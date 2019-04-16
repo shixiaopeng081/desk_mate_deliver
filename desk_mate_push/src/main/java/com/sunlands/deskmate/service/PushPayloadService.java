@@ -11,20 +11,27 @@ import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sunlands.deskmate.domain.PushRecordDO;
+import com.sunlands.deskmate.repository.PushRecordRepository;
+import com.sunlands.deskmate.util.BeanPropertiesUtil;
 import com.sunlands.deskmate.vo.PushDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author shixiaopeng
  */
 @Slf4j
 @Service
-public class PushPayloadService {
+public class PushPayloadService implements BeanPropertiesUtil{
 
     @Value("${MASTER_SECRET}")
     private String MASTER_SECRET;
@@ -42,6 +49,25 @@ public class PushPayloadService {
         try {
             result = jPushClient.sendPush(pushPayload);
             log.info("Got result - " + result);
+
+            PushResult finalResult = result;
+            CompletableFuture.runAsync(() -> {
+                try {
+                    PushRecordDO pushRecordDO = new PushRecordDO();
+                    ObjectMapper mapper = new ObjectMapper();
+
+                    pushRecordDO.setStatus(finalResult.statusCode);
+                    pushRecordDO.setTitle(pushDTO.getTitle());
+                    pushRecordDO.setContent(pushDTO.getContent());
+                    pushRecordDO.setExtras(mapper.writeValueAsString(pushDTO.getExtras()));
+                    pushRecordDO.setRegIds(String.join(",", pushDTO.getRegIds()) );
+
+                    pushRecordRepository.saveAndFlush(pushRecordDO);
+                } catch (JsonProcessingException e) {
+                    log.error("mapper.writeValueAsString = " + e.getMessage());
+                    e.printStackTrace();
+                }
+            });
         } catch (APIConnectionException e) {
             log.error("Connection error. Should retry later. ", e);
         } catch (APIRequestException e) {
@@ -70,5 +96,11 @@ public class PushPayloadService {
                         .setApnsProduction(APNS_PRODUCTION)
                         .build())
                 .build();
+    }
+
+    private final PushRecordRepository pushRecordRepository;
+
+    public PushPayloadService(PushRecordRepository pushRecordRepository) {
+        this.pushRecordRepository = pushRecordRepository;
     }
 }
