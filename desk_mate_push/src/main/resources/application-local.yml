@@ -1,19 +1,35 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+eureka:
+    client:
+        fetch-registry: false
+        register-with-eureka: false
+spring:
+    datasource:
+        driver-class-name: com.mysql.jdbc.Driver
+        druid:
+            initial-size: 50
+            max-active: 500
+            max-wait: 60000
+            min-idle: 50
+            test-on-borrow: false
+            test-on-return: false
+            test-while-idle: true
+            validation-query: SELECT 'x'
+        password: root456$%^
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://bj-cdb-fmhcv6zw.sql.tencentcdb.com:62785/zlcx_tongzhuo?useUnicode=true&autoReconnect=true&rewriteBatchedStatements=TRUE&useSSL=false
+        username: zlcx_wx
+    jpa:
+        properties:
+            hibernate:
+                format_sql: true
+        show-sql: true
+    redis:
+        database: 8
+        host: 172.16.0.9
+        password: SunLands2018
+        pool:
+            max-active: 600
+            max-idle: 300
+        port: 6379
 
 APNS_PRODUCTION: false
