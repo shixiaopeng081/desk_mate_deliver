@@ -1,0 +1,44 @@
+eureka:
+    client:
+        fetch-registry: true
+        register-with-eureka: true
+        service-url:
+            defaultZone: http://sunlands:HL9i8gWoHuKLmEr9@172.16.0.7:8761/eureka/
+    instance:
+        hostname: localhost
+        lease-expiration-duration-in-seconds: 10
+        lease-renewal-interval-in-seconds: 3
+        prefer-ip-address: true
+    server:
+        enable-self-preservation: false
+        eviction-interval-timer-in-ms: 3000
+        wait-time-in-ms-when-sync-empty: 0
+spring:
+    datasource:
+        driver-class-name: com.mysql.jdbc.Driver
+        druid:
+            initial-size: 50
+            max-active: 500
+            max-wait: 60000
+            min-idle: 50
+            test-on-borrow: false
+            test-on-return: false
+            test-while-idle: true
+            validation-query: SELECT 'x'
+        password: root456$%^
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://172.16.0.3:3306/zlcx_tongzhuo?useUnicode=true&autoReconnect=true&rewriteBatchedStatements=TRUE&useSSL=false
+        username: zlcx_wx
+    jpa:
+        properties:
+            hibernate:
+                format_sql: true
+        show-sql: true
+    redis:
+        database: 8
+        host: 172.16.0.9
+        password: SunLands2018
+        pool:
+            max-active: 600
+            max-idle: 300
+        port: 6379
