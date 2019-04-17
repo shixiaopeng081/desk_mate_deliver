@@ -67,7 +67,9 @@ public class PushPayloadService implements BeanPropertiesUtil{
         userIds.removeAll(pushDTO.getExcludeUserIds());
 
         //根据用户id，查询注册regid集合
+        log.info("before ***************************************************");
         BusinessResult businessResult = tzUserCenterService.findByIdIn(userIds);
+        log.info("before ***************************************************");
         List<UsersVO> resultData = (List<UsersVO>) businessResult.getData();
         List<String> regIds = resultData.stream().map(usersVO -> usersVO.getDeviceId()).collect(Collectors.toList());
 
