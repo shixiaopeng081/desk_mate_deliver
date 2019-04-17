@@ -1,5 +1,6 @@
 package com.sunlands.deskmate.client;
 
+import com.sunlands.deskmate.config.FeignConfig;
 import com.sunlands.deskmate.vo.response.BusinessResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.netflix.feign.FeignClient;
@@ -12,7 +13,7 @@ import java.util.List;
  * @author shixiaopeng
  */
 @SuppressWarnings("unused")
-@FeignClient(value = "tz_user_center")
+@FeignClient(value = "tz_user_center", configuration = FeignConfig.class)
 public interface TzUserCenterService {
 
     /**

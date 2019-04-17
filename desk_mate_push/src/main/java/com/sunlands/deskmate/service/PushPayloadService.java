@@ -127,7 +127,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
     }
 
     private final PushRecordRepository pushRecordRepository;
-    private final TzUserCenterService tzUserCenterService;
+    public final TzUserCenterService tzUserCenterService;
 
     public PushPayloadService(PushRecordRepository pushRecordRepository, TzUserCenterService tzUserCenterService) {
         this.pushRecordRepository = pushRecordRepository;
