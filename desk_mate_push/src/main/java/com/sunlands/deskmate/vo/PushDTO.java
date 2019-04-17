@@ -1,7 +1,8 @@
 package com.sunlands.deskmate.vo;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,25 +23,25 @@ import java.util.Map;
 @Builder
 public class PushDTO {
 
-    @ApiParam("标题")
+    @ApiModelProperty("标题")
     private String title;
 
-    @ApiParam("内容")
+    @ApiModelProperty("内容")
     private String content;
 
-    @ApiParam("扩展属性，map格式")
+    @ApiModelProperty("扩展属性，map格式")
     private Map<String, String> extras;
 
-    @ApiParam("push对象的极光注册id集合")
+    @ApiModelProperty("push对象的极光注册id集合")
     private List<String> regIds;
 
-    @ApiParam("用户/群/房间，不传默认个人。枚举：用户：1，群：2，房间：3")
+    @ApiModelProperty("用户/群/房间，不传默认个人。枚举：用户：1，群：2，房间：3")
     private Integer type;
 
-    @ApiParam("推送业务id集合,如果type是用户，就是用户id集合")
+    @ApiModelProperty("推送业务id集合,如果type是用户，就是用户id集合")
     private List<Integer> ids;
-
-    @ApiParam("不需要发送的用户id集合")
+    
+    @ApiModelProperty("不需要发送的用户id集合")
     private List<Integer>  excludeUserIds;
 
 
