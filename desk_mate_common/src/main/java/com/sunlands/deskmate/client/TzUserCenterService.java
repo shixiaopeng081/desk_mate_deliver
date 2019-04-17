@@ -23,7 +23,7 @@ public interface TzUserCenterService {
      * @return
      */
     @ApiOperation(value = "根据idList查询", notes = "根据idList查询")
-    @PostMapping("/list")
+    @PostMapping("/users/list")
     BusinessResult findByIdIn(@RequestBody List<Integer> idList);
 }
 
