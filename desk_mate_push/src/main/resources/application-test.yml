@@ -42,7 +42,7 @@ spring:
             max-active: 600
             max-idle: 300
         port: 6379
- security:
+security:
    oauth2:
      resource:
        token-info-uri: https://tongzhuotest.sunlands.wang/tz_user_center/oauth/check_token
