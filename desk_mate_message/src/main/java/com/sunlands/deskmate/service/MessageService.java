@@ -33,7 +33,7 @@ public class MessageService implements BeanPropertiesUtil {
             messageDODB.setIsRead(false);
             messageDODB.setContent(messageDTO.getContent());
             messageDODB.setTitle(messageDTO.getTitle());
-            messageDODB.setAvatarUrl(messageDTO.getAvatarUrl());
+//            messageDODB.setAvatarUrl(messageDTO.getAvatarUrl());
             messageDODB.setMessageDateTime(messageDTO.getMessageDateTime());
 
             messageRepository.save(messageDODB);
