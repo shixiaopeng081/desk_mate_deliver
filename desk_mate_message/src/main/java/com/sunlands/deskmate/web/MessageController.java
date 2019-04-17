@@ -29,7 +29,7 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
-    @ApiOperation(value = "保存消息接口")
+    @ApiOperation(value = "发送消息接口")
     @PostMapping("/message")
     public BusinessResult createMessage(@RequestBody MessageDTO messageDTO) {
         String result = checkData(messageDTO);

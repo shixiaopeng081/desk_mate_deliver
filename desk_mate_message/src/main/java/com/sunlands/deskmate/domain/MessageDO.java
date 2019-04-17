@@ -27,7 +27,7 @@ public class MessageDO {
 
     private String content;
 
-    private String avatarUrl;
+//    private String avatarUrl;
 
     private Integer businessId;
 

@@ -30,8 +30,8 @@ public class Message {
     @ApiModelProperty("内容")
     private String content;
 
-    @ApiModelProperty("头像")
-    private String avatarUrl;
+//    @ApiModelProperty("头像")
+//    private String avatarUrl;
 
     @ApiModelProperty("业务id")
     private Integer businessId;

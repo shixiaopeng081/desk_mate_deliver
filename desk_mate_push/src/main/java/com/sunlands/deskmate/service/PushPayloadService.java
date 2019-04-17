@@ -66,10 +66,9 @@ public class PushPayloadService implements BeanPropertiesUtil{
 
 
         List<String> regIds = null;
-        pushDTO.setRegIds(regIds);
 
         JPushClient jPushClient = new JPushClient(MASTER_SECRET, APP_KEY);
-        PushPayload pushPayload = buildPushObject_android_and_ios(pushDTO);
+        PushPayload pushPayload = buildPushObject_android_and_ios(pushDTO, regIds);
         PushResult result = null;
         try {
             result = jPushClient.sendPush(pushPayload);
@@ -85,7 +84,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
                     pushRecordDO.setTitle(pushDTO.getTitle());
                     pushRecordDO.setContent(pushDTO.getContent());
                     pushRecordDO.setExtras(mapper.writeValueAsString(pushDTO.getExtras()));
-                    pushRecordDO.setRegIds(String.join(",", pushDTO.getRegIds()) );
+                    pushRecordDO.setRegIds(String.join(",", regIds) );
 
                     pushRecordRepository.saveAndFlush(pushRecordDO);
                 } catch (JsonProcessingException e) {
@@ -104,10 +103,10 @@ public class PushPayloadService implements BeanPropertiesUtil{
         return result;
     }
 
-    private PushPayload buildPushObject_android_and_ios(PushDTO pushDTO) {
+    private PushPayload buildPushObject_android_and_ios(PushDTO pushDTO, List<String> regIds) {
         return PushPayload.newBuilder()
                 .setPlatform(Platform.android_ios())
-                .setAudience(Audience.registrationId(pushDTO.getRegIds()))
+                .setAudience(Audience.registrationId(regIds))
                 .setNotification(Notification.newBuilder()
                         .setAlert(pushDTO.getContent())
                         .addPlatformNotification(AndroidNotification.newBuilder()

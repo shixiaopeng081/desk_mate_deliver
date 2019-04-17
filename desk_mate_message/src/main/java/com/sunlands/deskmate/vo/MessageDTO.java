@@ -26,8 +26,8 @@ public class MessageDTO {
     @ApiModelProperty("内容")
     private String content;
 
-    @ApiModelProperty("头像")
-    private String avatarUrl;
+//    @ApiModelProperty("头像")
+//    private String avatarUrl;
 
     @ApiModelProperty("业务id，可能是群id，也可能是道友id")
     private Integer businessId;

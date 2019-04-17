@@ -32,8 +32,8 @@ public class PushDTO {
     @ApiModelProperty("扩展属性，map格式")
     private Map<String, String> extras;
 
-    @ApiModelProperty("push对象的极光注册id集合")
-    private List<String> regIds;
+//    @ApiModelProperty("push对象的极光注册id集合")
+//    private List<String> regIds;
 
     @ApiModelProperty("用户/群/房间，不传默认个人。枚举：用户：1，群：2，房间：3")
     private Integer type;
