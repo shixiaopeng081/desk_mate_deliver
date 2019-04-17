@@ -35,6 +35,7 @@ public class MessageDO {
 
     private String type;
 
+    @Column(insertable = false)
     private Boolean isRead;
 
     private Integer unreadCount;

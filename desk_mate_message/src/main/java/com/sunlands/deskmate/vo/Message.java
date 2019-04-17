@@ -8,18 +8,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
  * @author shixiaopeng
  */
-@ApiModel("后端消息实体")
+@ApiModel("前端消息实体")
 @Data
 @FieldNameConstants
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MessageDTO {
+public class Message {
+    @ApiModelProperty("主键")
+    private Integer id;
+
     @ApiModelProperty("标题")
     private String title;
 
@@ -29,14 +33,17 @@ public class MessageDTO {
     @ApiModelProperty("头像")
     private String avatarUrl;
 
-    @ApiModelProperty("业务id，可能是群id，也可能是道友id")
+    @ApiModelProperty("业务id")
     private Integer businessId;
 
-    @ApiModelProperty("接受消息的用户id")
+    @ApiModelProperty("用户id")
     private Integer userId;
 
     @ApiModelProperty("消息类型")
     private String type;
+
+    @ApiModelProperty("未读条数")
+    private Integer unreadCount;
 
     @ApiModelProperty("消息时间")
     private LocalDateTime messageDateTime;
