@@ -70,6 +70,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
         log.info("userIds = {}", userIds);
         BusinessResult businessResult = tzUserCenterService.findByIdIn(userIds);
         List<UsersVO> resultData = (List<UsersVO>) businessResult.getData();
+        log.info("List<UsersVO> = {}", resultData);
         List<String> regIds = resultData.stream().map(usersVO -> usersVO.getDeviceId()).collect(Collectors.toList());
 
         JPushClient jPushClient = new JPushClient(MASTER_SECRET, APP_KEY);
