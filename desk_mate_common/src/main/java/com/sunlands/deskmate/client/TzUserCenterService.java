@@ -13,7 +13,7 @@ import java.util.List;
  * @author shixiaopeng
  */
 @SuppressWarnings("unused")
-@FeignClient(value = "tz_user_center", configuration = FeignConfig.class)
+@FeignClient(value = "tz-user-center", configuration = FeignConfig.class)
 public interface TzUserCenterService {
 
     /**
@@ -23,7 +23,7 @@ public interface TzUserCenterService {
      * @return
      */
     @ApiOperation(value = "根据idList查询", notes = "根据idList查询")
-    @PostMapping("/list")
+    @PostMapping("/users/list")
     BusinessResult findByIdIn(@RequestBody List<Integer> idList);
 }
 
