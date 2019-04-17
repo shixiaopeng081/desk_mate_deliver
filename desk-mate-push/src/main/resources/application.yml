@@ -1,6 +1,6 @@
 spring:
   application:
-    name: desk_mate_push
+    name: desk-mate-push
 server:
   port: 8384
 

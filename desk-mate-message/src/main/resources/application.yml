@@ -1,6 +1,6 @@
 spring:
   application:
-    name: desk_mate_message
+    name: desk-mate-message
 server:
   port: 8385
 
