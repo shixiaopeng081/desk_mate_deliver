@@ -4,12 +4,14 @@ package com.sunlands.deskmate.vo.response;
 import com.sunlands.deskmate.vo.CommonResultMessage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class BusinessResult implements Serializable {
 
     private String code;
