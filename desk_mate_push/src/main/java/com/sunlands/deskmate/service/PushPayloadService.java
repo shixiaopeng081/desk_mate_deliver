@@ -13,19 +13,24 @@ import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sunlands.deskmate.client.TzUserCenterService;
 import com.sunlands.deskmate.domain.PushRecordDO;
 import com.sunlands.deskmate.repository.PushRecordRepository;
 import com.sunlands.deskmate.util.BeanPropertiesUtil;
 import com.sunlands.deskmate.vo.PushDTO;
+import com.sunlands.deskmate.vo.UsersVO;
+import com.sunlands.deskmate.vo.response.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * @author shixiaopeng
@@ -62,10 +67,9 @@ public class PushPayloadService implements BeanPropertiesUtil{
         userIds.removeAll(pushDTO.getExcludeUserIds());
 
         //根据用户id，查询注册regid集合
-
-
-
-        List<String> regIds = null;
+        BusinessResult businessResult = tzUserCenterService.findByIdIn(userIds);
+        List<UsersVO> resultData = (List<UsersVO>) businessResult.getData();
+        List<String> regIds = resultData.stream().map(usersVO -> usersVO.getDeviceId()).collect(Collectors.toList());
 
         JPushClient jPushClient = new JPushClient(MASTER_SECRET, APP_KEY);
         PushPayload pushPayload = buildPushObject_android_and_ios(pushDTO, regIds);
@@ -123,8 +127,10 @@ public class PushPayloadService implements BeanPropertiesUtil{
     }
 
     private final PushRecordRepository pushRecordRepository;
+    private final TzUserCenterService tzUserCenterService;
 
-    public PushPayloadService(PushRecordRepository pushRecordRepository) {
+    public PushPayloadService(PushRecordRepository pushRecordRepository, TzUserCenterService tzUserCenterService) {
         this.pushRecordRepository = pushRecordRepository;
+        this.tzUserCenterService = tzUserCenterService;
     }
 }

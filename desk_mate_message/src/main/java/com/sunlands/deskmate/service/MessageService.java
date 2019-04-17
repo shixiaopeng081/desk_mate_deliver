@@ -8,11 +8,9 @@ import com.sunlands.deskmate.vo.Message;
 import com.sunlands.deskmate.vo.MessageDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
