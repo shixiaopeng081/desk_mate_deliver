@@ -1,7 +1,18 @@
 eureka:
     client:
-        fetch-registry: false
-        register-with-eureka: false
+        fetch-registry: true
+        register-with-eureka: true
+        service-url:
+            defaultZone: http://sunlands:HL9i8gWoHuKLmEr9@172.16.0.7:8761/eureka/
+    instance:
+        prefer-ip-address: true
+        instance-id: ${spring.cloud.client.ipAddress}:${spring.application.name}:${server.port}
+        lease-expiration-duration-in-seconds: 10
+        lease-renewal-interval-in-seconds: 5
+    server:
+        enable-self-preservation: false
+        eviction-interval-timer-in-ms: 3000
+        wait-time-in-ms-when-sync-empty: 0
 spring:
     datasource:
         driver-class-name: com.mysql.jdbc.Driver

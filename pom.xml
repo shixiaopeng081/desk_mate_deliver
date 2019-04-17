@@ -42,9 +42,9 @@
 
 	<modules>
 		<module>desk_mate_common</module>
-		<module>desk_mate_message</module>
-		<module>desk_mate_push</module>
-		<module>desk_mate_socket</module>
+		<module>desk-mate-message</module>
+		<module>desk-mate-push</module>
+		<module>desk-mate-socket</module>
 	</modules>
 
 	<dependencies>
