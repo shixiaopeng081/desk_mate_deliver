@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -43,6 +44,30 @@ public class PushPayloadService implements BeanPropertiesUtil{
     private boolean APNS_PRODUCTION;
 
     public PushResult sendPushWithRegIds(PushDTO pushDTO) {
+        Integer type = pushDTO.getType();
+        List<Integer> userIds = null;
+
+        if(type == PushDTO.TypeEnum.USER.code){
+            //用户
+            userIds = pushDTO.getIds();
+        }else if(type == PushDTO.TypeEnum.GROUP.code){
+            //根据群id，查询群下的所有用户
+
+
+        }else if(type == PushDTO.TypeEnum.ROOM.code){
+            //根据房间id，查询房间下的所有用户
+
+
+        }
+        userIds.removeAll(pushDTO.getExcludeUserIds());
+
+        //根据用户id，查询注册regid集合
+
+
+
+        List<String> regIds = null;
+        pushDTO.setRegIds(regIds);
+
         JPushClient jPushClient = new JPushClient(MASTER_SECRET, APP_KEY);
         PushPayload pushPayload = buildPushObject_android_and_ios(pushDTO);
         PushResult result = null;

@@ -35,6 +35,7 @@ public class JpushApiController {
         if(result != null){
             BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_INVALIDE, result);
         }
+
         PushResult pushResult = pushPayloadService.sendPushWithRegIds(pushDTO);
         if(pushResult.statusCode == 0){
             return BusinessResult.createSuccessInstance(null);
@@ -46,9 +47,9 @@ public class JpushApiController {
 
 
     private String checkData(PushDTO pushDTO){
-        List<String> regIds = pushDTO.getRegIds();
-        if(Objects.isNull(regIds) || regIds.isEmpty()){
-            return "regIds不能为空";
+        List<Integer> ids = pushDTO.getIds();
+        if(Objects.isNull(ids) || ids.isEmpty()){
+            return "业务Ids不能为空";
         }
         return null;
     }

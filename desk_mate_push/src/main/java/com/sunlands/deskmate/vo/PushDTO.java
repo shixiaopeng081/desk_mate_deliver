@@ -33,4 +33,49 @@ public class PushDTO {
 
     @ApiParam("push对象的极光注册id集合")
     private List<String> regIds;
+
+    @ApiParam("用户/群/房间，不传默认个人。枚举：用户：1，群：2，房间：3")
+    private Integer type;
+
+    @ApiParam("推送业务id集合,如果type是用户，就是用户id集合")
+    private List<Integer> ids;
+
+    @ApiParam("不需要发送的用户id集合")
+    private List<Integer>  excludeUserIds;
+
+
+    public enum TypeEnum {
+        /**
+         * 用户
+         */
+        USER(1),
+
+        /**
+         * 群
+         */
+        GROUP(2),
+
+        /**
+         * 房间
+         */
+        ROOM(3),
+        ;
+
+        public final int code;
+
+        TypeEnum(int code) {
+            this.code = code;
+        }
+
+        public static TypeEnum byCode(int code) {
+            for (TypeEnum typeEnum : TypeEnum.values()) {
+                if (typeEnum.code == code) {
+                    return typeEnum;
+                }
+            }
+
+            throw new IllegalArgumentException("type code值不合法, input code=" + code);
+        }
+
+    }
 }
