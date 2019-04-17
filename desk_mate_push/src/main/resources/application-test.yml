@@ -6,7 +6,7 @@ eureka:
             defaultZone: http://sunlands:HL9i8gWoHuKLmEr9@172.16.0.7:8761/eureka/
     instance:
         prefer-ip-address: true
-        instance-id: ${spring.cloud.client.ipAddress}:${spring.application.name}:${server.port}
+        instance-id: 172.16.0.10:tz-user-center:9666
         lease-expiration-duration-in-seconds: 10
         lease-renewal-interval-in-seconds: 5
     server:
