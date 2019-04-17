@@ -12,7 +12,7 @@ import java.util.List;
  * @author shixiaopeng
  */
 @SuppressWarnings("unused")
-@FeignClient(value = "tz_user_center")
+@FeignClient(value = "tz-user-center")
 public interface TzUserCenterService {
 
     /**
