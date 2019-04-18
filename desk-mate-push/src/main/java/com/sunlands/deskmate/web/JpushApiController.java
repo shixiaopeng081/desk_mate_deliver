@@ -30,7 +30,6 @@ public class JpushApiController {
     private PushPayloadService pushPayloadService;
 
     @ApiOperation(value = "发起push请求接口")
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/push")
     public BusinessResult push(@RequestBody PushDTO pushDTO) {
         String result = checkData(pushDTO);
