@@ -19,6 +19,5 @@ test-redeploy:
     - ssh $TEST_SERVERS "/sunlands/deploy_desk_mate_push.sh"
 
 
-
 #-------------------------------------------------------------------------------------------
 
