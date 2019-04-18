@@ -1,3 +1,22 @@
+server:
+    port: 8081
+
 spring:
     profiles:
         active: dev
+    datasource:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+    # jackson时间格式化
+    jackson:
+        time-zone: GMT+8
+        date-format: yyyy-MM-dd HH:mm:ss
+
+# Mybatis配置
+mybatis:
+    mapperLocations: classpath:mapper/**/*.xml
+    configLocation: classpath:mybatis-config.xml
+    typeAliasesPackage: com.sunlands.deskmate.*
+
+netty:
+    port: 9961
