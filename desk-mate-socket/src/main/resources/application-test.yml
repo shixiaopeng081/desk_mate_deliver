@@ -34,9 +34,9 @@ security:
     password: 123456
   oauth2:
     resource:
-      token-info-uri: http://tongzhuotest.sunlands.wang/oauth/check_token
+      token-info-uri: http://localhost:9666/oauth/check_token
     client:
       client-id: users
       client-secret: 123456
-      access-token-uri: http://tongzhuotest.sunlands.wang/oauth/token
+      access-token-uri: http://localhost:9666/oauth/token
       grant-type: client_credentials

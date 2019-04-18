@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +32,8 @@ public class ChatApi {
 
     @ApiOperation(value = "查询未读聊天信息接口")
     @GetMapping("/unread")
-    public BusinessResult createMessage(@RequestBody RequestDTO requestDTO) {
+    @PreAuthorize("isAuthenticated()")
+    public BusinessResult createMessage(RequestDTO requestDTO) {
         List<TzChatRecord> tzChatRecords = messageService.queryUnreadRecord(requestDTO);
         return BusinessResult.createSuccessInstance(tzChatRecords);
     }
