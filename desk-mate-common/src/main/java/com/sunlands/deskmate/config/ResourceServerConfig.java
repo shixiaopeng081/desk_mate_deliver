@@ -20,11 +20,6 @@ import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecur
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Override
-    public void configure(ResourceServerSecurityConfigurer resources) {
-        resources.resourceId("web-api");
-    }
-
-    @Override
     public void configure(HttpSecurity http) throws Exception {
         http
                 .httpBasic()
