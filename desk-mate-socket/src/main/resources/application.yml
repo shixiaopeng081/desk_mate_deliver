@@ -1,3 +1,4 @@
+
 server:
     port: 8081
 
@@ -11,6 +12,8 @@ spring:
     jackson:
         time-zone: GMT+8
         date-format: yyyy-MM-dd HH:mm:ss
+    application:
+      name: desk-mate-socket
 
 # Mybatis配置
 mybatis:
