@@ -147,22 +147,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 log.info("paramter error. type = {} userId = {} toId = {}", typeStr, userIdStr, toIdStr);
                 return;
             }
-            String destIdStr = "";
             Integer userId = Integer.valueOf(userIdStr);
-            if (Integer.valueOf(typeStr) == MessageType.PRIVATE_CHAT.getType()){
-                Integer destId = Integer.valueOf(toIdStr);
-                if (userId > destId){
-                    destIdStr = destId + ":" + userId + ":" + typeStr;
-                } else {
-                    destIdStr = userId + ":" + destId + ":" + typeStr;
-                }
-            } else if (Integer.valueOf(typeStr) == MessageType.GROUP_CHAT.getType()){
-                destIdStr = toIdStr + ":" + typeStr;
-            } else if (Integer.valueOf(typeStr) == MessageType.ROOM_CHAT.getType()){
-                destIdStr = toIdStr  + ":" + typeStr;
-            } else {
-                log.warn("unknown type num type = {}", typeStr);
-            }
+            String destIdStr = makeDestIdStr(Integer.valueOf(typeStr), Integer.valueOf(toIdStr), Integer.valueOf(userIdStr));
             log.info(">>>>>>>destIdStr={}", destIdStr);
 
             // TODO 获取用户信息
@@ -207,6 +193,24 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         } else {
             log.warn("web socket request method not get");
         }
+    }
+
+    public String makeDestIdStr(Integer type, Integer toId, Integer userId) {
+        String destIdStr = "";
+        if (type == MessageType.PRIVATE_CHAT.getType()){
+            if (userId > toId){
+                destIdStr = toId + ":" + userId + ":" + type;
+            } else {
+                destIdStr = userId + ":" + toId + ":" + type;
+            }
+        } else if (type == MessageType.GROUP_CHAT.getType()){
+            destIdStr = toId + ":" + type;
+        } else if (type == MessageType.ROOM_CHAT.getType()){
+            destIdStr = toId  + ":" + type;
+        } else {
+            log.warn("unknown type num type = {}", type);
+        }
+        return destIdStr;
     }
 
     @Override

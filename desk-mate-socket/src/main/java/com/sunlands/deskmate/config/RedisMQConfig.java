@@ -1,5 +1,6 @@
 package com.sunlands.deskmate.config;
 
+import com.sunlands.deskmate.service.impl.MessageServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +10,6 @@ import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 
-import com.sunlands.deskmate.service.impl.MessageServiceImpl;
 
 /**
  * @author lishuai

@@ -42,3 +42,16 @@ spring:
             timeout: 6000  # 连接超时时长（毫秒）
 
 queue: hsk_queue_dev
+
+security:
+  user:
+    name: users
+    password: 123456
+  oauth2:
+    resource:
+      token-info-uri: http://tongzhuotest.sunlands.wang/oauth/check_token
+    client:
+      client-id: users
+      client-secret: 123456
+      access-token-uri: http://tongzhuotest.sunlands.wang/oauth/token
+      grant-type: client_credentials
