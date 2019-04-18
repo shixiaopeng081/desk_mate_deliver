@@ -1,0 +1,22 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  TEST_SERVERS: root@172.16.0.10
+  TEST_HOSTS: 172.16.0.10
+
+#-------------------------------------------------------------------------------------------
+
+test-redeploy:
+  stage: deploy
+  only:
+    - test
+  tags:
+    - tencent
+  script:
+    - echo "deploy start"
+    - ssh $TEST_SERVERS "/sunlands/deploy_desk_mate_push.sh"
+
+#-------------------------------------------------------------------------------------------
+
