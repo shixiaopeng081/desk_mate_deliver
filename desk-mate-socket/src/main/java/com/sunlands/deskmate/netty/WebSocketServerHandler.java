@@ -64,10 +64,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof FullHttpRequest) {//建立连接的请求
-
-            redisTemplate.opsForValue().set("liuyan", "test");
-            Object liuyan = redisTemplate.opsForValue().get("liuyan");
-
             handleHttpRequest(ctx, (FullHttpRequest) msg);
         } else if (msg instanceof WebSocketFrame) {//WebSocket
             handleWebsocketFrame(ctx, (WebSocketFrame) msg, true);
@@ -234,7 +230,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 if (handshaker != null) {
                     //ctx.channel().write(new TextWebSocketFrame("server:主动给客户端发消息"));
                     ctx.flush();
-                }
+                 }
             }
         }, 1000, 1000);
     }
