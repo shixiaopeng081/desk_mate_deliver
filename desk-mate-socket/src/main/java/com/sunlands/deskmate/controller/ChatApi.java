@@ -33,7 +33,7 @@ public class ChatApi {
     @ApiOperation(value = "查询未读聊天信息接口")
     @GetMapping("/unread")
     @PreAuthorize("isAuthenticated()")
-    public BusinessResult createMessage(RequestDTO requestDTO) {
+    public BusinessResult unreadMessage(RequestDTO requestDTO) {
         List<TzChatRecord> tzChatRecords = messageService.queryUnreadRecord(requestDTO);
         return BusinessResult.createSuccessInstance(tzChatRecords);
     }
