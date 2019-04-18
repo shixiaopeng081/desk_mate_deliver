@@ -47,7 +47,7 @@ security:
      resource:
        token-info-uri: https://tongzhuotest.sunlands.wang/tz_user_center/oauth/check_token
      client:
-       client-id: users
+       client-id: message
        client-secret: 123456
        access-token-uri: https://tongzhuotest.sunlands.wang/tz_user_center/oauth/token
 
