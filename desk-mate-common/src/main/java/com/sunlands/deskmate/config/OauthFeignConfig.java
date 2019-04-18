@@ -1,68 +1,61 @@
 package com.sunlands.deskmate.config;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.Contract;
 import feign.FeignException;
 import feign.RequestInterceptor;
 import feign.codec.ErrorDecoder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.cloud.netflix.feign.support.SpringMvcContract;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.security.oauth2.client.feign.OAuth2FeignRequestInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
+import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Map;
-import java.util.Objects;
 
 /**
- * 使用feignClient的时候, 传递所有Header(主要是Authorization)
- * 写在这里, 对所有的feignClient起作用
- *
  * @author liude
  */
 @Configuration
-public class FeignConfig {
+@EnableConfigurationProperties
+@Slf4j
+public class OauthFeignConfig {
+
     @Bean
-    public RequestInterceptor headerInterceptor() {
-        return requestTemplate -> {
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            if (Objects.isNull(attributes)) {
-                return;
-            }
-
-            HttpServletRequest request = attributes.getRequest();
-            Enumeration<String> headerNames = request.getHeaderNames();
-
-            if (headerNames != null) {
-
-                while (headerNames.hasMoreElements()) {
-                    String name = headerNames.nextElement();
-                    if ("Authorization".equalsIgnoreCase(name)) {
-                        String values = request.getHeader(name);
-                        requestTemplate.header(name, values);
-                    }
-                }
-            }
-
-        };
+    @ConfigurationProperties(prefix = "security.oauth2.client")
+    public ClientCredentialsResourceDetails clientCredentialsResourceDetails() {
+        return new ClientCredentialsResourceDetails();
     }
 
-    /**
-     * Feign在DateConvert之前就初始化了， 会导致convert不全
-     * 加上这个可以准备一些DateConverter
-     *
-     * @return Contract
-     */
     @Bean
-    public Contract feignContract() {
-        return new SpringMvcContract();
+    public RequestInterceptor oauth2FeignRequestInterceptor() {
+        ClientCredentialsResourceDetails client = clientCredentialsResourceDetails();
+        try {
+            log.debug("oauth2FeignRequestInterceptor={}", new ObjectMapper().writeValueAsString(client));
+        } catch (JsonProcessingException e) {
+            log.warn("oauth2FeignRequestInterceptor", e);
+        }
+        return new OAuth2FeignRequestInterceptor(new DefaultOAuth2ClientContext(), client);
+    }
+
+    @Bean
+    public OAuth2RestTemplate clientCredentialsRestTemplate() {
+        ClientCredentialsResourceDetails client = clientCredentialsResourceDetails();
+        try {
+            log.debug("clientCredentialsRestTemplate={}", new ObjectMapper().writeValueAsString(client));
+        } catch (JsonProcessingException e) {
+            log.warn("clientCredentialsRestTemplate", e);
+        }
+        return new OAuth2RestTemplate(client);
     }
 
     @Bean
@@ -77,6 +70,7 @@ public class FeignConfig {
         };
     }
 
+    @SuppressWarnings("WeakerAccess")
     public static class MyFeignException extends FeignException {
         private MyFeignException(int status, String message) {
             super(status, message);
@@ -85,15 +79,13 @@ public class FeignConfig {
 
 
     /**
-     * 解决应用关闭时候产生的异常信息
-     * org.springframework.beans.factory.BeanCreationNotAllowedException: Error creating bean with name 'eurekaAutoServiceRegistration': Singleton bean creation not allowed while singletons of this factory are in destruction (Do not request a bean from a BeanFactory in a destroy method implementation!)
-     * ...其实也不是很严重的问题
+     * 避免在应用关闭的时候产生: Error creating bean with name 'eurekaAutoServiceRegistration': Singleton bean creation not allowed
      */
     @Component
     public static class FeignBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
-        private static final String FEIGN_CONTEXT = "feignContext";
         private static final String EUREKA_AUTO_SERVICE_REGISTRATION = "eurekaAutoServiceRegistration";
+        private static final String FEIGN_CONTEXT = "feignContext";
 
         @Override
         public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
