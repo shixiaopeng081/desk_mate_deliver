@@ -42,9 +42,9 @@
 
 	<modules>
 		<module>desk_mate_common</module>
-		<module>desk_mate_message</module>
-		<module>desk_mate_push</module>
-		<module>desk_mate_socket</module>
+		<module>desk-mate-message</module>
+		<module>desk-mate-push</module>
+		<module>desk-mate-socket</module>
 	</modules>
 
 	<dependencies>
@@ -165,22 +165,22 @@
 
 	</dependencies>
 
-	<build>
-		<finalName>desk_mate_deliver</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<skipTests>true</skipTests>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<!--<build>-->
+		<!--<finalName>desk_mate_deliver</finalName>-->
+		<!--<plugins>-->
+			<!--<plugin>-->
+				<!--<groupId>org.springframework.boot</groupId>-->
+				<!--<artifactId>spring-boot-maven-plugin</artifactId>-->
+			<!--</plugin>-->
+			<!--<plugin>-->
+				<!--<groupId>org.apache.maven.plugins</groupId>-->
+				<!--<artifactId>maven-surefire-plugin</artifactId>-->
+				<!--<configuration>-->
+					<!--<skipTests>true</skipTests>-->
+				<!--</configuration>-->
+			<!--</plugin>-->
+		<!--</plugins>-->
+	<!--</build>-->
 
 
 	<repositories>

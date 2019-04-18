@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: desk-mate-push
+server:
+  port: 8384
+
+swagger:
+  title: 极光push推送接口
+  description: "给app推送push功能"
+  basePackage: com.sunlands.deskmate.web
+  version: 1.0
+  contact:
+        name: push功能接口服务
+        email: shixiaopeng@sunlands.com
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /doc #默认/v2/api-doc可能和应用接口命名冲突
+
+MASTER_SECRET: 7e14af5151fdbfb3e33a2baa
+APP_KEY: 07ae1c3c0fd09df804028dd4
