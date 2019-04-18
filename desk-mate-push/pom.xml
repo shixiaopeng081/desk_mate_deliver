@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>com.sunlands.deskmate</groupId>
-            <artifactId>desk_mate_common</artifactId>
+            <artifactId>desk-mate-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 

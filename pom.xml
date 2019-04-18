@@ -41,7 +41,7 @@
 	</properties>
 
 	<modules>
-		<module>desk_mate_common</module>
+		<module>desk-mate-common</module>
 		<module>desk-mate-message</module>
 		<module>desk-mate-push</module>
 		<module>desk-mate-socket</module>
