@@ -29,7 +29,7 @@ public class JpushApiController {
     @Autowired
     private PushPayloadService pushPayloadService;
 
-    @ApiOperation(value = "发起push请求接口")
+    @ApiOperation(value = "发起push-----请求接口")
     @PostMapping("/push")
     public BusinessResult push(@RequestBody PushDTO pushDTO) {
         String result = checkData(pushDTO);
