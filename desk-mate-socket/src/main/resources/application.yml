@@ -23,3 +23,17 @@ mybatis:
 
 netty:
     port: 9961
+swagger:
+  title: 聊天信心处理接口
+  description: "聊天信心处理功能"
+  basePackage: com.sunlands.deskmate.controller
+  version: 1.0
+  contact:
+        name: 聊天信心处理接口服务
+        email: liuyan@sunlands.com
+
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /doc #默认/v2/api-doc可能和应用接口命名冲突

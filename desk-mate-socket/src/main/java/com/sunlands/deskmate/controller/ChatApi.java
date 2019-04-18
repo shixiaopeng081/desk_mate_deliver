@@ -34,6 +34,13 @@ public class ChatApi {
     @GetMapping("/unread")
     @PreAuthorize("isAuthenticated()")
     public BusinessResult unreadMessage(RequestDTO requestDTO) {
+        if (requestDTO.getType() == null || requestDTO.getDestId() == null || requestDTO.getUserId() == null){
+            return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
+
+        }
+        if (requestDTO.getMaxReadId() == null){
+            requestDTO.setMaxReadId(0L);
+        }
         List<TzChatRecord> tzChatRecords = messageService.queryUnreadRecord(requestDTO);
         return BusinessResult.createSuccessInstance(tzChatRecords);
     }

@@ -54,13 +54,10 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<TzChatRecord> queryUnreadRecord(RequestDTO requestDTO) {
         String destIdStr = webSocketServerHandler.makeDestIdStr(requestDTO.getType(), requestDTO.getDestId(), requestDTO.getUserId());
-
         TzChatRecordExample example = new TzChatRecordExample();
-        example.createCriteria().andDestIdEqualTo(destIdStr);
+        example.createCriteria().andDestIdEqualTo(destIdStr).andIdGreaterThan(requestDTO.getMaxReadId());
         example.setOrderByClause("create_time");
-
         return messageMapper.selectByExample(example);
-
     }
 
     public void receiveMessage(String message) {

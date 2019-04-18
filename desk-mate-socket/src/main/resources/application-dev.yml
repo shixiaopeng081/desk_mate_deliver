@@ -1,9 +1,9 @@
 eureka:
     client:
-        fetch-registry: false
-        register-with-eureka: false
+        fetch-registry: true
+        register-with-eureka: true
         service-url:
-            defaultZone: http://sunlands:HL9i8gWoHuKLmEr9@172.16.0.7:8761/eureka/
+            defaultZone: http://sunlands:HL9i8gWoHuKLmEr9@62.234.206.233:8761/eureka/
     instance:
         hostname: localhost
         lease-expiration-duration-in-seconds: 10
