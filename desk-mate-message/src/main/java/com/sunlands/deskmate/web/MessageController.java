@@ -33,7 +33,7 @@ public class MessageController {
         if(result != null){
             BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_INVALIDE, result);
         }
-        if(messageDTO.getGroupId() == null){
+        if(messageDTO.getBusinessId() == null){
             messageService.createPerson(messageDTO);
         }else{
             messageService.createGroup(messageDTO);

@@ -36,7 +36,7 @@ public class Message {
 //    private String avatarUrl;
 
     @ApiModelProperty("业务id")
-    private Integer businessId;
+    private String businessId;
 
     @ApiModelProperty("用户id")
     private Integer userId;
@@ -48,5 +48,5 @@ public class Message {
     private Integer unreadCount;
 
     @ApiModelProperty("消息时间")
-    private Date updateDateTime;;
+    private Date updateDateTime;
 }
