@@ -14,7 +14,7 @@ import java.util.List;
  * @author shixiaopeng
  */
 @SuppressWarnings("unused")
-@FeignClient(value = "deskmate-group-api", configuration = OauthFeignConfig.class)
+@FeignClient(value = "deskmate-group-api")
 public interface DeskMateGroupService {
 
     @GetMapping(value = "/deskmate-group-api/group/users")
