@@ -10,7 +10,7 @@ swagger:
   basePackage: com.sunlands.deskmate.web
   version: 1.0
   contact:
-        name: push功能接口服务
+        name: 石晓鹏
         email: shixiaopeng@sunlands.com
 
 springfox:
