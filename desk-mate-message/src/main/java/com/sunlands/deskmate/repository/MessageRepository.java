@@ -13,9 +13,9 @@ import java.util.List;
 @Repository
 public interface MessageRepository extends JpaRepository<MessageDO, Integer> {
 
-    MessageDO findAllByUserIdAndBusinessIdAndType(Integer userId, Integer businessId, String type);
+    MessageDO findAllByUserIdAndBusinessIdAndType(Integer userId, String businessId, String type);
 
-    List<MessageDO> findAllByBusinessIdAndType(Integer businessId, String type);
+    List<MessageDO> findAllByBusinessIdAndType(String businessId, String type);
 
     List<MessageDO> findAllByUserIdAndIsReadOrderByUpdateDateTimeDesc(Integer userId, Boolean isRead);
 }

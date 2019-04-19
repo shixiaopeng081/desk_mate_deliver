@@ -1,12 +1,15 @@
 package com.sunlands.deskmate.service;
 
 
+import com.sunlands.deskmate.client.DeskMateGroupService;
 import com.sunlands.deskmate.client.TzUserCenterService;
 import com.sunlands.deskmate.domain.MessageDO;
 import com.sunlands.deskmate.repository.MessageRepository;
 import com.sunlands.deskmate.util.BeanPropertiesUtil;
+import com.sunlands.deskmate.vo.GroupUserVO;
 import com.sunlands.deskmate.vo.Message;
 import com.sunlands.deskmate.vo.MessageDTO;
+import com.sunlands.deskmate.vo.response.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -55,28 +58,30 @@ public class MessageService implements BeanPropertiesUtil {
         Map<Integer, MessageDO> userIdToMessageDOMap = messageDOListDB.stream().collect(Collectors.toMap(o -> o.getUserId(), o -> o));
 
         //根据群id查询群用户列表
-        //TODO
-        List<Integer> userIds = new ArrayList<>();
-        userIds.remove(messageDTO.getUserId());
-        List<MessageDO> messageDOList = new ArrayList<>();
-        for (Integer userId : userIds){
-            MessageDO messageDB = userIdToMessageDOMap.get(userId);
-            if(messageDB == null){
-                //新增
-                MessageDO message = new MessageDO();
-                copyNonNullProperties(messageDO, message);
-                message.setUnreadCount(1);
-                messageDOList.add(message);
-            }else{
-                //更新
-                messageDB.setUnreadCount(messageDB.getUnreadCount() + 1);
-                messageDB.setIsRead(false);
-                messageDB.setContent(messageDTO.getContent());
-                messageDB.setTitle(messageDTO.getTitle());
-                messageDOList.add(messageDB);
+        BusinessResult<List<GroupUserVO>> groupUserByGroupId = deskMateGroupService.getGroupUserByGroupId(messageDTO.getBusinessId());
+        if(groupUserByGroupId != null && !groupUserByGroupId.getData().isEmpty()){
+            List<Integer> userIds = groupUserByGroupId.getData().stream().map(groupUserVO -> Integer.parseInt(groupUserVO.getUserId())).collect(Collectors.toList());
+            userIds.remove(messageDTO.getUserId());
+            List<MessageDO> messageDOList = new ArrayList<>();
+            for (Integer userId : userIds){
+                MessageDO messageDB = userIdToMessageDOMap.get(userId);
+                if(messageDB == null){
+                    //新增
+                    MessageDO message = new MessageDO();
+                    copyNonNullProperties(messageDO, message);
+                    message.setUnreadCount(1);
+                    messageDOList.add(message);
+                }else{
+                    //更新
+                    messageDB.setUnreadCount(messageDB.getUnreadCount() + 1);
+                    messageDB.setIsRead(false);
+                    messageDB.setContent(messageDTO.getContent());
+                    messageDB.setTitle(messageDTO.getTitle());
+                    messageDOList.add(messageDB);
+                }
             }
+            messageRepository.save(messageDOList);
         }
-        messageRepository.save(messageDOList);
     }
 
     public List<Message> getMessageList(Integer userId){
@@ -99,8 +104,10 @@ public class MessageService implements BeanPropertiesUtil {
     }
 
     private final MessageRepository messageRepository;
+    private final DeskMateGroupService deskMateGroupService;
 
-    public MessageService(MessageRepository messageRepository) {
+    public MessageService(MessageRepository messageRepository, DeskMateGroupService deskMateGroupService) {
         this.messageRepository = messageRepository;
+        this.deskMateGroupService = deskMateGroupService;
     }
 }
