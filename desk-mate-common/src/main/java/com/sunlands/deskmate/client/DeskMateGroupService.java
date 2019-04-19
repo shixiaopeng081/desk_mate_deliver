@@ -17,7 +17,7 @@ import java.util.List;
 @FeignClient(value = "deskmate-group-api")
 public interface DeskMateGroupService {
 
-    @GetMapping(value = "/deskmate-group-api/group/users")
+    @GetMapping(value = "/group/users")
     BusinessResult<List<GroupUserVO>> getGroupUserByGroupId(@RequestParam(value = "groupId") String groupId);
 }
 
