@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sunlands.deskmate.entity.MsgEntity;
 import com.sunlands.deskmate.entity.TzChatRecord;
-import com.sunlands.deskmate.entity.TzUser;
+import com.sunlands.deskmate.enums.MessageType;
 import com.sunlands.deskmate.service.MessageService;
 import com.sunlands.deskmate.service.UserService;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -49,11 +49,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         if (msg instanceof FullHttpRequest) {//建立连接的请求
             handleHttpRequest(ctx, (FullHttpRequest) msg);
         } else if (msg instanceof WebSocketFrame) {//WebSocket
-            handleWebsocketFrame(ctx, (WebSocketFrame) msg, true);
+            handleWebsocketFrame(ctx, (WebSocketFrame) msg);
         }
     }
 
-    private void handleWebsocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame, boolean toSelf) {
+    private void handleWebsocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
         if (frame instanceof CloseWebSocketFrame) {//关闭
             handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
         } else if (frame instanceof PingWebSocketFrame) {//ping消息
@@ -61,66 +61,74 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         } else if (frame instanceof TextWebSocketFrame) {//文本消息
             String request = ((TextWebSocketFrame) frame).text();
             MsgEntity msgEntity = JSONObject.parseObject(request, MsgEntity.class);
-
             dealMsgEntiy(msgEntity);
         }
     }
 
-    public void pushMsgToUserId(Integer userId, String type, String content) {
-        MsgEntity msgEntity = new MsgEntity();
-        msgEntity.setType(type);
-        msgEntity.setContent(content);
-        msgEntity.setFromUserId(userId);
-        msgEntity.setFromUserId(ctxMap.get(userId).channel().attr(USER_KEY).get());
-        ctxMap.get(userId).write(JSON.toJSONString(msgEntity));
+    public void pushMsgToUserId(MsgEntity msgEntity, Integer userId) {
+        ChannelHandlerContext ctx = ctxMap.get(userId);
+        if (ctx != null){
+            ctxMap.get(userId).write(new TextWebSocketFrame(JSON.toJSONString(msgEntity)));
+        } else {
+            // TODO 推送消息
+            offlineMessage(msgEntity);
+        }
+        TzChatRecord record = new TzChatRecord();
+        record.setSenderUserId(msgEntity.getFromUserId() == null ? null : Integer.valueOf(msgEntity.getFromUserId()));
+        record.setDestId(msgEntity.getBusinessId() == null ? null : Integer.valueOf(msgEntity.getBusinessId()));
+        record.setType(msgEntity.getType() == null ? null : Integer.valueOf(msgEntity.getType()));
+        record.setMessage(msgEntity.getContent());
+        record.setTitle(msgEntity.getTitle());
+        record.setExtras(JSON.toJSONString(msgEntity.getExtras()));
+        messageService.saveChatRecord(record);
     }
 
-
+    private void offlineMessage(MsgEntity msgEntity) {
+        // TODO
+    }
 
 
     private void dealMsgEntiy(MsgEntity msgEntity) {
-        switch (msgEntity.getType()) {
-            case "roomId":
-                pushMsgToRoom(Integer.valueOf(msgEntity.getBusinessId()),msgEntity.getContent());
-                break;
-            case "system":
-                break;
-            default:
-                ;
+        pushMsgToContainer(msgEntity);
+    }
+
+    public void pushMsgToContainer(MsgEntity msgEntity){
+        List<Integer> userIdsByBusinessId = new ArrayList<>();
+        if (MessageType.PRIVATE_CHAT.getType().equals(msgEntity.getType())
+                || MessageType.SHARE_TO_PRIVATE.getType().equals(msgEntity.getType())){
+            userIdsByBusinessId.add(Integer.valueOf(msgEntity.getFromUserId()));
+            userIdsByBusinessId.add(Integer.valueOf(msgEntity.getBusinessId()));
+        } else {
+            userIdsByBusinessId = getUserIdsByBussinessId(Integer.valueOf(msgEntity.getBusinessId()));
+        }
+        for(Integer userId : userIdsByBusinessId){
+            pushMsgToUserId(msgEntity, userId);
         }
     }
 
-    public void pushMsgToRoom(Integer roomId,String content){
-        List<Integer> userIdsByRoomId = getUserIdsByRoomId(roomId);
-        for(Integer userId:userIdsByRoomId){
-            pushMsgToUserId(userId,"xxxx",content);
-        }
-
-    }
-    public void pushMsgToChat(Integer roomId,String content){
-        List<Integer> userIdsByRoomId = getUserIdsByRoomId(roomId);
-        for(Integer userId:userIdsByRoomId){
-            pushMsgToUserId(userId,"xxxx2",content);
-        }
-
-    }
-
-    public List<Integer> getOnlineUserIdByRoomId(String type,Integer roomId){
-        List<Integer> userIdsByRoomId = getUserIdsByRoomId(roomId);
+    public List<Integer> getOnlineUserIdByRoomId(Integer roomId, Integer type){
+        List<Integer> userIdsByRoomId = getUserIdsByBussinessId(roomId);
         List<Integer> onLineList = new ArrayList<>();
         List<Integer> offLineList = new ArrayList<>();
-        for(Integer userId:userIdsByRoomId){
+        for(Integer userId : userIdsByRoomId){
             if(ctxMap.get(userId)!=null) {
                 onLineList.add(userId);
             }else{
                 offLineList.add(userId);
             }
         }
-        return onLineList;
+        if (type == 1){
+            return onLineList;
+        } else {
+            return offLineList;
+        }
     }
 
-    private List<Integer> getUserIdsByRoomId(Integer roomId){
-        return new ArrayList<>();
+    private List<Integer> getUserIdsByBussinessId(Integer roomId){
+        List<Integer> list = new ArrayList<>();
+        list.add(111);
+        list.add(222);
+        return list;
     }
 
 
@@ -128,19 +136,14 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         if (HttpMethod.GET == request.method()) {
             log.info("*** request uri is: {} ***", request.uri());
             QueryStringDecoder decoder = new QueryStringDecoder(request.uri());
-//            String token = decoder.parameters() != null && decoder.parameters().containsKey("token") ? decoder.parameters().get("token").get(0):null;
-
-            String typeStr = decoder.parameters() != null && decoder.parameters().containsKey("type") ? decoder.parameters().get("type").get(0) : null;
             String userIdStr = decoder.parameters() != null && decoder.parameters().containsKey("userId") ? decoder.parameters().get("userId").get(0) : null;
-            String toIdStr = decoder.parameters() != null && decoder.parameters().containsKey("toId") ? decoder.parameters().get("toId").get(0) : null;
 
-            if (typeStr == null || userIdStr == null || toIdStr == null) {
-                log.info("paramter error. type = {} userId = {} toId = {}", typeStr, userIdStr, toIdStr);
+            if (userIdStr == null) {
+                log.info("paramter error. userId = {} ", userIdStr);
                 return;
             }
-            Integer userId = Integer.valueOf(userIdStr);
-            ctx.channel().attr(USER_KEY).set(userId);
-
+            ctx.channel().attr(USER_KEY).set(Integer.valueOf(userIdStr));
+            ctxMap.put(Integer.valueOf(userIdStr), ctx);
             if (request.decoderResult().isSuccess() && "websocket".equals(request.headers().get("Upgrade"))) {
                 WebSocketServerHandshakerFactory factory = new WebSocketServerHandshakerFactory("wss://" + request.headers().get("Host") + "/websocket", null, false);
                 handshaker = factory.newHandshaker(request);//通过创建请求生成一个握手对象

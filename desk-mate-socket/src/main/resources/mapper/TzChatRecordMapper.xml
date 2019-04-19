@@ -10,6 +10,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
     <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="extras" jdbcType="VARCHAR" property="extras" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, sender_user_id, dest_id, type, message, create_time, avatar_url, title
+    id, sender_user_id, dest_id, type, message, create_time, avatar_url, title, extras
   </sql>
   <select id="selectByExample" parameterType="com.sunlands.deskmate.entity.TzChatRecordExample" resultMap="BaseResultMap">
     select
@@ -119,10 +120,10 @@
     </selectKey>
     insert into tz_chat_record (sender_user_id, dest_id, type, 
       message, create_time, avatar_url, 
-      title)
+      title, extras)
     values (#{senderUserId,jdbcType=INTEGER}, #{destId,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
       #{message,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{avatarUrl,jdbcType=VARCHAR}, 
-      #{title,jdbcType=VARCHAR})
+      #{title,jdbcType=VARCHAR}, #{extras,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.sunlands.deskmate.entity.TzChatRecord">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
@@ -151,6 +152,9 @@
       <if test="title != null">
         title,
       </if>
+      <if test="extras != null">
+        extras,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="senderUserId != null">
@@ -173,6 +177,9 @@
       </if>
       <if test="title != null">
         #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="extras != null">
+        #{extras,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -209,6 +216,9 @@
       <if test="record.title != null">
         title = #{record.title,jdbcType=VARCHAR},
       </if>
+      <if test="record.extras != null">
+        extras = #{record.extras,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -223,7 +233,8 @@
       message = #{record.message,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       avatar_url = #{record.avatarUrl,jdbcType=VARCHAR},
-      title = #{record.title,jdbcType=VARCHAR}
+      title = #{record.title,jdbcType=VARCHAR},
+      extras = #{record.extras,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -252,6 +263,9 @@
       <if test="title != null">
         title = #{title,jdbcType=VARCHAR},
       </if>
+      <if test="extras != null">
+        extras = #{extras,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -263,7 +277,8 @@
       message = #{message,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       avatar_url = #{avatarUrl,jdbcType=VARCHAR},
-      title = #{title,jdbcType=VARCHAR}
+      title = #{title,jdbcType=VARCHAR},
+      extras = #{extras,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

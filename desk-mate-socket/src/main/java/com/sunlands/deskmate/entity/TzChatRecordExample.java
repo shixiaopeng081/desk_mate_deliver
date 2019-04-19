@@ -255,76 +255,6 @@ public class TzChatRecordExample {
             return (Criteria) this;
         }
 
-        public Criteria andDestIdIsNull() {
-            addCriterion("dest_id is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdIsNotNull() {
-            addCriterion("dest_id is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdEqualTo(String value) {
-            addCriterion("dest_id =", value, "destId");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdNotEqualTo(String value) {
-            addCriterion("dest_id <>", value, "destId");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdGreaterThan(String value) {
-            addCriterion("dest_id >", value, "destId");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdGreaterThanOrEqualTo(String value) {
-            addCriterion("dest_id >=", value, "destId");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdLessThan(String value) {
-            addCriterion("dest_id <", value, "destId");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdLessThanOrEqualTo(String value) {
-            addCriterion("dest_id <=", value, "destId");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdLike(String value) {
-            addCriterion("dest_id like", value, "destId");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdNotLike(String value) {
-            addCriterion("dest_id not like", value, "destId");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdIn(List<String> values) {
-            addCriterion("dest_id in", values, "destId");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdNotIn(List<String> values) {
-            addCriterion("dest_id not in", values, "destId");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdBetween(String value1, String value2) {
-            addCriterion("dest_id between", value1, value2, "destId");
-            return (Criteria) this;
-        }
-
-        public Criteria andDestIdNotBetween(String value1, String value2) {
-            addCriterion("dest_id not between", value1, value2, "destId");
-            return (Criteria) this;
-        }
-
         public Criteria andTypeIsNull() {
             addCriterion("type is null");
             return (Criteria) this;
@@ -652,6 +582,136 @@ public class TzChatRecordExample {
 
         public Criteria andTitleNotBetween(String value1, String value2) {
             addCriterion("title not between", value1, value2, "title");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasIsNull() {
+            addCriterion("extras is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasIsNotNull() {
+            addCriterion("extras is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasEqualTo(String value) {
+            addCriterion("extras =", value, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasNotEqualTo(String value) {
+            addCriterion("extras <>", value, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasGreaterThan(String value) {
+            addCriterion("extras >", value, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasGreaterThanOrEqualTo(String value) {
+            addCriterion("extras >=", value, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasLessThan(String value) {
+            addCriterion("extras <", value, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasLessThanOrEqualTo(String value) {
+            addCriterion("extras <=", value, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasLike(String value) {
+            addCriterion("extras like", value, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasNotLike(String value) {
+            addCriterion("extras not like", value, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasIn(List<String> values) {
+            addCriterion("extras in", values, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasNotIn(List<String> values) {
+            addCriterion("extras not in", values, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasBetween(String value1, String value2) {
+            addCriterion("extras between", value1, value2, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andExtrasNotBetween(String value1, String value2) {
+            addCriterion("extras not between", value1, value2, "extras");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdIsNull() {
+            addCriterion("dest_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdIsNotNull() {
+            addCriterion("dest_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdEqualTo(Integer value) {
+            addCriterion("dest_id =", value, "destId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdNotEqualTo(Integer value) {
+            addCriterion("dest_id <>", value, "destId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdGreaterThan(Integer value) {
+            addCriterion("dest_id >", value, "destId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("dest_id >=", value, "destId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdLessThan(Integer value) {
+            addCriterion("dest_id <", value, "destId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdLessThanOrEqualTo(Integer value) {
+            addCriterion("dest_id <=", value, "destId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdIn(List<Integer> values) {
+            addCriterion("dest_id in", values, "destId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdNotIn(List<Integer> values) {
+            addCriterion("dest_id not in", values, "destId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdBetween(Integer value1, Integer value2) {
+            addCriterion("dest_id between", value1, value2, "destId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDestIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("dest_id not between", value1, value2, "destId");
             return (Criteria) this;
         }
     }

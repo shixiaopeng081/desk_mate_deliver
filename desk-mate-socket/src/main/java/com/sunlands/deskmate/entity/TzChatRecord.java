@@ -1,11 +1,16 @@
 package com.sunlands.deskmate.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author 
  */
+@ApiModel(value = "聊天记录表")
 public class TzChatRecord implements Serializable {
     /**
      * 主键
@@ -15,16 +20,13 @@ public class TzChatRecord implements Serializable {
     /**
      * 发送者用户ID
      */
+    @ApiModelProperty(value = "发送者id")
     private Integer senderUserId;
-
-    /**
-     * 目的地id
-     */
-    private String destId;
 
     /**
      * 消息类型1：普通聊天 2：分享的卡片
      */
+    @ApiModelProperty(value = "消息类型 1：普通聊天 2：分享的卡片")
     private Integer type;
 
     /**
@@ -47,6 +49,23 @@ public class TzChatRecord implements Serializable {
      */
     private String title;
 
+    /**
+     * 额外数据
+     */
+    private String extras;
+
+    private Integer destId;
+
+    private Map<String, String> extrasMap;
+
+    public Map<String, String> getExtrasMap() {
+        return extrasMap;
+    }
+
+    public void setExtrasMap(Map<String, String> extrasMap) {
+        this.extrasMap = extrasMap;
+    }
+
     private static final long serialVersionUID = 1L;
 
     public Long getId() {
@@ -63,14 +82,6 @@ public class TzChatRecord implements Serializable {
 
     public void setSenderUserId(Integer senderUserId) {
         this.senderUserId = senderUserId;
-    }
-
-    public String getDestId() {
-        return destId;
-    }
-
-    public void setDestId(String destId) {
-        this.destId = destId;
     }
 
     public Integer getType() {
@@ -113,6 +124,22 @@ public class TzChatRecord implements Serializable {
         this.title = title;
     }
 
+    public String getExtras() {
+        return extras;
+    }
+
+    public void setExtras(String extras) {
+        this.extras = extras;
+    }
+
+    public Integer getDestId() {
+        return destId;
+    }
+
+    public void setDestId(Integer destId) {
+        this.destId = destId;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -127,12 +154,13 @@ public class TzChatRecord implements Serializable {
         TzChatRecord other = (TzChatRecord) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.getSenderUserId() == null ? other.getSenderUserId() == null : this.getSenderUserId().equals(other.getSenderUserId()))
-            && (this.getDestId() == null ? other.getDestId() == null : this.getDestId().equals(other.getDestId()))
             && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
             && (this.getMessage() == null ? other.getMessage() == null : this.getMessage().equals(other.getMessage()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
             && (this.getAvatarUrl() == null ? other.getAvatarUrl() == null : this.getAvatarUrl().equals(other.getAvatarUrl()))
-            && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()));
+            && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
+            && (this.getExtras() == null ? other.getExtras() == null : this.getExtras().equals(other.getExtras()))
+            && (this.getDestId() == null ? other.getDestId() == null : this.getDestId().equals(other.getDestId()));
     }
 
     @Override
@@ -141,12 +169,13 @@ public class TzChatRecord implements Serializable {
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getSenderUserId() == null) ? 0 : getSenderUserId().hashCode());
-        result = prime * result + ((getDestId() == null) ? 0 : getDestId().hashCode());
         result = prime * result + ((getType() == null) ? 0 : getType().hashCode());
         result = prime * result + ((getMessage() == null) ? 0 : getMessage().hashCode());
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
         result = prime * result + ((getAvatarUrl() == null) ? 0 : getAvatarUrl().hashCode());
         result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());
+        result = prime * result + ((getExtras() == null) ? 0 : getExtras().hashCode());
+        result = prime * result + ((getDestId() == null) ? 0 : getDestId().hashCode());
         return result;
     }
 
@@ -158,12 +187,13 @@ public class TzChatRecord implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
         sb.append(", senderUserId=").append(senderUserId);
-        sb.append(", destId=").append(destId);
         sb.append(", type=").append(type);
         sb.append(", message=").append(message);
         sb.append(", createTime=").append(createTime);
         sb.append(", avatarUrl=").append(avatarUrl);
         sb.append(", title=").append(title);
+        sb.append(", extras=").append(extras);
+        sb.append(", destId=").append(destId);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

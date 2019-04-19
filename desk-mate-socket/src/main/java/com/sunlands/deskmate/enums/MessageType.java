@@ -6,23 +6,25 @@ package com.sunlands.deskmate.enums;
 public enum MessageType {
 
 
-    PRIVATE_CHAT(1, "私聊"),
-    GROUP_CHAT(2, "群聊"),
-    ROOM_CHAT(3, "室聊");
+    PRIVATE_CHAT("1", "私聊"),
+    GROUP_CHAT("2", "群聊"),
+    ROOM_CHAT("3", "室聊"),
+    SHARE_TO_PRIVATE("4", "分享到单"),
+    SHARE_TO_CONTAINER("5", "分享到群");
 
-    private Integer type;
+    private String type;
     private String name;
 
-    MessageType(Integer type, String name) {
+    MessageType(String type, String name) {
         this.type = type;
         this.name = name;
     }
 
-    public Integer getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(String type) {
         this.type = type;
     }
 
