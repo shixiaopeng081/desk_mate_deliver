@@ -36,7 +36,7 @@ public class ChatApi {
     @ApiOperation(value = "查询未读聊天信息接口")
     @GetMapping("/unread")
 //    @PreAuthorize("isAuthenticated()")
-    public BusinessResult unreadMessage(RequestDTO requestDTO) {
+    public BusinessResult<List<TzChatRecord>> unreadMessage(RequestDTO requestDTO) {
         if (requestDTO.getType() == null || requestDTO.getDestId() == null || requestDTO.getUserId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
 
@@ -52,7 +52,7 @@ public class ChatApi {
     @ApiOperation(value = "查询在线人员id接口")
     @GetMapping("/userIdList")
 //    @PreAuthorize("isAuthenticated()")
-    public BusinessResult peopleNum(OnLinePeopleRequestDTO requestDTO) {
+    public BusinessResult<List<Integer>> peopleNum(OnLinePeopleRequestDTO requestDTO) {
         if (requestDTO.getDestId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
