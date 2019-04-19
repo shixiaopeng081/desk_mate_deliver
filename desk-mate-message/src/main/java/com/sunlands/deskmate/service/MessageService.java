@@ -83,7 +83,11 @@ public class MessageService implements BeanPropertiesUtil {
         List<MessageDO> messageDOList = messageRepository.findAllByUserIdAndIsReadOrderByUpdateDateTimeDesc(userId, false);
 
         List<Message> messageList = new ArrayList<>();
-        copyNonNullProperties(messageDOList, messageList);
+        for(MessageDO messageDO : messageDOList){
+            Message message = new Message();
+            copyNonNullProperties(messageDO, message);
+            messageList.add(message);
+        }
         //修改为已读
         List<MessageDO> list = messageDOList.stream().map(messageDO -> {
             messageDO.setIsRead(true);

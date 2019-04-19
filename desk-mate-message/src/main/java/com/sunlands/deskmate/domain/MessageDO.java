@@ -1,14 +1,18 @@
 package com.sunlands.deskmate.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @author shixiaopeng
@@ -18,7 +22,8 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(value = "消息表")
+@DynamicUpdate
+@DynamicInsert
 public class MessageDO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -45,8 +50,10 @@ public class MessageDO implements Serializable {
     private Integer unreadCount;
 
     @Column(insertable = false, updatable = false)
-    LocalDateTime createDateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private Date createDateTime;
 
     @Column(insertable = false, updatable = false)
-    LocalDateTime updateDateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private Date updateDateTime;
 }

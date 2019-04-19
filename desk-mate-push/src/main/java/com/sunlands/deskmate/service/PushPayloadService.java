@@ -83,25 +83,6 @@ public class PushPayloadService implements BeanPropertiesUtil{
         try {
             result = jPushClient.sendPush(pushPayload);
             log.info("Got result - " + result);
-
-            PushResult finalResult = result;
-            CompletableFuture.runAsync(() -> {
-                try {
-                    PushRecordDO pushRecordDO = new PushRecordDO();
-
-
-                    pushRecordDO.setStatus(finalResult.statusCode);
-                    pushRecordDO.setTitle(pushDTO.getTitle());
-                    pushRecordDO.setContent(pushDTO.getContent());
-                    pushRecordDO.setExtras(mapper.writeValueAsString(pushDTO.getExtras()));
-                    pushRecordDO.setRegIds(String.join(",", regIds) );
-
-                    pushRecordRepository.saveAndFlush(pushRecordDO);
-                } catch (JsonProcessingException e) {
-                    log.error("mapper.writeValueAsString = " + e.getMessage());
-                    e.printStackTrace();
-                }
-            });
         } catch (APIConnectionException e) {
             log.error("Connection error. Should retry later. ", e);
         } catch (APIRequestException e) {
@@ -113,6 +94,24 @@ public class PushPayloadService implements BeanPropertiesUtil{
             result = gson.fromJson(e.getMessage(), PushResult.class);
             result.statusCode = e.getStatus();
         }
+        PushResult finalResult = result;
+        CompletableFuture.runAsync(() -> {
+            try {
+                PushRecordDO pushRecordDO = new PushRecordDO();
+
+
+                pushRecordDO.setStatus(finalResult.statusCode);
+                pushRecordDO.setTitle(pushDTO.getTitle());
+                pushRecordDO.setContent(pushDTO.getContent());
+                pushRecordDO.setExtras(mapper.writeValueAsString(pushDTO.getExtras()));
+                pushRecordDO.setRegIds(String.join(",", regIds) );
+
+                pushRecordRepository.saveAndFlush(pushRecordDO);
+            } catch (JsonProcessingException e) {
+                log.error("mapper.writeValueAsString = " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
         return result;
     }
 
