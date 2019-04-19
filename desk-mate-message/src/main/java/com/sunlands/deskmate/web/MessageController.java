@@ -28,12 +28,16 @@ public class MessageController {
 
     @ApiOperation(value = "发送消息接口")
     @PostMapping("/message")
-    public BusinessResult createMessage(@RequestBody MessageDTO messageDTO) {
+    public BusinessResult createMessagePerson(@RequestBody MessageDTO messageDTO) {
         String result = checkData(messageDTO);
         if(result != null){
             BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_INVALIDE, result);
         }
-        messageService.create(messageDTO);
+        if(messageDTO.getGroupId() == null){
+            messageService.createPerson(messageDTO);
+        }else{
+            messageService.createGroup(messageDTO);
+        }
         return BusinessResult.createSuccessInstance(null);
     }
 

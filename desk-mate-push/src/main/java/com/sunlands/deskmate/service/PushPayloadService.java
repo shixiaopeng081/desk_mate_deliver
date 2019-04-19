@@ -59,11 +59,11 @@ public class PushPayloadService implements BeanPropertiesUtil{
             userIds = pushDTO.getIds();
         }else if(type == PushDTO.TypeEnum.GROUP.code){
             //根据群id，查询群下的所有用户
-
+            //TODO
 
         }else if(type == PushDTO.TypeEnum.ROOM.code){
             //根据房间id，查询房间下的所有用户
-
+            //TODO
 
         }
         userIds.removeAll(pushDTO.getExcludeUserIds());

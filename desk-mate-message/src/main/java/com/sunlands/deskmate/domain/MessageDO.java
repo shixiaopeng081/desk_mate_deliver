@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -18,7 +19,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ApiModel(value = "消息表")
-public class MessageDO {
+public class MessageDO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -39,8 +43,6 @@ public class MessageDO {
     private Boolean isRead;
 
     private Integer unreadCount;
-
-    private LocalDateTime messageDateTime;
 
     @Column(insertable = false, updatable = false)
     LocalDateTime createDateTime;

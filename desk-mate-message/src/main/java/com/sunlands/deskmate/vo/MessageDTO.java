@@ -32,12 +32,14 @@ public class MessageDTO {
     @ApiModelProperty("业务id，可能是群id，也可能是道友id")
     private Integer businessId;
 
-    @ApiModelProperty("接受消息的用户id")
+    @ApiModelProperty(value = "接受消息的用户id/如果传了群id，这个id作为不发送消息的用户", required = false)
     private Integer userId;
+
+    @ApiModelProperty("接受消息的用户所在群id")
+    private Integer groupId;
 
     @ApiModelProperty("消息类型")
     private String type;
 
-    @ApiModelProperty("消息时间")
-    private LocalDateTime messageDateTime;
+
 }
