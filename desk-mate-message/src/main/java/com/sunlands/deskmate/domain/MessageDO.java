@@ -38,7 +38,7 @@ public class MessageDO implements Serializable {
 
 //    private String avatarUrl;
 
-    private Integer businessId;
+    private String businessId;
 
     private Integer userId;
 
