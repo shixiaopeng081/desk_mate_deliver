@@ -9,11 +9,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,7 +31,7 @@ public class JpushApiController {
 
     @ApiOperation(value = "发起push-----请求接口")
     @PostMapping("/push")
-    public BusinessResult push(@RequestBody PushDTO pushDTO) {
+    public BusinessResult push(@RequestBody PushDTO pushDTO) throws IOException {
         String result = checkData(pushDTO);
         if(result != null){
             BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_INVALIDE, result);
@@ -41,9 +41,8 @@ public class JpushApiController {
         if(pushResult.statusCode == 0){
             return BusinessResult.createSuccessInstance(null);
         }else{
-            return BusinessResult.createInstance(pushResult.error.getCode() + "", pushResult.error.getMessage(), pushResult.statusCode);
+            return BusinessResult.createInstance((long) pushResult.statusCode, pushResult.error.getMessage(), pushResult.error);
         }
-
     }
 
 

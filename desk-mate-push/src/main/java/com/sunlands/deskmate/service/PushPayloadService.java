@@ -13,6 +13,7 @@ import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.sunlands.deskmate.client.TzUserCenterService;
 import com.sunlands.deskmate.domain.PushRecordDO;
 import com.sunlands.deskmate.repository.PushRecordRepository;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +50,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
     @Value("${APNS_PRODUCTION}")
     private boolean APNS_PRODUCTION;
 
-    public PushResult sendPushWithRegIds(PushDTO pushDTO) {
+    public PushResult sendPushWithRegIds(PushDTO pushDTO) throws IOException {
         Integer type = pushDTO.getType();
         List<Integer> userIds = null;
 
@@ -77,6 +79,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
         JPushClient jPushClient = new JPushClient(MASTER_SECRET, APP_KEY);
         PushPayload pushPayload = buildPushObject_android_and_ios(pushDTO, regIds);
         PushResult result = null;
+        ObjectMapper mapper = new ObjectMapper();
         try {
             result = jPushClient.sendPush(pushPayload);
             log.info("Got result - " + result);
@@ -85,7 +88,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
             CompletableFuture.runAsync(() -> {
                 try {
                     PushRecordDO pushRecordDO = new PushRecordDO();
-                    ObjectMapper mapper = new ObjectMapper();
+
 
                     pushRecordDO.setStatus(finalResult.statusCode);
                     pushRecordDO.setTitle(pushDTO.getTitle());
@@ -106,6 +109,9 @@ public class PushPayloadService implements BeanPropertiesUtil{
             log.info("HTTP Status: " + e.getStatus());
             log.info("Error Code: " + e.getErrorCode());
             log.info("Error Message: " + e.getErrorMessage());
+            Gson gson = new Gson();
+            result = gson.fromJson(e.getMessage(), PushResult.class);
+            result.statusCode = e.getStatus();
         }
         return result;
     }

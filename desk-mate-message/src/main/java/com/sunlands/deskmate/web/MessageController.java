@@ -39,7 +39,7 @@ public class MessageController {
 
     @ApiOperation(value = "根据用户id获取消息列表")
     @GetMapping("/message")
-    public BusinessResult getMessageList(@RequestParam Integer userId) {
+    public BusinessResult<List<Message>> getMessageList(@RequestParam Integer userId) {
         List<Message> messageList = messageService.getMessageList(userId);
         return BusinessResult.createSuccessInstance(messageList);
     }

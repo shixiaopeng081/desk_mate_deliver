@@ -1,6 +1,7 @@
 package com.sunlands.deskmate.client;
 
 import com.sunlands.deskmate.config.OauthFeignConfig;
+import com.sunlands.deskmate.vo.UsersVO;
 import com.sunlands.deskmate.vo.response.BusinessResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.netflix.feign.FeignClient;
@@ -24,6 +25,6 @@ public interface TzUserCenterService {
      */
     @ApiOperation(value = "根据idList查询", notes = "根据idList查询")
     @PostMapping("/users/list")
-    BusinessResult findByIdIn(@RequestBody List<Integer> idList);
+    BusinessResult<List<UsersVO>> findByIdIn(@RequestBody List<Integer> idList);
 }
 
