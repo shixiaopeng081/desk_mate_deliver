@@ -61,6 +61,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
             userIds = pushDTO.getIds().stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
         }else if(type == PushDTO.TypeEnum.GROUP.code){
             //根据群id，查询群下的所有用户
+            log.info("pushDTO.getIds() = {} ", pushDTO.getIds());
             BusinessResult<List<GroupUserVO>> groupUserByGroupId = deskMateGroupService.getGroupUserByGroupId(pushDTO.getIds().get(0));
             userIds = groupUserByGroupId.getData().stream().map(groupUserVO -> Integer.parseInt(groupUserVO.getUserId())).collect(Collectors.toList());
         }else if(type == PushDTO.TypeEnum.ROOM.code){
