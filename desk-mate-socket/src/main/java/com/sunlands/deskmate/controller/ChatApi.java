@@ -67,7 +67,7 @@ public class ChatApi {
         if (msgEntity.getBusinessId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
-        webSocketServerHandler.pushMsgToUserId(msgEntity, Integer.valueOf(msgEntity.getBusinessId()));
+        webSocketServerHandler.pushMsgToContainer(msgEntity);//pushMsgToUserId(msgEntity, Integer.valueOf(msgEntity.getBusinessId()));
         return BusinessResult.createSuccessInstance(null);
     }
 
