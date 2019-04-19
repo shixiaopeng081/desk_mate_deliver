@@ -2,7 +2,11 @@ package com.sunlands.deskmate.netty;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sunlands.deskmate.client.TzPushInformService;
+import com.sunlands.deskmate.client.TzPushMessageService;
 import com.sunlands.deskmate.entity.MsgEntity;
+import com.sunlands.deskmate.entity.PushInformEntity;
+import com.sunlands.deskmate.entity.PushMessageEntity;
 import com.sunlands.deskmate.entity.TzChatRecord;
 import com.sunlands.deskmate.enums.MessageType;
 import com.sunlands.deskmate.service.MessageService;
@@ -19,7 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,6 +49,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     private static final AttributeKey<Integer> USER_KEY = AttributeKey.newInstance("USER_KEY");
 
     private static final ConcurrentHashMap<Integer, ChannelHandlerContext> ctxMap = new ConcurrentHashMap<>();
+    @Autowired
+    private TzPushInformService tzPushInformService;
+
+    @Autowired
+    private TzPushMessageService tzPushMessageService;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -65,31 +76,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         }
     }
 
-    public void pushMsgToUserId(MsgEntity msgEntity, Integer userId) {
-        ChannelHandlerContext ctx = ctxMap.get(userId);
-        if (ctx != null){
-            ctxMap.get(userId).write(new TextWebSocketFrame(JSON.toJSONString(msgEntity)));
-        } else {
-            // TODO 推送消息
-            offlineMessage(msgEntity);
-        }
-        TzChatRecord record = new TzChatRecord();
-        record.setSenderUserId(msgEntity.getFromUserId() == null ? null : Integer.valueOf(msgEntity.getFromUserId()));
-        record.setDestId(msgEntity.getBusinessId() == null ? null : Integer.valueOf(msgEntity.getBusinessId()));
-        record.setType(msgEntity.getType() == null ? null : Integer.valueOf(msgEntity.getType()));
-        record.setMessage(msgEntity.getContent());
-        record.setTitle(msgEntity.getTitle());
-        record.setExtras(JSON.toJSONString(msgEntity.getExtras()));
-        messageService.saveChatRecord(record);
-    }
-
-    private void offlineMessage(MsgEntity msgEntity) {
-        // TODO
-    }
-
-
     private void dealMsgEntiy(MsgEntity msgEntity) {
+        log.info("deal msg start message = {}", msgEntity);
         pushMsgToContainer(msgEntity);
+        log.info("deal msg end");
     }
 
     public void pushMsgToContainer(MsgEntity msgEntity){
@@ -101,9 +91,59 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         } else {
             userIdsByBusinessId = getUserIdsByBussinessId(Integer.valueOf(msgEntity.getBusinessId()));
         }
+        List<Integer> offlineUserIds = new ArrayList<>();
         for(Integer userId : userIdsByBusinessId){
-            pushMsgToUserId(msgEntity, userId);
+            ChannelHandlerContext ctx = ctxMap.get(userId);
+            if (ctx != null){
+                ctxMap.get(userId).write(new TextWebSocketFrame(JSON.toJSONString(msgEntity)));
+            } else {
+                offlineUserIds.add(userId);
+            }
+            saveChatRecord(msgEntity);
+            if (offlineUserIds.size() > 0){
+                // 推送离线消息
+                for (Integer uId : offlineUserIds){
+                    doPushMessage(msgEntity, uId);
+                }
+                doPushInform(msgEntity, offlineUserIds);
+            }
         }
+    }
+
+    private void doPushInform(MsgEntity msgEntity, List<Integer> offlineUserIds) {
+        // 推送通知
+        PushInformEntity informEntity = new PushInformEntity();
+        informEntity.setContent(msgEntity.getContent());
+        informEntity.setIds(offlineUserIds);
+        informEntity.setTitle(msgEntity.getTitle());
+        informEntity.setType(1);// 枚举：用户：1，群：2，房间：3
+        log.info("push inform = {} start", informEntity);
+//            tzPushInformService.pushInform(informEntity);
+        log.info("push inform end");
+    }
+
+    private void doPushMessage(MsgEntity msgEntity, Integer uId) {
+        PushMessageEntity messageEntity  = new PushMessageEntity();
+        messageEntity.setUserId(uId);
+        messageEntity.setType(msgEntity.getType());
+        messageEntity.setBusinessId(msgEntity.getBusinessId() == null ? null : Integer.valueOf(msgEntity.getBusinessId()));
+        messageEntity.setContent(msgEntity.getContent());
+        messageEntity.setMessageDateTime(LocalDateTime.now());
+        messageEntity.setTitle(msgEntity.getTitle());
+        log.info("push message = {} start", messageEntity);
+//                tzPushMessageService.pushMessage(messageEntity);
+        log.info("push message end");
+    }
+
+    private void saveChatRecord(MsgEntity msgEntity) {
+        TzChatRecord record = new TzChatRecord();
+        record.setSenderUserId(msgEntity.getFromUserId() == null ? null : Integer.valueOf(msgEntity.getFromUserId()));
+        record.setDestId(msgEntity.getBusinessId() == null ? null : Integer.valueOf(msgEntity.getBusinessId()));
+        record.setType(msgEntity.getType() == null ? null : Integer.valueOf(msgEntity.getType()));
+        record.setMessage(msgEntity.getContent());
+        record.setTitle(msgEntity.getTitle());
+        record.setExtras(JSON.toJSONString(msgEntity.getExtras()));
+        messageService.saveChatRecord(record);
     }
 
     public List<Integer> getOnlineUserIdByRoomId(Integer roomId, Integer type){

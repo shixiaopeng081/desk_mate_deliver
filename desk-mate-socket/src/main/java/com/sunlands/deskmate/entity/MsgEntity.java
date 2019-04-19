@@ -3,12 +3,14 @@ package com.sunlands.deskmate.entity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
+@ToString
 public class MsgEntity {
     @ApiModelProperty(value = "发送者id")
     private String fromUserId;
