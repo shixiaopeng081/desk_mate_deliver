@@ -58,6 +58,7 @@ public class MessageService implements BeanPropertiesUtil {
         Map<Integer, MessageDO> userIdToMessageDOMap = messageDOListDB.stream().collect(Collectors.toMap(o -> o.getUserId(), o -> o));
 
         //根据群id查询群用户列表
+        log.info("messageDTO.getBusinessId() = {} ", messageDTO.getBusinessId());
         BusinessResult<List<GroupUserVO>> groupUserByGroupId = deskMateGroupService.getGroupUserByGroupId(messageDTO.getBusinessId());
         if(groupUserByGroupId != null && !groupUserByGroupId.getData().isEmpty()){
             List<Integer> userIds = groupUserByGroupId.getData().stream().map(groupUserVO -> Integer.parseInt(groupUserVO.getUserId())).collect(Collectors.toList());
