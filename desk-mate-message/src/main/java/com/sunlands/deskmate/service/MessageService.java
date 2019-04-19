@@ -81,6 +81,7 @@ public class MessageService implements BeanPropertiesUtil {
                     messageDOList.add(messageDB);
                 }
             }
+            log.info("messageDOList = {} ", messageDOList);
             messageRepository.save(messageDOList);
         }
     }
