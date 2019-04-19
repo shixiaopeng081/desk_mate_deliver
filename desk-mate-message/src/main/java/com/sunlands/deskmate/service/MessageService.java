@@ -73,6 +73,7 @@ public class MessageService implements BeanPropertiesUtil {
                     MessageDO message = new MessageDO();
                     copyNonNullProperties(messageDO, message);
                     message.setUnreadCount(1);
+                    message.setUserId(userId);
                     messageDOList.add(message);
                 }else{
                     //更新
