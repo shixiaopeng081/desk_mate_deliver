@@ -2,7 +2,7 @@
 <configuration debug="true" scan="true" scanPeriod="30 seconds">
 	<springProperty scope="context" name="server.port" source="server.port"/>
     <include resource="org/springframework/boot/logging/logback/base.xml" />
-    <property name="log_home" value="/sunlands/logs/hsk_websocket"/>
+    <property name="log_home" value="/sunlands/logs/desk-mate-socket"/>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg %n</pattern>
@@ -11,9 +11,9 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-　　　　 <file>${log_home}/hsk_websocket.log</file>
+　　　　 <file>${log_home}/desk-mate-socket.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${log_home}/hsk_websocket.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <fileNamePattern>${log_home}/desk-mate-socket.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
             <maxFileSize>500MB</maxFileSize>
             <maxHistory>60</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>
