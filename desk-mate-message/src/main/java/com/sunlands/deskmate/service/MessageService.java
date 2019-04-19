@@ -62,7 +62,9 @@ public class MessageService implements BeanPropertiesUtil {
         BusinessResult<List<GroupUserVO>> groupUserByGroupId = deskMateGroupService.getGroupUserByGroupId(messageDTO.getBusinessId());
         if(groupUserByGroupId != null && !groupUserByGroupId.getData().isEmpty()){
             List<Integer> userIds = groupUserByGroupId.getData().stream().map(groupUserVO -> Integer.parseInt(groupUserVO.getUserId())).collect(Collectors.toList());
+            log.info("userIds = {} ", userIds);
             userIds.remove(messageDTO.getUserId());
+            log.info("userIds.remove(messageDTO.getUserId()) = {} ", userIds);
             List<MessageDO> messageDOList = new ArrayList<>();
             for (Integer userId : userIds){
                 MessageDO messageDB = userIdToMessageDOMap.get(userId);
