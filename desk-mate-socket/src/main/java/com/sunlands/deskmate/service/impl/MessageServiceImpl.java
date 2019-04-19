@@ -1,7 +1,7 @@
 package com.sunlands.deskmate.service.impl;
 
-import com.netflix.discovery.converters.Auto;
 import com.sunlands.deskmate.dto.RequestDTO;
+import com.sunlands.deskmate.entity.MsgEntity;
 import com.sunlands.deskmate.entity.TzChatRecord;
 import com.sunlands.deskmate.entity.TzChatRecordExample;
 import com.sunlands.deskmate.enums.MessageType;
@@ -17,7 +17,10 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lishuai
@@ -53,11 +56,24 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<TzChatRecord> queryUnreadRecord(RequestDTO requestDTO) {
-        String destIdStr = webSocketServerHandler.makeDestIdStr(requestDTO.getType(), requestDTO.getDestId(), requestDTO.getUserId());
         TzChatRecordExample example = new TzChatRecordExample();
-        example.createCriteria().andDestIdEqualTo(destIdStr).andIdGreaterThan(requestDTO.getMaxReadId());
+        if (MessageType.PRIVATE_CHAT.getType().equals(requestDTO.getType().toString())){
+            example.createCriteria().andSenderUserIdIn(Arrays.asList(requestDTO.getUserId(), requestDTO.getDestId())).andTypeEqualTo(requestDTO.getType()).andIdGreaterThan(requestDTO.getMaxReadId());
+        } else if (MessageType.GROUP_CHAT.getType().equals(requestDTO.getType().toString())
+                || MessageType.ROOM_CHAT.getType().equals(requestDTO.getType().toString())){
+            example.createCriteria().andDestIdEqualTo(requestDTO.getDestId()).andTypeEqualTo(requestDTO.getType()).andIdGreaterThan(requestDTO.getMaxReadId());
+        }
         example.setOrderByClause("create_time");
-        return messageMapper.selectByExample(example);
+        List<TzChatRecord> tzChatRecords = messageMapper.selectByExample(example);
+        for (TzChatRecord r : tzChatRecords){
+           r.setExtrasMap(JSON.parseObject(r.getExtras(), Map.class));
+        }
+        return tzChatRecords;
+    }
+
+    @Override
+    public int saveChatRecord(TzChatRecord record) {
+        return messageMapper.insertSelective(record);
     }
 
     public void receiveMessage(String message) {
@@ -67,4 +83,7 @@ public class MessageServiceImpl implements MessageService {
             log.error("method receiveMessage error !" + e);
         }
     }
+
+
+
 }

@@ -2,6 +2,7 @@ package com.sunlands.deskmate.service;
 
 
 import com.sunlands.deskmate.dto.RequestDTO;
+import com.sunlands.deskmate.entity.MsgEntity;
 import com.sunlands.deskmate.entity.TzChatRecord;
 
 import java.util.List;
@@ -22,5 +23,7 @@ public interface MessageService {
 
 
     public List<TzChatRecord> queryUnreadRecord(RequestDTO requestDTO);
+
+    public int saveChatRecord(TzChatRecord record);
 
 }

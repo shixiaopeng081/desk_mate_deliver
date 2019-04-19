@@ -1,7 +1,7 @@
 eureka:
     client:
         fetch-registry: true
-        register-with-eureka: true
+        register-with-eureka: false
         service-url:
             defaultZone: http://sunlands:HL9i8gWoHuKLmEr9@62.234.206.233:8761/eureka/
     instance:
