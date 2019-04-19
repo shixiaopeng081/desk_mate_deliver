@@ -13,11 +13,11 @@ eureka:
     server:
         enable-self-preservation: true
         eviction-interval-timer-in-ms: 3000
-        wait-time-in-ms-when-sync-empty: 0
+        wait-time-in-ms-when-sync-empty: 0 K
 
 spring:
     datasource:
-        url: jdbc:mysql://bj-cdb-fmhcv6zw.sql.tencentcdb.com:3306/zlcx_tongzhuo?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+        url: jdbc:mysql://172.16.0.3:3306/zlcx_tongzhuo?useUnicode=true&autoReconnect=true&rewriteBatchedStatements=TRUE&useSSL=false
         username: zlcx_wx
         password: root456$%^
         #连接池的配置信息
