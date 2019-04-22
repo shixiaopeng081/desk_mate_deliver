@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author shixiaopeng
@@ -30,14 +31,19 @@ public class MessageDTO {
 //    private String avatarUrl;
 
     @ApiModelProperty("业务id，可能是群id，也可能是道友id")
-    private Integer businessId;
+    private String businessId;
 
-    @ApiModelProperty("接受消息的用户id")
-    private Integer userId;
+    @ApiModelProperty(value = "接受消息的用户id集合")
+    private List<Integer> userIds;
+
+    @ApiModelProperty("不需要发送的用户id集合")
+    private List<Integer> excludeUserIds;
 
     @ApiModelProperty("消息类型")
     private String type;
 
-    @ApiModelProperty("消息时间")
-    private LocalDateTime messageDateTime;
+    @ApiModelProperty("是否群发")
+    private Boolean isGroupSend;
+
+
 }

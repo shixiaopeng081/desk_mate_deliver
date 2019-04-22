@@ -45,11 +45,11 @@ spring:
 security:
    oauth2:
      resource:
-       token-info-uri: https://tongzhuotest.sunlands.wang/tz_user_center/oauth/check_token
+       token-info-uri: http://localhost:9666/oauth/check_token
      client:
-       client-id: users
+       client-id: message
        client-secret: 123456
-       access-token-uri: https://tongzhuotest.sunlands.wang/tz_user_center/oauth/token
+       access-token-uri: http://localhost:9666/oauth/token
 logging:
   level:
     org.springframework.security: info

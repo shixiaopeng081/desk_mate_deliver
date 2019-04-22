@@ -3,6 +3,7 @@ package com.sunlands.deskmate.entity;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @author liuyan
@@ -19,5 +20,5 @@ public class PushMessageEntity {
 
     private String type;
 
-    private LocalDateTime messageDateTime;
+    private Date updateDateTime;
 }

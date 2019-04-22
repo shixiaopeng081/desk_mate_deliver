@@ -39,7 +39,7 @@ public class PushDTO {
     private Integer type;
 
     @ApiModelProperty("推送业务id集合,如果type是用户，就是用户id集合")
-    private List<Integer> ids;
+    private List<String> ids;
     
     @ApiModelProperty("不需要发送的用户id集合")
     private List<Integer>  excludeUserIds;

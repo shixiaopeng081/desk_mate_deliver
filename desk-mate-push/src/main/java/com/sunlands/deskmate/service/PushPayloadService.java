@@ -14,10 +14,12 @@ import cn.jpush.api.push.model.notification.Notification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.sunlands.deskmate.client.DeskMateGroupService;
 import com.sunlands.deskmate.client.TzUserCenterService;
 import com.sunlands.deskmate.domain.PushRecordDO;
 import com.sunlands.deskmate.repository.PushRecordRepository;
 import com.sunlands.deskmate.util.BeanPropertiesUtil;
+import com.sunlands.deskmate.vo.GroupUserVO;
 import com.sunlands.deskmate.vo.PushDTO;
 import com.sunlands.deskmate.vo.UsersVO;
 import com.sunlands.deskmate.vo.response.BusinessResult;
@@ -56,14 +58,15 @@ public class PushPayloadService implements BeanPropertiesUtil{
 
         if(type == PushDTO.TypeEnum.USER.code){
             //用户
-            userIds = pushDTO.getIds();
+            userIds = pushDTO.getIds().stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
         }else if(type == PushDTO.TypeEnum.GROUP.code){
             //根据群id，查询群下的所有用户
-
-
+            log.info("pushDTO.getIds() = {} ", pushDTO.getIds());
+            BusinessResult<List<GroupUserVO>> groupUserByGroupId = deskMateGroupService.getGroupUserByGroupId(pushDTO.getIds().get(0));
+            userIds = groupUserByGroupId.getData().stream().map(groupUserVO -> Integer.parseInt(groupUserVO.getUserId())).collect(Collectors.toList());
         }else if(type == PushDTO.TypeEnum.ROOM.code){
             //根据房间id，查询房间下的所有用户
-
+            //TODO
 
         }
         userIds.removeAll(pushDTO.getExcludeUserIds());
@@ -83,25 +86,6 @@ public class PushPayloadService implements BeanPropertiesUtil{
         try {
             result = jPushClient.sendPush(pushPayload);
             log.info("Got result - " + result);
-
-            PushResult finalResult = result;
-            CompletableFuture.runAsync(() -> {
-                try {
-                    PushRecordDO pushRecordDO = new PushRecordDO();
-
-
-                    pushRecordDO.setStatus(finalResult.statusCode);
-                    pushRecordDO.setTitle(pushDTO.getTitle());
-                    pushRecordDO.setContent(pushDTO.getContent());
-                    pushRecordDO.setExtras(mapper.writeValueAsString(pushDTO.getExtras()));
-                    pushRecordDO.setRegIds(String.join(",", regIds) );
-
-                    pushRecordRepository.saveAndFlush(pushRecordDO);
-                } catch (JsonProcessingException e) {
-                    log.error("mapper.writeValueAsString = " + e.getMessage());
-                    e.printStackTrace();
-                }
-            });
         } catch (APIConnectionException e) {
             log.error("Connection error. Should retry later. ", e);
         } catch (APIRequestException e) {
@@ -113,6 +97,24 @@ public class PushPayloadService implements BeanPropertiesUtil{
             result = gson.fromJson(e.getMessage(), PushResult.class);
             result.statusCode = e.getStatus();
         }
+        PushResult finalResult = result;
+        CompletableFuture.runAsync(() -> {
+            try {
+                PushRecordDO pushRecordDO = new PushRecordDO();
+
+
+                pushRecordDO.setStatus(finalResult.statusCode);
+                pushRecordDO.setTitle(pushDTO.getTitle());
+                pushRecordDO.setContent(pushDTO.getContent());
+                pushRecordDO.setExtras(mapper.writeValueAsString(pushDTO.getExtras()));
+                pushRecordDO.setRegIds(String.join(",", regIds) );
+
+                pushRecordRepository.saveAndFlush(pushRecordDO);
+            } catch (JsonProcessingException e) {
+                log.error("mapper.writeValueAsString = " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
         return result;
     }
 
@@ -136,10 +138,12 @@ public class PushPayloadService implements BeanPropertiesUtil{
     }
 
     private final PushRecordRepository pushRecordRepository;
-    public final TzUserCenterService tzUserCenterService;
+    private final TzUserCenterService tzUserCenterService;
+    private final DeskMateGroupService deskMateGroupService;
 
-    public PushPayloadService(PushRecordRepository pushRecordRepository, TzUserCenterService tzUserCenterService) {
+    public PushPayloadService(PushRecordRepository pushRecordRepository, TzUserCenterService tzUserCenterService, DeskMateGroupService deskMateGroupService) {
         this.pushRecordRepository = pushRecordRepository;
         this.tzUserCenterService = tzUserCenterService;
+        this.deskMateGroupService = deskMateGroupService;
     }
 }

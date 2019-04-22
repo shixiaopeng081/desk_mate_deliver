@@ -1,5 +1,6 @@
 package com.sunlands.deskmate.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.experimental.FieldNameConstants;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @author shixiaopeng
@@ -34,7 +36,7 @@ public class Message {
 //    private String avatarUrl;
 
     @ApiModelProperty("业务id")
-    private Integer businessId;
+    private String businessId;
 
     @ApiModelProperty("用户id")
     private Integer userId;
@@ -46,5 +48,5 @@ public class Message {
     private Integer unreadCount;
 
     @ApiModelProperty("消息时间")
-    private LocalDateTime messageDateTime;
+    private Date updateDateTime;
 }

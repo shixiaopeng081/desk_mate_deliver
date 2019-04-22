@@ -47,7 +47,7 @@ public class JpushApiController {
 
 
     private String checkData(PushDTO pushDTO){
-        List<Integer> ids = pushDTO.getIds();
+        List<String> ids = pushDTO.getIds();
         if(Objects.isNull(ids) || ids.isEmpty()){
             return "业务Ids不能为空";
         }
