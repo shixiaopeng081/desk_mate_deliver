@@ -1,5 +1,6 @@
 package com.sunlands.deskmate.controller;
 
+import com.sunlands.deskmate.client.TzUserCenterService;
 import com.sunlands.deskmate.dto.OnLinePeopleRequestDTO;
 import com.sunlands.deskmate.dto.RequestDTO;
 import com.sunlands.deskmate.entity.MsgEntity;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -60,10 +62,15 @@ public class ChatApi {
         return BusinessResult.createSuccessInstance(list);
     }
 
+    @Autowired
+    private TzUserCenterService tzUserCenterService;
+
     @ApiOperation(value = "分享内容接口")
     @PostMapping("/share")
 //    @PreAuthorize("isAuthenticated()")
     public BusinessResult share(@RequestBody MsgEntity msgEntity) {
+
+        tzUserCenterService.findByIdIn(Arrays.asList(1,2));
         if (msgEntity.getBusinessId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }

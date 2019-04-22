@@ -32,4 +32,7 @@ public class MsgEntity {
     @ApiModelProperty(value = "扩展属性")
     private Map<String, String> extras = new HashMap<>();
 
+    @ApiModelProperty(value = "消息id")
+    private  Long id;
+
 }

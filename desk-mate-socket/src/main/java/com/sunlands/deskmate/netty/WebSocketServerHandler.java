@@ -24,10 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -49,6 +46,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     private static final AttributeKey<Integer> USER_KEY = AttributeKey.newInstance("USER_KEY");
 
     private static final ConcurrentHashMap<Integer, ChannelHandlerContext> ctxMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Set<Integer>> onlineMap = new ConcurrentHashMap<>();
+
+    // 用户与所在群或room对应关系
+    private static final ConcurrentHashMap<Integer, Set<String>> userIdContainerMap = new ConcurrentHashMap<>();
     @Autowired
     private TzPushInformService tzPushInformService;
 
@@ -71,7 +72,39 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
         } else if (frame instanceof TextWebSocketFrame) {//文本消息
             String request = ((TextWebSocketFrame) frame).text();
-            MsgEntity msgEntity = JSONObject.parseObject(request, MsgEntity.class);
+            MsgEntity msgEntity =   null;
+            try {
+                msgEntity = JSONObject.parseObject(request, MsgEntity.class);
+            } catch (Exception e){
+                log.error("message format error. message = {}", request, e);
+                msgEntity.setType("9000");
+                msgEntity.setContent("消息格式异常");
+                ctxMap.get(msgEntity.getFromUserId()).write(msgEntity);
+                return;
+            }
+            if (MessageType.ENTER_CONTAINER.getType().equals(msgEntity.getType())){
+                String key = msgEntity.getType() + ":" + msgEntity.getBusinessId();
+                Set<Integer> set = new HashSet<>();
+                set.add(Integer.valueOf(msgEntity.getFromUserId()));
+                Set<Integer> oldSet = onlineMap.putIfAbsent(key, set);
+                if (oldSet != null){
+                    oldSet.add(Integer.valueOf(msgEntity.getFromUserId()));
+                }
+                Set<String> set2 = new HashSet<>();
+                set2.add(key);
+                Set<String> oldSet2 = userIdContainerMap.putIfAbsent(Integer.valueOf(msgEntity.getFromUserId()), set2);
+                if (oldSet2 != null){
+                    oldSet2.add(key);
+                }
+                return;
+            }
+
+            if (MessageType.QUIT_CONTAINER.getType().equals(msgEntity.getType())){
+                String key = msgEntity.getType() + ":" + msgEntity.getBusinessId();
+                onlineMap.remove(key);
+                userIdContainerMap.get(Integer.valueOf(msgEntity.getFromUserId())).remove(key);
+                return;
+            }
             dealMsgEntiy(msgEntity);
         }
     }
@@ -83,6 +116,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     public void pushMsgToContainer(MsgEntity msgEntity){
+        Long pId = saveChatRecord(msgEntity);
+        msgEntity.setId(pId);
         List<Integer> userIdsByBusinessId = new ArrayList<>();
         if (MessageType.PRIVATE_CHAT.getType().equals(msgEntity.getType())
                 || MessageType.SHARE_TO_PRIVATE.getType().equals(msgEntity.getType())){
@@ -99,7 +134,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             } else {
                 offlineUserIds.add(userId);
             }
-            saveChatRecord(msgEntity);
             if (offlineUserIds.size() > 0){
                 // 推送离线消息
                 for (Integer uId : offlineUserIds){
@@ -135,7 +169,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         log.info("push message end");
     }
 
-    private void saveChatRecord(MsgEntity msgEntity) {
+    private Long saveChatRecord(MsgEntity msgEntity) {
         TzChatRecord record = new TzChatRecord();
         record.setSenderUserId(msgEntity.getFromUserId() == null ? null : Integer.valueOf(msgEntity.getFromUserId()));
         record.setDestId(msgEntity.getBusinessId() == null ? null : Integer.valueOf(msgEntity.getBusinessId()));
@@ -144,6 +178,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         record.setTitle(msgEntity.getTitle());
         record.setExtras(JSON.toJSONString(msgEntity.getExtras()));
         messageService.saveChatRecord(record);
+        return record.getId();
     }
 
     public List<Integer> getOnlineUserIdByRoomId(Integer roomId, Integer type){
@@ -168,9 +203,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         List<Integer> list = new ArrayList<>();
         list.add(111);
         list.add(222);
+        // TODO
         return list;
     }
-
 
     private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request) {
         if (HttpMethod.GET == request.method()) {
@@ -206,8 +241,17 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         ctxMap.remove(ctx.channel().attr(USER_KEY).get());
+        removeFromOnlineMap(ctx);
         cause.printStackTrace();
         ctx.close();
+    }
+
+    private void removeFromOnlineMap(ChannelHandlerContext ctx) {
+        Set<String> containers = userIdContainerMap.get(ctx.channel().attr(USER_KEY).get());
+        for (String key : containers){
+            onlineMap.get(key).remove(ctx.channel().attr(USER_KEY).get());
+        }
+        userIdContainerMap.remove(ctx.channel().attr(USER_KEY).get());
     }
 
     @Override
@@ -229,6 +273,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         if (ctx != null && ctx.channel() != null && ctx.channel().attr(USER_KEY) != null &&
                 ctx.channel().attr(USER_KEY).get() != null) {
             ctxMap.remove(ctx.channel().attr(USER_KEY).get());
+            removeFromOnlineMap(ctx);
         }
         super.handlerRemoved(ctx);
     }
