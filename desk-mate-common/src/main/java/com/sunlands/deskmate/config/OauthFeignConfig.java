@@ -84,7 +84,7 @@ public class OauthFeignConfig {
         public Response execute(Request request, Request.Options options) throws IOException {
             if(debug){
                 URI asUri = URI.create(request.url());
-                String url = debugUrl + "/" + clientName + asUri.getPath();
+                String url = String.format("%s/%s%s?%s", debugUrl, clientName, asUri.getPath(), asUri.getQuery());
                 request = Request.create(request.method(), url, request.headers(), request.body(), request.charset());
             }
             return super.execute(request, options);
