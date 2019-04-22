@@ -31,21 +31,30 @@ public class MessageService implements BeanPropertiesUtil {
         MessageDO messageDO = new MessageDO();
         copyNonNullProperties(messageDTO, messageDO);
 
-        MessageDO messageDODB = messageRepository.findAllByUserIdAndBusinessIdAndType(messageDO.getUserId(), messageDO.getBusinessId(), messageDO.getType());
-        if(messageDODB != null){
-            //修改
-            messageDODB.setUnreadCount(messageDODB.getUnreadCount() + 1);
-            messageDODB.setIsRead(false);
-            messageDODB.setContent(messageDTO.getContent());
-            messageDODB.setTitle(messageDTO.getTitle());
-//            messageDODB.setAvatarUrl(messageDTO.getAvatarUrl());
+        List<MessageDO> messageDOList = new ArrayList<>();
 
-            messageRepository.save(messageDODB);
-        }else{
-            //新增
-            messageDO.setUnreadCount(1);
-            messageRepository.save(messageDO);
+
+        List<Integer> userIds = messageDTO.getUserIds();
+        for(Integer userId : userIds){
+            MessageDO messageDODB = messageRepository.findAllByUserIdAndBusinessIdAndType(userId, messageDO.getBusinessId(), messageDO.getType());
+            if(messageDODB != null){
+                //修改
+                messageDODB.setUnreadCount(messageDODB.getUnreadCount() + 1);
+                messageDODB.setIsRead(false);
+                messageDODB.setContent(messageDTO.getContent());
+                messageDODB.setTitle(messageDTO.getTitle());
+//            messageDODB.setAvatarUrl(messageDTO.getAvatarUrl());
+                messageDOList.add(messageDODB);
+            }else{
+                //新增
+                messageDO.setUserId(userId);
+                messageDO.setUnreadCount(1);
+                messageDOList.add(messageDO);
+            }
         }
+
+        messageRepository.save(messageDOList);
+
     }
 
     public void createGroup(MessageDTO messageDTO){
@@ -63,7 +72,7 @@ public class MessageService implements BeanPropertiesUtil {
         if(groupUserByGroupId != null && !groupUserByGroupId.getData().isEmpty()){
             List<Integer> userIds = groupUserByGroupId.getData().stream().map(groupUserVO -> Integer.parseInt(groupUserVO.getUserId())).collect(Collectors.toList());
             log.info("userIds = {} ", userIds);
-            userIds.remove(messageDTO.getUserId());
+            userIds.removeAll(messageDTO.getExcludeUserIds());
             log.info("userIds.remove(messageDTO.getUserId()) = {} ", userIds);
             List<MessageDO> messageDOList = new ArrayList<>();
             for (Integer userId : userIds){
