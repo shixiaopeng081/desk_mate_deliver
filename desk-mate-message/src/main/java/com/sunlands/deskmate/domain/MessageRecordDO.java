@@ -44,7 +44,7 @@ public class MessageRecordDO implements Serializable {
 
     private String excludeUserIds;
 
-    private boolean isGroupSend;
+    private Boolean isGroupSend;
 
     @Column(insertable = false, updatable = false)
     private Date createDateTime;
