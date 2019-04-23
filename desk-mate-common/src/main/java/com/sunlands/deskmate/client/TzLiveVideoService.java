@@ -29,6 +29,6 @@ public interface TzLiveVideoService {
      * @return
      */
     @GetMapping("/liveRoom/getUserIdsByRoomId")
-    BusinessResult<List<Long>> getUserIdsByRoomId(@RequestParam(defaultValue = "0") Integer queryType, @RequestParam Long roomId);
+    BusinessResult<List<Long>> getUserIdsByRoomId(@RequestParam(value = "queryType", defaultValue = "0") Integer queryType, @RequestParam(value = "roomId") Long roomId);
 }
 
