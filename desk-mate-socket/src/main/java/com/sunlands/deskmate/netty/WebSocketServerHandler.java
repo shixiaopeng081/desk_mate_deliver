@@ -12,6 +12,7 @@ import com.sunlands.deskmate.entity.TzChatRecord;
 import com.sunlands.deskmate.enums.MessageType;
 import com.sunlands.deskmate.service.MessageService;
 import com.sunlands.deskmate.service.UserService;
+import com.sunlands.deskmate.vo.response.BusinessResult;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -139,10 +140,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 offlineUserIds.add(userId);
             }
             if (offlineUserIds.size() > 0){
-                // 推送离线消息
-                for (Integer uId : offlineUserIds){
-                    doPushMessage(msgEntity, uId);
-                }
+                // 推送离线消息和通知
+                doPushMessage(msgEntity, offlineUserIds);
                 doPushInform(msgEntity, offlineUserIds);
             }
         }
@@ -154,23 +153,22 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         informEntity.setContent(msgEntity.getContent());
         informEntity.setIds(offlineUserIds);
         informEntity.setTitle(msgEntity.getTitle());
-        informEntity.setType(1);// 枚举：用户：1，群：2，房间：3
         log.info("push inform = {} start", informEntity);
-//            tzPushInformService.pushInform(informEntity);
-        log.info("push inform end");
+//        BusinessResult businessResult = tzPushInformService.pushInform(informEntity);
+//        log.info("push inform end resut={}", businessResult);
     }
 
-    private void doPushMessage(MsgEntity msgEntity, Integer uId) {
+    private void doPushMessage(MsgEntity msgEntity, List<Integer> uIds) {
         PushMessageEntity messageEntity  = new PushMessageEntity();
-        messageEntity.setUserId(uId);
+        messageEntity.setUserIds(uIds);
         messageEntity.setType(msgEntity.getType());
-        messageEntity.setBusinessId(msgEntity.getBusinessId() == null ? null : Integer.valueOf(msgEntity.getBusinessId()));
+        messageEntity.setBusinessId(msgEntity.getBusinessId());
         messageEntity.setContent(msgEntity.getContent());
-        messageEntity.setMessageDateTime(LocalDateTime.now());
+        messageEntity.setIsGroupSend(false);
         messageEntity.setTitle(msgEntity.getTitle());
         log.info("push message = {} start", messageEntity);
-//                tzPushMessageService.pushMessage(messageEntity);
-        log.info("push message end");
+//        BusinessResult businessResult = tzPushMessageService.pushMessage(messageEntity);
+//        log.info("push message end result={}", businessResult);
     }
 
     private Long saveChatRecord(MsgEntity msgEntity) {
@@ -186,22 +184,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     public Set<Integer> getOnlineUserIdByRoomId(Integer roomId, Integer type){
-//        List<Integer> userIdsByRoomId = getUserIdsByBussinessId(roomId);
-//        List<Integer> onLineList = new ArrayList<>();
-//        List<Integer> offLineList = new ArrayList<>();
-//        for(Integer userId : userIdsByRoomId){
-//            if(ctxMap.get(userId)!=null) {
-//                onLineList.add(userId);
-//            }else{
-//                offLineList.add(userId);
-//            }
-//        }
-//        if (type == 1){
-//            return onLineList;
-//        } else {
-//            return offLineList;
-//        }
-
         String key = type + ":" + roomId;
         Set<Integer> userIdsSet = onlineMap.get(key);
         return userIdsSet;
