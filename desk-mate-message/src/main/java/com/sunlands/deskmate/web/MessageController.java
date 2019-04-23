@@ -43,7 +43,7 @@ public class MessageController {
     }
 
     @ApiOperation(value = "发送消息接口--适用于发送多个群")
-    @PostMapping("/message")
+    @PostMapping("/message/_list")
     public BusinessResult createMessagePerson(@RequestBody List<MessageDTO> messageDTOList) {
         for (MessageDTO messageDTO : messageDTOList){
             if(messageDTO.getIsGroupSend()!= null && messageDTO.getIsGroupSend()){
