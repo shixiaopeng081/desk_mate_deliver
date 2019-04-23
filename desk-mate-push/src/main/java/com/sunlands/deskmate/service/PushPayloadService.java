@@ -30,10 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -55,7 +52,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
 
     public PushResult sendPushWithRegIds(PushDTO pushDTO) throws IOException {
         Integer type = pushDTO.getType();
-        List<Long> userIds = null;
+        List<Long> userIds = new ArrayList<>();
 
         if(type == PushDTO.TypeEnum.USER.code){
             //用户
