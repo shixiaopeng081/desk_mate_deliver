@@ -61,6 +61,7 @@ public class MessageService implements BeanPropertiesUtil {
         CompletableFuture.runAsync(() -> {
             MessageRecordDO messageRecordDO = new MessageRecordDO();
             copyNonNullProperties(messageDTO, messageRecordDO);
+            log.info("messageRecordDO = {} ", messageRecordDO);
             messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
             messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
             messageRecordRepository.save(messageRecordDO);
@@ -109,6 +110,7 @@ public class MessageService implements BeanPropertiesUtil {
             CompletableFuture.runAsync(() -> {
                 MessageRecordDO messageRecordDO = new MessageRecordDO();
                 copyNonNullProperties(messageDTO, messageRecordDO);
+                log.info("messageRecordDO = {} ", messageRecordDO);
                 messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
                 messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
                 messageRecordRepository.save(messageRecordDO);

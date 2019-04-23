@@ -29,6 +29,7 @@ public class MessageController {
     @ApiOperation(value = "发送消息接口--多个用户/单个群")
     @PostMapping("/message")
     public BusinessResult createMessagePerson(@RequestBody MessageDTO messageDTO) {
+        log.info("messageDTO = {} ", messageDTO);
         String result = checkData(messageDTO);
         if(result != null){
             BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_INVALIDE, result);
