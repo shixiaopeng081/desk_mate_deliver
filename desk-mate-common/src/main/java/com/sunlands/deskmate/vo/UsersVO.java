@@ -20,7 +20,7 @@ import java.util.Objects;
 @ApiModel(value = "用户（道友）")
 public class UsersVO {
     @ApiModelProperty(position = 10, value = "id")
-    private Integer id;
+    private Long id;
 
     @ApiModelProperty(position = 20, value = "姓名(昵称)")
     private String name;
