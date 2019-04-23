@@ -25,6 +25,6 @@ public interface TzUserCenterService {
      */
     @ApiOperation(value = "根据idList查询", notes = "根据idList查询")
     @PostMapping("/users/list")
-    BusinessResult<List<UsersVO>> findByIdIn(@RequestBody List<Integer> idList);
+    BusinessResult<List<UsersVO>> findByIdIn(@RequestBody List<Long> idList);
 }
 

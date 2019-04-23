@@ -26,18 +26,32 @@ public class MessageController {
     @Autowired
     private MessageService messageService;
 
-    @ApiOperation(value = "发送消息接口")
+    @ApiOperation(value = "发送消息接口--多个用户/单个群")
     @PostMapping("/message")
     public BusinessResult createMessagePerson(@RequestBody MessageDTO messageDTO) {
         String result = checkData(messageDTO);
         if(result != null){
             BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_INVALIDE, result);
         }
-        if(messageDTO.getIsGroupSend()){
+        if(messageDTO.getIsGroupSend()!= null && messageDTO.getIsGroupSend()){
             messageService.createGroup(messageDTO);
 
         }else{
             messageService.createPerson(messageDTO);
+        }
+        return BusinessResult.createSuccessInstance(null);
+    }
+
+    @ApiOperation(value = "发送消息接口--适用于发送多个群")
+    @PostMapping("/message/_list")
+    public BusinessResult createMessagePerson(@RequestBody List<MessageDTO> messageDTOList) {
+        for (MessageDTO messageDTO : messageDTOList){
+            if(messageDTO.getIsGroupSend()!= null && messageDTO.getIsGroupSend()){
+                messageService.createGroup(messageDTO);
+
+            }else{
+                messageService.createPerson(messageDTO);
+            }
         }
         return BusinessResult.createSuccessInstance(null);
     }

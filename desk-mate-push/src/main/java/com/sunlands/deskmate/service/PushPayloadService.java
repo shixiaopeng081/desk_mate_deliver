@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.sunlands.deskmate.client.DeskMateGroupService;
+import com.sunlands.deskmate.client.TzLiveVideoService;
 import com.sunlands.deskmate.client.TzUserCenterService;
 import com.sunlands.deskmate.domain.PushRecordDO;
 import com.sunlands.deskmate.repository.PushRecordRepository;
@@ -54,20 +55,26 @@ public class PushPayloadService implements BeanPropertiesUtil{
 
     public PushResult sendPushWithRegIds(PushDTO pushDTO) throws IOException {
         Integer type = pushDTO.getType();
-        List<Integer> userIds = null;
+        List<Long> userIds = null;
 
         if(type == PushDTO.TypeEnum.USER.code){
             //用户
-            userIds = pushDTO.getIds().stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
+            userIds = pushDTO.getIds().stream().map(s -> Long.parseLong(s)).collect(Collectors.toList());
         }else if(type == PushDTO.TypeEnum.GROUP.code){
             //根据群id，查询群下的所有用户
             log.info("pushDTO.getIds() = {} ", pushDTO.getIds());
-            BusinessResult<List<GroupUserVO>> groupUserByGroupId = deskMateGroupService.getGroupUserByGroupId(pushDTO.getIds().get(0));
-            userIds = groupUserByGroupId.getData().stream().map(groupUserVO -> Integer.parseInt(groupUserVO.getUserId())).collect(Collectors.toList());
+            for (String groupId : pushDTO.getIds()){
+                BusinessResult<List<GroupUserVO>> groupUserByGroupId = deskMateGroupService.getGroupUserByGroupId(groupId);
+                userIds.addAll(groupUserByGroupId.getData().stream().map(groupUserVO -> Long.parseLong(groupUserVO.getUserId())).collect(Collectors.toList()));
+            }
         }else if(type == PushDTO.TypeEnum.ROOM.code){
             //根据房间id，查询房间下的所有用户
-            //TODO
-
+            log.info("pushDTO.getIds() = {} ", pushDTO.getIds());
+            for (String roomId : pushDTO.getIds()){
+                BusinessResult<List<Long>> roomUserByRoomId = tzLiveVideoService.getUserIdsByRoomId(0, Long.parseLong(roomId));
+                log.info("roomUserByRoomId.getData() = {} ", roomUserByRoomId.getData());
+                userIds.addAll(roomUserByRoomId.getData());
+            }
         }
         userIds.removeAll(pushDTO.getExcludeUserIds());
 
@@ -140,10 +147,12 @@ public class PushPayloadService implements BeanPropertiesUtil{
     private final PushRecordRepository pushRecordRepository;
     private final TzUserCenterService tzUserCenterService;
     private final DeskMateGroupService deskMateGroupService;
+    private final TzLiveVideoService tzLiveVideoService;
 
-    public PushPayloadService(PushRecordRepository pushRecordRepository, TzUserCenterService tzUserCenterService, DeskMateGroupService deskMateGroupService) {
+    public PushPayloadService(PushRecordRepository pushRecordRepository, TzUserCenterService tzUserCenterService, DeskMateGroupService deskMateGroupService, TzLiveVideoService tzLiveVideoService) {
         this.pushRecordRepository = pushRecordRepository;
         this.tzUserCenterService = tzUserCenterService;
         this.deskMateGroupService = deskMateGroupService;
+        this.tzLiveVideoService = tzLiveVideoService;
     }
 }
