@@ -87,6 +87,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 ctxMap.get(msgEntity.getFromUserId()).write(msgEntity);
                 return;
             }
+            log.info("recieve msgEntity={}", msgEntity);
             if (MessageType.ENTER_CONTAINER.getType().equals(msgEntity.getType())){
                 String key = msgEntity.getType() + ":" + msgEntity.getBusinessId();
                 Set<Integer> set = new HashSet<>();
@@ -236,6 +237,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.info("Exception accoured e={}, stack={}", cause.getMessage(), cause.getStackTrace());
         ctxMap.remove(ctx.channel().attr(USER_KEY).get());
         removeFromOnlineMap(ctx);
         cause.printStackTrace();
@@ -270,6 +272,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         if (ctx != null && ctx.channel() != null && ctx.channel().attr(USER_KEY) != null &&
                 ctx.channel().attr(USER_KEY).get() != null) {
+            log.info("handleRemoved userId={}", ctx.channel().attr(USER_KEY).get());
             ctxMap.remove(ctx.channel().attr(USER_KEY).get());
             removeFromOnlineMap(ctx);
         }
