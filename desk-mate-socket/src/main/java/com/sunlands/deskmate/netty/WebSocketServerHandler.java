@@ -244,10 +244,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     private void removeFromOnlineMap(ChannelHandlerContext ctx) {
         Set<String> containers = userIdContainerMap.get(ctx.channel().attr(USER_KEY).get());
-        for (String key : containers){
-            onlineMap.get(key).remove(ctx.channel().attr(USER_KEY).get());
+        if (containers != null){
+            for (String key : containers){
+                onlineMap.get(key).remove(ctx.channel().attr(USER_KEY).get());
+            }
+            userIdContainerMap.remove(ctx.channel().attr(USER_KEY).get());
         }
-        userIdContainerMap.remove(ctx.channel().attr(USER_KEY).get());
     }
 
     @Override
