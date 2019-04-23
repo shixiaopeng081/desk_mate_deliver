@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class OnLinePeopleRequestDTO {
 
-    @ApiModelProperty("目标id，例如：群id，房间id，如果是私聊，则为对方的用户id")
+    @ApiModelProperty(value = "目标id，例如：群id，房间id，如果是私聊，则为对方的用户id", required = true)
     private Integer destId;
 
 }

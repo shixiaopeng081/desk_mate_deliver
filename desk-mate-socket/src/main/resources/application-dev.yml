@@ -1,18 +1,12 @@
 eureka:
+    debug: true   #自定义参数，开始本地环境通过eurake调用test环境中的服务，
+                  #设置为true开启，开启后将register-with-eureka配置参数设置为false,防止test环境调用到本地的微服务出错
+    debug-url: https://tongzhuotest.sunlands.wang #测试环境注册微服务的真实访问路径，此配置适用于 同桌项目，其他项目根据情况配置
     client:
         fetch-registry: true
-        register-with-eureka: false
+        register-with-eureka: false #本地使用时，将此属性设置为false，不会将本地服务注册到eurake上，但是本地服务可以从eurake上获取到服务信息
         service-url:
             defaultZone: http://sunlands:HL9i8gWoHuKLmEr9@62.234.206.233:8761/eureka/
-    instance:
-        hostname: localhost
-        lease-expiration-duration-in-seconds: 10
-        lease-renewal-interval-in-seconds: 3
-        prefer-ip-address: true
-    server:
-        enable-self-preservation: false
-        eviction-interval-timer-in-ms: 3000
-        wait-time-in-ms-when-sync-empty: 0
 
 spring:
     datasource:

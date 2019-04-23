@@ -2,6 +2,7 @@ package com.sunlands.deskmate.netty;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sunlands.deskmate.client.DeskMateGroupService;
 import com.sunlands.deskmate.client.TzPushInformService;
 import com.sunlands.deskmate.client.TzPushMessageService;
 import com.sunlands.deskmate.entity.MsgEntity;
@@ -42,6 +43,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     private UserService userService;
 
     private WebSocketServerHandshaker handshaker;
+
+    @Autowired
+    private DeskMateGroupService deskMateGroupService;
 
     private static final AttributeKey<Integer> USER_KEY = AttributeKey.newInstance("USER_KEY");
 
@@ -124,7 +128,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             userIdsByBusinessId.add(Integer.valueOf(msgEntity.getFromUserId()));
             userIdsByBusinessId.add(Integer.valueOf(msgEntity.getBusinessId()));
         } else {
-            userIdsByBusinessId = getUserIdsByBussinessId(Integer.valueOf(msgEntity.getBusinessId()));
+            userIdsByBusinessId = getUserIdsByBussinessId(Integer.valueOf(msgEntity.getBusinessId()), msgEntity.getType());
         }
         List<Integer> offlineUserIds = new ArrayList<>();
         for(Integer userId : userIdsByBusinessId){
@@ -181,25 +185,35 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         return record.getId();
     }
 
-    public List<Integer> getOnlineUserIdByRoomId(Integer roomId, Integer type){
-        List<Integer> userIdsByRoomId = getUserIdsByBussinessId(roomId);
-        List<Integer> onLineList = new ArrayList<>();
-        List<Integer> offLineList = new ArrayList<>();
-        for(Integer userId : userIdsByRoomId){
-            if(ctxMap.get(userId)!=null) {
-                onLineList.add(userId);
-            }else{
-                offLineList.add(userId);
-            }
-        }
-        if (type == 1){
-            return onLineList;
-        } else {
-            return offLineList;
-        }
+    public Set<Integer> getOnlineUserIdByRoomId(Integer roomId, Integer type){
+//        List<Integer> userIdsByRoomId = getUserIdsByBussinessId(roomId);
+//        List<Integer> onLineList = new ArrayList<>();
+//        List<Integer> offLineList = new ArrayList<>();
+//        for(Integer userId : userIdsByRoomId){
+//            if(ctxMap.get(userId)!=null) {
+//                onLineList.add(userId);
+//            }else{
+//                offLineList.add(userId);
+//            }
+//        }
+//        if (type == 1){
+//            return onLineList;
+//        } else {
+//            return offLineList;
+//        }
+
+        String key = type + ":" + roomId;
+        Set<Integer> userIdsSet = onlineMap.get(key);
+        return userIdsSet;
+
     }
 
-    private List<Integer> getUserIdsByBussinessId(Integer roomId){
+    private List<Integer> getUserIdsByBussinessId(Integer roomId, String type){
+//        if (MessageType.ROOM_CHAT.getType().equals(type)){
+//            // TODO
+//        } else {
+//            deskMateGroupService.getGroupUserByGroupId(roomId.toString());
+//        }
         List<Integer> list = new ArrayList<>();
         list.add(111);
         list.add(222);

@@ -12,17 +12,17 @@ import java.util.Map;
 @Data
 @ToString
 public class MsgEntity {
-    @ApiModelProperty(value = "发送者id")
+    @ApiModelProperty(value = "发送者id", required = true)
     private String fromUserId;
     //消息的类型，如：群聊，房间聊等
-    @ApiModelProperty(value = "消息类型")
+    @ApiModelProperty(value = "消息类型", required = true)
     private String type;
     //类型下相关的业务Id
-    @ApiModelProperty(value = "业务id 例：群id，房间id")
+    @ApiModelProperty(value = "业务id 例：群id，房间id", required = true)
     private String businessId;
 
     //发送的消息内容，要求格式
-    @ApiModelProperty(value = "内容")
+    @ApiModelProperty(value = "内容", required = true)
     private String content;
     //消息的标题
     @ApiModelProperty(value = "标题")

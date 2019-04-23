@@ -5,9 +5,11 @@ import com.sunlands.deskmate.dto.OnLinePeopleRequestDTO;
 import com.sunlands.deskmate.dto.RequestDTO;
 import com.sunlands.deskmate.entity.MsgEntity;
 import com.sunlands.deskmate.entity.TzChatRecord;
+import com.sunlands.deskmate.enums.MessageType;
 import com.sunlands.deskmate.netty.WebSocketServerHandler;
 import com.sunlands.deskmate.service.MessageService;
 import com.sunlands.deskmate.vo.CommonResultMessage;
+import com.sunlands.deskmate.vo.UsersVO;
 import com.sunlands.deskmate.vo.response.BusinessResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by yanliu on 2019/4/18.
@@ -37,7 +40,7 @@ public class ChatApi {
 
     @ApiOperation(value = "查询未读聊天信息接口")
     @GetMapping("/unread")
-//    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     public BusinessResult<List<TzChatRecord>> unreadMessage(RequestDTO requestDTO) {
         if (requestDTO.getType() == null || requestDTO.getDestId() == null || requestDTO.getUserId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
@@ -52,13 +55,13 @@ public class ChatApi {
 
 
     @ApiOperation(value = "查询在线人员id接口")
-    @GetMapping("/userIdList")
-//    @PreAuthorize("isAuthenticated()")
-    public BusinessResult<List<Integer>> peopleNum(OnLinePeopleRequestDTO requestDTO) {
+    @GetMapping("/userIdsOnline")
+    @PreAuthorize("isAuthenticated()")
+    public BusinessResult<Set<Integer>> peopleNum(OnLinePeopleRequestDTO requestDTO) {
         if (requestDTO.getDestId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
-        List<Integer> list = webSocketServerHandler.getOnlineUserIdByRoomId(requestDTO.getDestId(), 1);
+        Set<Integer> list = webSocketServerHandler.getOnlineUserIdByRoomId(requestDTO.getDestId(), Integer.valueOf(MessageType.ROOM_CHAT.getType()));
         return BusinessResult.createSuccessInstance(list);
     }
 
@@ -67,14 +70,12 @@ public class ChatApi {
 
     @ApiOperation(value = "分享内容接口")
     @PostMapping("/share")
-//    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     public BusinessResult share(@RequestBody MsgEntity msgEntity) {
-
-        tzUserCenterService.findByIdIn(Arrays.asList(1,2));
         if (msgEntity.getBusinessId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
-        webSocketServerHandler.pushMsgToContainer(msgEntity);//pushMsgToUserId(msgEntity, Integer.valueOf(msgEntity.getBusinessId()));
+        webSocketServerHandler.pushMsgToContainer(msgEntity);
         return BusinessResult.createSuccessInstance(null);
     }
 
