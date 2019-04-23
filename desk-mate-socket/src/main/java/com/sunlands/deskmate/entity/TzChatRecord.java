@@ -15,6 +15,7 @@ public class TzChatRecord implements Serializable {
     /**
      * 主键
      */
+    @ApiModelProperty(value = "消息id")
     private Long id;
 
     /**
@@ -32,30 +33,37 @@ public class TzChatRecord implements Serializable {
     /**
      * 消息内容
      */
+    @ApiModelProperty(value = "消息内容")
     private String message;
 
     /**
      * 时间戳
      */
+    @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
-    /**
-     * 头像url
-     */
-    private String avatarUrl;
+//    /**
+//     * 头像url
+//     */
+//    @ApiModelProperty(value = "消息内容")
+//    private String avatarUrl;
 
     /**
      * 分享标题
      */
+    @ApiModelProperty(value = "分享标题")
     private String title;
 
     /**
      * 额外数据
      */
+    @ApiModelProperty(value = "额外属性字符串类型")
     private String extras;
 
+    @ApiModelProperty(value = "接收者id(可以是群id、roomId、用户id)")
     private Integer destId;
 
+    @ApiModelProperty(value = "额外属性Map类型")
     private Map<String, String> extrasMap;
 
     public Map<String, String> getExtrasMap() {
@@ -108,13 +116,13 @@ public class TzChatRecord implements Serializable {
         this.createTime = createTime;
     }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
+//    public String getAvatarUrl() {
+//        return avatarUrl;
+//    }
+//
+//    public void setAvatarUrl(String avatarUrl) {
+//        this.avatarUrl = avatarUrl;
+//    }
 
     public String getTitle() {
         return title;
@@ -157,7 +165,7 @@ public class TzChatRecord implements Serializable {
             && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
             && (this.getMessage() == null ? other.getMessage() == null : this.getMessage().equals(other.getMessage()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
-            && (this.getAvatarUrl() == null ? other.getAvatarUrl() == null : this.getAvatarUrl().equals(other.getAvatarUrl()))
+//            && (this.getAvatarUrl() == null ? other.getAvatarUrl() == null : this.getAvatarUrl().equals(other.getAvatarUrl()))
             && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
             && (this.getExtras() == null ? other.getExtras() == null : this.getExtras().equals(other.getExtras()))
             && (this.getDestId() == null ? other.getDestId() == null : this.getDestId().equals(other.getDestId()));
@@ -172,7 +180,7 @@ public class TzChatRecord implements Serializable {
         result = prime * result + ((getType() == null) ? 0 : getType().hashCode());
         result = prime * result + ((getMessage() == null) ? 0 : getMessage().hashCode());
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
-        result = prime * result + ((getAvatarUrl() == null) ? 0 : getAvatarUrl().hashCode());
+//        result = prime * result + ((getAvatarUrl() == null) ? 0 : getAvatarUrl().hashCode());
         result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());
         result = prime * result + ((getExtras() == null) ? 0 : getExtras().hashCode());
         result = prime * result + ((getDestId() == null) ? 0 : getDestId().hashCode());
@@ -190,7 +198,7 @@ public class TzChatRecord implements Serializable {
         sb.append(", type=").append(type);
         sb.append(", message=").append(message);
         sb.append(", createTime=").append(createTime);
-        sb.append(", avatarUrl=").append(avatarUrl);
+//        sb.append(", avatarUrl=").append(avatarUrl);
         sb.append(", title=").append(title);
         sb.append(", extras=").append(extras);
         sb.append(", destId=").append(destId);
