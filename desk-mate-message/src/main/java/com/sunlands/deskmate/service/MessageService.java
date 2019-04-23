@@ -1,9 +1,12 @@
 package com.sunlands.deskmate.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sunlands.deskmate.client.DeskMateGroupService;
 import com.sunlands.deskmate.client.TzUserCenterService;
 import com.sunlands.deskmate.domain.MessageDO;
+import com.sunlands.deskmate.domain.MessageRecordDO;
+import com.sunlands.deskmate.repository.MessageRecordRepository;
 import com.sunlands.deskmate.repository.MessageRepository;
 import com.sunlands.deskmate.util.BeanPropertiesUtil;
 import com.sunlands.deskmate.vo.GroupUserVO;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -54,7 +58,13 @@ public class MessageService implements BeanPropertiesUtil {
         }
 
         messageRepository.save(messageDOList);
-
+        CompletableFuture.runAsync(() -> {
+            MessageRecordDO messageRecordDO = new MessageRecordDO();
+            copyNonNullProperties(messageDTO, messageRecordDO);
+            messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
+            messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
+            messageRecordRepository.save(messageRecordDO);
+        });
     }
 
     public void createGroup(MessageDTO messageDTO){
@@ -95,6 +105,14 @@ public class MessageService implements BeanPropertiesUtil {
             }
             log.info("messageDOList = {} ", messageDOList);
             messageRepository.save(messageDOList);
+
+            CompletableFuture.runAsync(() -> {
+                MessageRecordDO messageRecordDO = new MessageRecordDO();
+                copyNonNullProperties(messageDTO, messageRecordDO);
+                messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
+                messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
+                messageRecordRepository.save(messageRecordDO);
+            });
         }
     }
 
@@ -119,9 +137,11 @@ public class MessageService implements BeanPropertiesUtil {
 
     private final MessageRepository messageRepository;
     private final DeskMateGroupService deskMateGroupService;
+    private final MessageRecordRepository messageRecordRepository;
 
-    public MessageService(MessageRepository messageRepository, DeskMateGroupService deskMateGroupService) {
+    public MessageService(MessageRepository messageRepository, DeskMateGroupService deskMateGroupService, MessageRecordRepository messageRecordRepository) {
         this.messageRepository = messageRepository;
         this.deskMateGroupService = deskMateGroupService;
+        this.messageRecordRepository = messageRecordRepository;
     }
 }
