@@ -31,3 +31,6 @@ spring:
             max-active: 600
             max-idle: 300
         port: 6379
+
+message:
+    type: system

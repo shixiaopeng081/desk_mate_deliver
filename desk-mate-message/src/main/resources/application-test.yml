@@ -56,3 +56,6 @@ logging:
     com.sunlands: DEBUG
 ribbon:
   ReadTimeout: 20000
+
+message:
+    type: system

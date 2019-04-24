@@ -6,14 +6,21 @@ import com.sunlands.deskmate.client.DeskMateGroupService;
 import com.sunlands.deskmate.client.TzUserCenterService;
 import com.sunlands.deskmate.domain.MessageDO;
 import com.sunlands.deskmate.domain.MessageRecordDO;
+import com.sunlands.deskmate.domain.MessageSystemDO;
 import com.sunlands.deskmate.repository.MessageRecordRepository;
 import com.sunlands.deskmate.repository.MessageRepository;
+import com.sunlands.deskmate.repository.MessageSystemRepository;
 import com.sunlands.deskmate.util.BeanPropertiesUtil;
 import com.sunlands.deskmate.vo.GroupUserVO;
 import com.sunlands.deskmate.vo.Message;
 import com.sunlands.deskmate.vo.MessageDTO;
 import com.sunlands.deskmate.vo.response.BusinessResult;
+import com.sunlands.deskmate.vo.response.PageResultVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneOffset;
@@ -31,12 +38,20 @@ import java.util.stream.Collectors;
 @Service
 public class MessageService implements BeanPropertiesUtil {
 
+    @Value("${message.type}")
+    private String messageType;
+
     public void createPerson(MessageDTO messageDTO){
         MessageDO messageDO = new MessageDO();
         copyNonNullProperties(messageDTO, messageDO);
 
         List<MessageDO> messageDOList = new ArrayList<>();
-
+        //小书童--即系统消息
+        List<MessageSystemDO> messageSystemDOList = new ArrayList<>();
+        Boolean isSystem = false;
+        if(messageDTO.getType().equals(messageType)){
+            isSystem= true;
+        }
 
         List<Integer> userIds = messageDTO.getUserIds();
         for(Integer userId : userIds){
@@ -55,6 +70,12 @@ public class MessageService implements BeanPropertiesUtil {
                 messageDO.setUnreadCount(1);
                 messageDOList.add(messageDO);
             }
+            if(isSystem){
+                MessageSystemDO messageSystemDO = new MessageSystemDO();
+                copyNonNullProperties(messageDTO, messageSystemDO);
+                messageSystemDO.setUserId(userId);
+                messageSystemDOList.add(messageSystemDO);
+            }
         }
 
         messageRepository.save(messageDOList);
@@ -65,6 +86,7 @@ public class MessageService implements BeanPropertiesUtil {
             messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
             messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
             messageRecordRepository.save(messageRecordDO);
+            messageSystemRepository.save(messageSystemDOList);
         });
     }
 
@@ -86,6 +108,14 @@ public class MessageService implements BeanPropertiesUtil {
             userIds.removeAll(messageDTO.getExcludeUserIds());
             log.info("userIds.remove(messageDTO.getUserId()) = {} ", userIds);
             List<MessageDO> messageDOList = new ArrayList<>();
+
+            //小书童--即系统消息
+            List<MessageSystemDO> messageSystemDOList = new ArrayList<>();
+            Boolean isSystem = false;
+            if(messageDTO.getType().equals(messageType)){
+                isSystem= true;
+            }
+
             for (Integer userId : userIds){
                 MessageDO messageDB = userIdToMessageDOMap.get(userId);
                 if(messageDB == null){
@@ -103,6 +133,12 @@ public class MessageService implements BeanPropertiesUtil {
                     messageDB.setTitle(messageDTO.getTitle());
                     messageDOList.add(messageDB);
                 }
+                if(isSystem){
+                    MessageSystemDO messageSystemDO = new MessageSystemDO();
+                    copyNonNullProperties(messageDTO, messageSystemDO);
+                    messageSystemDO.setUserId(userId);
+                    messageSystemDOList.add(messageSystemDO);
+                }
             }
             log.info("messageDOList = {} ", messageDOList);
             messageRepository.save(messageDOList);
@@ -114,6 +150,7 @@ public class MessageService implements BeanPropertiesUtil {
                 messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
                 messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
                 messageRecordRepository.save(messageRecordDO);
+                messageSystemRepository.save(messageSystemDOList);
             });
         }
     }
@@ -137,13 +174,26 @@ public class MessageService implements BeanPropertiesUtil {
         return messageList;
     }
 
+    public PageResultVO<MessageSystemDO> findSystemMessagePages(Integer userId, Integer page, Integer pageSize){
+        Pageable pageable = new PageRequest(page + 1, pageSize);
+        Page<MessageSystemDO> messageSystemDOS = messageSystemRepository.findAllByUserIdOrderByCreateDateTimeDesc(userId, pageable);
+
+        PageResultVO<MessageSystemDO> pageResultVO = new PageResultVO<>();
+        pageResultVO.setRows(messageSystemDOS.getContent());
+        pageResultVO.setTotal(messageSystemDOS.getTotalElements());
+
+        return pageResultVO;
+    }
+
     private final MessageRepository messageRepository;
     private final DeskMateGroupService deskMateGroupService;
     private final MessageRecordRepository messageRecordRepository;
+    private final MessageSystemRepository messageSystemRepository;
 
-    public MessageService(MessageRepository messageRepository, DeskMateGroupService deskMateGroupService, MessageRecordRepository messageRecordRepository) {
+    public MessageService(MessageRepository messageRepository, DeskMateGroupService deskMateGroupService, MessageRecordRepository messageRecordRepository, MessageSystemRepository messageSystemRepository) {
         this.messageRepository = messageRepository;
         this.deskMateGroupService = deskMateGroupService;
         this.messageRecordRepository = messageRecordRepository;
+        this.messageSystemRepository = messageSystemRepository;
     }
 }

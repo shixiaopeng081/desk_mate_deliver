@@ -1,13 +1,16 @@
 package com.sunlands.deskmate.web;
 
 
+import com.sunlands.deskmate.domain.MessageSystemDO;
 import com.sunlands.deskmate.service.MessageService;
 import com.sunlands.deskmate.vo.CommonResultMessage;
 import com.sunlands.deskmate.vo.Message;
 import com.sunlands.deskmate.vo.MessageDTO;
 import com.sunlands.deskmate.vo.response.BusinessResult;
+import com.sunlands.deskmate.vo.response.PageResultVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -62,6 +65,15 @@ public class MessageController {
     public BusinessResult<List<Message>> getMessageList(@RequestParam Integer userId) {
         List<Message> messageList = messageService.getMessageList(userId);
         return BusinessResult.createSuccessInstance(messageList);
+    }
+
+    @ApiOperation(value = "根据用户id获取系统历史消息列表--分页")
+    @GetMapping("/message/_system")
+    public BusinessResult<PageResultVO<MessageSystemDO>> getMessageList(@ApiParam(value = "用户id") @RequestParam Integer userId,
+                                                                        @ApiParam(value = "页码") @RequestParam(defaultValue = "1") Integer page,
+                                                                        @ApiParam(value = "页码大小") @RequestParam(defaultValue = "10") Integer pageSize) {
+        PageResultVO<MessageSystemDO> systemMessagePages = messageService.findSystemMessagePages(userId, page, pageSize);
+        return BusinessResult.createSuccessInstance(systemMessagePages);
     }
 
     private String checkData(MessageDTO messageDTO){
