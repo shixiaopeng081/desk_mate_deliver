@@ -24,10 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -179,7 +176,9 @@ public class MessageService implements BeanPropertiesUtil {
         Page<MessageSystemDO> messageSystemDOS = messageSystemRepository.findAllByUserIdOrderByCreateDateTimeDesc(userId, pageable);
 
         PageResultVO<MessageSystemDO> pageResultVO = new PageResultVO<>();
-        pageResultVO.setRows(messageSystemDOS.getContent());
+        List<MessageSystemDO> systemDOList = messageSystemDOS.getContent();
+        Collections.reverse(systemDOList);
+        pageResultVO.setRows(systemDOList);
         pageResultVO.setTotal(messageSystemDOS.getTotalElements());
 
         return pageResultVO;
