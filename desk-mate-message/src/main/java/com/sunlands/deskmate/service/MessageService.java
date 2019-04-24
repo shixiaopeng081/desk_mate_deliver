@@ -176,7 +176,7 @@ public class MessageService implements BeanPropertiesUtil {
         Page<MessageSystemDO> messageSystemDOS = messageSystemRepository.findAllByUserIdOrderByCreateDateTimeDesc(userId, pageable);
 
         PageResultVO<MessageSystemDO> pageResultVO = new PageResultVO<>();
-        List<MessageSystemDO> systemDOList = messageSystemDOS.getContent();
+        List<MessageSystemDO> systemDOList = new ArrayList(messageSystemDOS.getContent());
         Collections.reverse(systemDOList);
         pageResultVO.setRows(systemDOList);
         pageResultVO.setTotal(messageSystemDOS.getTotalElements());
