@@ -175,7 +175,7 @@ public class MessageService implements BeanPropertiesUtil {
     }
 
     public PageResultVO<MessageSystemDO> findSystemMessagePages(Integer userId, Integer page, Integer pageSize){
-        Pageable pageable = new PageRequest(page + 1, pageSize);
+        Pageable pageable = new PageRequest(page - 1, pageSize);
         Page<MessageSystemDO> messageSystemDOS = messageSystemRepository.findAllByUserIdOrderByCreateDateTimeDesc(userId, pageable);
 
         PageResultVO<MessageSystemDO> pageResultVO = new PageResultVO<>();
