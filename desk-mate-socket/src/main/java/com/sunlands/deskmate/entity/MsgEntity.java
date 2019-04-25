@@ -24,7 +24,7 @@ public class MsgEntity {
     @ApiModelProperty(value = "消息创建时间")
     private String createTime;
     @ApiModelProperty(value = "消息内容", required = true)
-    private String messge;
+    private String message;
     @ApiModelProperty(value = "业务id，用来承载业务相关id，如群id、房间id，一般分享、邀请的时候会用到")
     private  String contentId;
     @ApiModelProperty(value = "contentId 的 type")

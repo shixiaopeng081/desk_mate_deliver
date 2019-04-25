@@ -87,7 +87,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             } catch (Exception e){
                 log.error("message format error. message = {}", request, e);
                 msgEntity.setType("9000");
-                msgEntity.setMessge("消息格式异常");
+                msgEntity.setMessage("消息格式异常");
                 ctxMap.get(msgEntity.getFromUserId()).write(msgEntity);
                 return;
             }
@@ -190,7 +190,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     private void doPushInform(MsgEntity msgEntity, List<Integer> offlineUserIds) {
         // 推送通知
         PushInformEntity informEntity = new PushInformEntity();
-        informEntity.setContent(msgEntity.getMessge());
+        informEntity.setContent(msgEntity.getMessage());
         informEntity.setIds(offlineUserIds);
 //        informEntity.setTitle(msgEntity.getTitle());
         log.info("push inform = {} start", informEntity);
@@ -203,7 +203,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         messageEntity.setUserIds(uIds);
         messageEntity.setType(msgEntity.getType());
         messageEntity.setBusinessId(msgEntity.getToId());
-        messageEntity.setContent(msgEntity.getMessge());
+        messageEntity.setContent(msgEntity.getMessage());
         messageEntity.setIsGroupSend(false);
 //        messageEntity.setTitle(msgEntity.getTitle());
         log.info("push message = {} start", messageEntity);
@@ -216,9 +216,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         record.setSenderUserId(msgEntity.getFromUserId() == null ? null : Integer.valueOf(msgEntity.getFromUserId()));
         record.setDestId(msgEntity.getToId() == null ? null : Integer.valueOf(msgEntity.getToId()));
         record.setType(msgEntity.getType() == null ? null : Integer.valueOf(msgEntity.getType()));
-        record.setMessage(msgEntity.getMessge());
+        record.setMessage(msgEntity.getMessage());
 //        record.setTitle(msgEntity.getTitle());
         record.setExtras(JSON.toJSONString(msgEntity.getExtras()));
+        record.setContentId(msgEntity.getContentId() == null ? null : Integer.valueOf(msgEntity.getContentId()));
+        record.setContentType(msgEntity.getContentType() == null ? null : Integer.valueOf(msgEntity.getContentType()));
         messageService.saveChatRecord(record);
         return record.getId();
     }

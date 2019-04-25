@@ -4,13 +4,13 @@
   <resultMap id="BaseResultMap" type="com.sunlands.deskmate.entity.TzChatRecord">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="sender_user_id" jdbcType="INTEGER" property="senderUserId" />
-    <result column="dest_id" jdbcType="VARCHAR" property="destId" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="message" jdbcType="VARCHAR" property="message" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="avatar_url" jdbcType="VARCHAR" property="avatarUrl" />
-    <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="extras" jdbcType="VARCHAR" property="extras" />
+    <result column="dest_id" jdbcType="INTEGER" property="destId" />
+    <result column="content_id" jdbcType="INTEGER" property="contentId" />
+    <result column="content_type" jdbcType="INTEGER" property="contentType" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -71,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, sender_user_id, dest_id, type, message, create_time, avatar_url, title, extras
+    id, sender_user_id, type, message, create_time, extras, dest_id, content_id, content_type
   </sql>
   <select id="selectByExample" parameterType="com.sunlands.deskmate.entity.TzChatRecordExample" resultMap="BaseResultMap">
     select
@@ -118,12 +118,12 @@
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
       SELECT LAST_INSERT_ID()
     </selectKey>
-    insert into tz_chat_record (sender_user_id, dest_id, type, 
-      message, create_time, avatar_url, 
-      title, extras)
-    values (#{senderUserId,jdbcType=INTEGER}, #{destId,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
-      #{message,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{avatarUrl,jdbcType=VARCHAR}, 
-      #{title,jdbcType=VARCHAR}, #{extras,jdbcType=VARCHAR})
+    insert into tz_chat_record (sender_user_id, type, message, 
+      create_time, extras, dest_id, 
+      content_id, content_type)
+    values (#{senderUserId,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{message,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{extras,jdbcType=VARCHAR}, #{destId,jdbcType=INTEGER}, 
+      #{contentId,jdbcType=INTEGER}, #{contentType,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.sunlands.deskmate.entity.TzChatRecord">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
@@ -134,9 +134,6 @@
       <if test="senderUserId != null">
         sender_user_id,
       </if>
-      <if test="destId != null">
-        dest_id,
-      </if>
       <if test="type != null">
         type,
       </if>
@@ -146,22 +143,22 @@
       <if test="createTime != null">
         create_time,
       </if>
-      <if test="avatarUrl != null">
-        avatar_url,
-      </if>
-      <if test="title != null">
-        title,
-      </if>
       <if test="extras != null">
         extras,
+      </if>
+      <if test="destId != null">
+        dest_id,
+      </if>
+      <if test="contentId != null">
+        content_id,
+      </if>
+      <if test="contentType != null">
+        content_type,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="senderUserId != null">
         #{senderUserId,jdbcType=INTEGER},
-      </if>
-      <if test="destId != null">
-        #{destId,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
         #{type,jdbcType=INTEGER},
@@ -172,14 +169,17 @@
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="avatarUrl != null">
-        #{avatarUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="title != null">
-        #{title,jdbcType=VARCHAR},
-      </if>
       <if test="extras != null">
         #{extras,jdbcType=VARCHAR},
+      </if>
+      <if test="destId != null">
+        #{destId,jdbcType=INTEGER},
+      </if>
+      <if test="contentId != null">
+        #{contentId,jdbcType=INTEGER},
+      </if>
+      <if test="contentType != null">
+        #{contentType,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -198,9 +198,6 @@
       <if test="record.senderUserId != null">
         sender_user_id = #{record.senderUserId,jdbcType=INTEGER},
       </if>
-      <if test="record.destId != null">
-        dest_id = #{record.destId,jdbcType=VARCHAR},
-      </if>
       <if test="record.type != null">
         type = #{record.type,jdbcType=INTEGER},
       </if>
@@ -210,14 +207,17 @@
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.avatarUrl != null">
-        avatar_url = #{record.avatarUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="record.title != null">
-        title = #{record.title,jdbcType=VARCHAR},
-      </if>
       <if test="record.extras != null">
         extras = #{record.extras,jdbcType=VARCHAR},
+      </if>
+      <if test="record.destId != null">
+        dest_id = #{record.destId,jdbcType=INTEGER},
+      </if>
+      <if test="record.contentId != null">
+        content_id = #{record.contentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.contentType != null">
+        content_type = #{record.contentType,jdbcType=INTEGER},
       </if>
     </set>
     <if test="_parameter != null">
@@ -228,13 +228,13 @@
     update tz_chat_record
     set id = #{record.id,jdbcType=BIGINT},
       sender_user_id = #{record.senderUserId,jdbcType=INTEGER},
-      dest_id = #{record.destId,jdbcType=VARCHAR},
       type = #{record.type,jdbcType=INTEGER},
       message = #{record.message,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      avatar_url = #{record.avatarUrl,jdbcType=VARCHAR},
-      title = #{record.title,jdbcType=VARCHAR},
-      extras = #{record.extras,jdbcType=VARCHAR}
+      extras = #{record.extras,jdbcType=VARCHAR},
+      dest_id = #{record.destId,jdbcType=INTEGER},
+      content_id = #{record.contentId,jdbcType=INTEGER},
+      content_type = #{record.contentType,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -245,9 +245,6 @@
       <if test="senderUserId != null">
         sender_user_id = #{senderUserId,jdbcType=INTEGER},
       </if>
-      <if test="destId != null">
-        dest_id = #{destId,jdbcType=VARCHAR},
-      </if>
       <if test="type != null">
         type = #{type,jdbcType=INTEGER},
       </if>
@@ -257,14 +254,17 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="avatarUrl != null">
-        avatar_url = #{avatarUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="title != null">
-        title = #{title,jdbcType=VARCHAR},
-      </if>
       <if test="extras != null">
         extras = #{extras,jdbcType=VARCHAR},
+      </if>
+      <if test="destId != null">
+        dest_id = #{destId,jdbcType=INTEGER},
+      </if>
+      <if test="contentId != null">
+        content_id = #{contentId,jdbcType=INTEGER},
+      </if>
+      <if test="contentType != null">
+        content_type = #{contentType,jdbcType=INTEGER},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -272,13 +272,13 @@
   <update id="updateByPrimaryKey" parameterType="com.sunlands.deskmate.entity.TzChatRecord">
     update tz_chat_record
     set sender_user_id = #{senderUserId,jdbcType=INTEGER},
-      dest_id = #{destId,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},
       message = #{message,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      avatar_url = #{avatarUrl,jdbcType=VARCHAR},
-      title = #{title,jdbcType=VARCHAR},
-      extras = #{extras,jdbcType=VARCHAR}
+      extras = #{extras,jdbcType=VARCHAR},
+      dest_id = #{destId,jdbcType=INTEGER},
+      content_id = #{contentId,jdbcType=INTEGER},
+      content_type = #{contentType,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

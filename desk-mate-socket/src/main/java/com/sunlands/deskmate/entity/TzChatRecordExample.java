@@ -445,146 +445,6 @@ public class TzChatRecordExample {
             return (Criteria) this;
         }
 
-        public Criteria andAvatarUrlIsNull() {
-            addCriterion("avatar_url is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlIsNotNull() {
-            addCriterion("avatar_url is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlEqualTo(String value) {
-            addCriterion("avatar_url =", value, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlNotEqualTo(String value) {
-            addCriterion("avatar_url <>", value, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlGreaterThan(String value) {
-            addCriterion("avatar_url >", value, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlGreaterThanOrEqualTo(String value) {
-            addCriterion("avatar_url >=", value, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlLessThan(String value) {
-            addCriterion("avatar_url <", value, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlLessThanOrEqualTo(String value) {
-            addCriterion("avatar_url <=", value, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlLike(String value) {
-            addCriterion("avatar_url like", value, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlNotLike(String value) {
-            addCriterion("avatar_url not like", value, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlIn(List<String> values) {
-            addCriterion("avatar_url in", values, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlNotIn(List<String> values) {
-            addCriterion("avatar_url not in", values, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlBetween(String value1, String value2) {
-            addCriterion("avatar_url between", value1, value2, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andAvatarUrlNotBetween(String value1, String value2) {
-            addCriterion("avatar_url not between", value1, value2, "avatarUrl");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleIsNull() {
-            addCriterion("title is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleIsNotNull() {
-            addCriterion("title is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleEqualTo(String value) {
-            addCriterion("title =", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleNotEqualTo(String value) {
-            addCriterion("title <>", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleGreaterThan(String value) {
-            addCriterion("title >", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleGreaterThanOrEqualTo(String value) {
-            addCriterion("title >=", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleLessThan(String value) {
-            addCriterion("title <", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleLessThanOrEqualTo(String value) {
-            addCriterion("title <=", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleLike(String value) {
-            addCriterion("title like", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleNotLike(String value) {
-            addCriterion("title not like", value, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleIn(List<String> values) {
-            addCriterion("title in", values, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleNotIn(List<String> values) {
-            addCriterion("title not in", values, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleBetween(String value1, String value2) {
-            addCriterion("title between", value1, value2, "title");
-            return (Criteria) this;
-        }
-
-        public Criteria andTitleNotBetween(String value1, String value2) {
-            addCriterion("title not between", value1, value2, "title");
-            return (Criteria) this;
-        }
-
         public Criteria andExtrasIsNull() {
             addCriterion("extras is null");
             return (Criteria) this;
@@ -712,6 +572,126 @@ public class TzChatRecordExample {
 
         public Criteria andDestIdNotBetween(Integer value1, Integer value2) {
             addCriterion("dest_id not between", value1, value2, "destId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdIsNull() {
+            addCriterion("content_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdIsNotNull() {
+            addCriterion("content_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdEqualTo(Integer value) {
+            addCriterion("content_id =", value, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdNotEqualTo(Integer value) {
+            addCriterion("content_id <>", value, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdGreaterThan(Integer value) {
+            addCriterion("content_id >", value, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("content_id >=", value, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdLessThan(Integer value) {
+            addCriterion("content_id <", value, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdLessThanOrEqualTo(Integer value) {
+            addCriterion("content_id <=", value, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdIn(List<Integer> values) {
+            addCriterion("content_id in", values, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdNotIn(List<Integer> values) {
+            addCriterion("content_id not in", values, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdBetween(Integer value1, Integer value2) {
+            addCriterion("content_id between", value1, value2, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("content_id not between", value1, value2, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeIsNull() {
+            addCriterion("content_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeIsNotNull() {
+            addCriterion("content_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeEqualTo(Integer value) {
+            addCriterion("content_type =", value, "contentType");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeNotEqualTo(Integer value) {
+            addCriterion("content_type <>", value, "contentType");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeGreaterThan(Integer value) {
+            addCriterion("content_type >", value, "contentType");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeGreaterThanOrEqualTo(Integer value) {
+            addCriterion("content_type >=", value, "contentType");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeLessThan(Integer value) {
+            addCriterion("content_type <", value, "contentType");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeLessThanOrEqualTo(Integer value) {
+            addCriterion("content_type <=", value, "contentType");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeIn(List<Integer> values) {
+            addCriterion("content_type in", values, "contentType");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeNotIn(List<Integer> values) {
+            addCriterion("content_type not in", values, "contentType");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeBetween(Integer value1, Integer value2) {
+            addCriterion("content_type between", value1, value2, "contentType");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeNotBetween(Integer value1, Integer value2) {
+            addCriterion("content_type not between", value1, value2, "contentType");
             return (Criteria) this;
         }
     }
