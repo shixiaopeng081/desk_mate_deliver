@@ -30,8 +30,8 @@ public class MessageServiceImplTest {
     @Test
     public void test(){
 
-        List<Integer> list = new ArrayList<>();
-        list.add(1);
+        List<Long> list = new ArrayList<>();
+        list.add(1L);
         tzUserCenterService.findByIdIn(list);
 
 

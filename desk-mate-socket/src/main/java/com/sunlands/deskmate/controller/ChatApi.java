@@ -68,14 +68,26 @@ public class ChatApi {
     @Autowired
     private TzUserCenterService tzUserCenterService;
 
-    @ApiOperation(value = "分享内容接口")
-    @PostMapping("/share")
+    @ApiOperation(value = "通过长连接发送内容接口")
+    @PostMapping("/send")
     @PreAuthorize("isAuthenticated()")
-    public BusinessResult share(@RequestBody MsgEntity msgEntity) {
-        if (msgEntity.getBusinessId() == null){
+    public BusinessResult send(@RequestBody MsgEntity msgEntity) {
+        if (msgEntity.getToId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
         webSocketServerHandler.pushMsgToContainer(msgEntity);
+        return BusinessResult.createSuccessInstance(null);
+    }
+
+
+    @ApiOperation(value = "消息变动通知接口")
+    @PostMapping("/inform")
+    @PreAuthorize("isAuthenticated()")
+    public BusinessResult inform(@RequestBody MsgEntity msgEntity) {
+        if (msgEntity.getToId() == null){
+            return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
+        }
+        webSocketServerHandler.inform(msgEntity);
         return BusinessResult.createSuccessInstance(null);
     }
 

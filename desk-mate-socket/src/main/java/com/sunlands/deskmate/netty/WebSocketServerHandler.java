@@ -3,6 +3,7 @@ package com.sunlands.deskmate.netty;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sunlands.deskmate.client.DeskMateGroupService;
+import com.sunlands.deskmate.client.TzLiveVideoService;
 import com.sunlands.deskmate.client.TzPushInformService;
 import com.sunlands.deskmate.client.TzPushMessageService;
 import com.sunlands.deskmate.entity.MsgEntity;
@@ -12,6 +13,7 @@ import com.sunlands.deskmate.entity.TzChatRecord;
 import com.sunlands.deskmate.enums.MessageType;
 import com.sunlands.deskmate.service.MessageService;
 import com.sunlands.deskmate.service.UserService;
+import com.sunlands.deskmate.vo.GroupUserVO;
 import com.sunlands.deskmate.vo.response.BusinessResult;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -60,6 +62,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     @Autowired
     private TzPushMessageService tzPushMessageService;
+    @Autowired
+    private TzLiveVideoService tzLiveVideoService;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -83,13 +87,15 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             } catch (Exception e){
                 log.error("message format error. message = {}", request, e);
                 msgEntity.setType("9000");
-                msgEntity.setContent("消息格式异常");
+                msgEntity.setMessge("消息格式异常");
                 ctxMap.get(msgEntity.getFromUserId()).write(msgEntity);
                 return;
             }
             log.info("recieve msgEntity={}", msgEntity);
-            if (MessageType.ENTER_CONTAINER.getType().equals(msgEntity.getType())){
-                String key = msgEntity.getType() + ":" + msgEntity.getBusinessId();
+            if (MessageType.ENTER_GROUP.getType().equals(msgEntity.getType())
+                    || MessageType.ENTER_ROOM.getType().equals(msgEntity.getType())
+                    || MessageType.ENTER_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
+                String key = generateKey(msgEntity);
                 Set<Integer> set = new HashSet<>();
                 set.add(Integer.valueOf(msgEntity.getFromUserId()));
                 Set<Integer> oldSet = onlineMap.putIfAbsent(key, set);
@@ -104,15 +110,28 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 }
                 return;
             }
-
-            if (MessageType.QUIT_CONTAINER.getType().equals(msgEntity.getType())){
-                String key = msgEntity.getType() + ":" + msgEntity.getBusinessId();
-                onlineMap.remove(key);
+            if (MessageType.QUIT_GROUP.getType().equals(msgEntity.getType())
+                    || MessageType.QUIT_ROOM.getType().equals(msgEntity.getType())
+                    || MessageType.QUIT_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
+                String key = generateKey(msgEntity);
+                onlineMap.get(key).remove(ctx.channel().attr(USER_KEY).get());
                 userIdContainerMap.get(Integer.valueOf(msgEntity.getFromUserId())).remove(key);
                 return;
             }
             dealMsgEntiy(msgEntity);
         }
+    }
+
+    private String generateKey(MsgEntity msgEntity) {
+        String key = "";
+        if (MessageType.PRIVATE_CHAT.getType().equals(msgEntity.getType())
+                || MessageType.SHARE_GROUP_TO_PRIVATE.getType().equals(msgEntity.getType())
+                || MessageType.SHARE_ROOM_TO_PRIVATE.getType().equals(msgEntity.getType())){
+            key = getPrivateChatRoomKey(msgEntity);
+        } else {
+            key = msgEntity.getType().substring(0, 1) + ":" + msgEntity.getToId();
+        }
+        return key;
     }
 
     private void dealMsgEntiy(MsgEntity msgEntity) {
@@ -123,37 +142,57 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     public void pushMsgToContainer(MsgEntity msgEntity){
         Long pId = saveChatRecord(msgEntity);
-        msgEntity.setId(pId);
-        List<Integer> userIdsByBusinessId = new ArrayList<>();
+        msgEntity.setId(pId.toString());
+        List<Integer> userIdsInContainer = new ArrayList<>();
+        String key = "";
         if (MessageType.PRIVATE_CHAT.getType().equals(msgEntity.getType())
-                || MessageType.SHARE_TO_PRIVATE.getType().equals(msgEntity.getType())){
-            userIdsByBusinessId.add(Integer.valueOf(msgEntity.getFromUserId()));
-            userIdsByBusinessId.add(Integer.valueOf(msgEntity.getBusinessId()));
+                || MessageType.SHARE_GROUP_TO_PRIVATE.getType().equals(msgEntity.getType())
+                || MessageType.SHARE_ROOM_TO_PRIVATE.getType().equals(msgEntity.getType())){
+            userIdsInContainer.add(Integer.valueOf(msgEntity.getFromUserId()));
+            userIdsInContainer.add(Integer.valueOf(msgEntity.getToId()));
+            key = getPrivateChatRoomKey(msgEntity);
+
         } else {
-            userIdsByBusinessId = getUserIdsByBussinessId(Integer.valueOf(msgEntity.getBusinessId()), msgEntity.getType());
+            userIdsInContainer = getUserIdsByToId(Integer.valueOf(msgEntity.getToId()), Integer.valueOf(msgEntity.getType()));
+            key = msgEntity.getType().substring(0,1) + ":" + msgEntity.getToId();
         }
-        List<Integer> offlineUserIds = new ArrayList<>();
-        for(Integer userId : userIdsByBusinessId){
+        if (userIdsInContainer == null){
+            return;
+        }
+        Set<Integer> onlineUserIds = onlineMap.get(key);
+        if (onlineUserIds == null){
+            return;
+        }
+        for(Integer userId : onlineUserIds){
             ChannelHandlerContext ctx = ctxMap.get(userId);
             if (ctx != null){
                 ctxMap.get(userId).write(new TextWebSocketFrame(JSON.toJSONString(msgEntity)));
-            } else {
-                offlineUserIds.add(userId);
-            }
-            if (offlineUserIds.size() > 0){
-                // 推送离线消息和通知
-                doPushMessage(msgEntity, offlineUserIds);
-                doPushInform(msgEntity, offlineUserIds);
             }
         }
+        userIdsInContainer.removeAll(onlineUserIds);
+        if (userIdsInContainer.size() > 0){
+            // 推送离线消息和通知
+            doPushMessage(msgEntity, userIdsInContainer);
+            doPushInform(msgEntity, userIdsInContainer);
+        }
+    }
+
+    private String getPrivateChatRoomKey(MsgEntity msgEntity) {
+        String privateChatContainerKey = "";
+        if (Integer.valueOf(msgEntity.getToId()) > Integer.valueOf(msgEntity.getFromUserId())){
+            privateChatContainerKey = msgEntity.getFromUserId() + ":" + msgEntity.getToId();
+        } else {
+            privateChatContainerKey = msgEntity.getToId() + ":" + msgEntity.getFromUserId();
+        }
+        return msgEntity.getType().substring(0,1) + ":" + privateChatContainerKey;
     }
 
     private void doPushInform(MsgEntity msgEntity, List<Integer> offlineUserIds) {
         // 推送通知
         PushInformEntity informEntity = new PushInformEntity();
-        informEntity.setContent(msgEntity.getContent());
+        informEntity.setContent(msgEntity.getMessge());
         informEntity.setIds(offlineUserIds);
-        informEntity.setTitle(msgEntity.getTitle());
+//        informEntity.setTitle(msgEntity.getTitle());
         log.info("push inform = {} start", informEntity);
 //        BusinessResult businessResult = tzPushInformService.pushInform(informEntity);
 //        log.info("push inform end resut={}", businessResult);
@@ -163,10 +202,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         PushMessageEntity messageEntity  = new PushMessageEntity();
         messageEntity.setUserIds(uIds);
         messageEntity.setType(msgEntity.getType());
-        messageEntity.setBusinessId(msgEntity.getBusinessId());
-        messageEntity.setContent(msgEntity.getContent());
+        messageEntity.setBusinessId(msgEntity.getToId());
+        messageEntity.setContent(msgEntity.getMessge());
         messageEntity.setIsGroupSend(false);
-        messageEntity.setTitle(msgEntity.getTitle());
+//        messageEntity.setTitle(msgEntity.getTitle());
         log.info("push message = {} start", messageEntity);
 //        BusinessResult businessResult = tzPushMessageService.pushMessage(messageEntity);
 //        log.info("push message end result={}", businessResult);
@@ -175,10 +214,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     private Long saveChatRecord(MsgEntity msgEntity) {
         TzChatRecord record = new TzChatRecord();
         record.setSenderUserId(msgEntity.getFromUserId() == null ? null : Integer.valueOf(msgEntity.getFromUserId()));
-        record.setDestId(msgEntity.getBusinessId() == null ? null : Integer.valueOf(msgEntity.getBusinessId()));
+        record.setDestId(msgEntity.getToId() == null ? null : Integer.valueOf(msgEntity.getToId()));
         record.setType(msgEntity.getType() == null ? null : Integer.valueOf(msgEntity.getType()));
-        record.setMessage(msgEntity.getContent());
-        record.setTitle(msgEntity.getTitle());
+        record.setMessage(msgEntity.getMessge());
+//        record.setTitle(msgEntity.getTitle());
         record.setExtras(JSON.toJSONString(msgEntity.getExtras()));
         messageService.saveChatRecord(record);
         return record.getId();
@@ -191,17 +230,62 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     }
 
-    private List<Integer> getUserIdsByBussinessId(Integer roomId, String type){
-//        if (MessageType.ROOM_CHAT.getType().equals(type)){
-//            // TODO
-//        } else {
-//            deskMateGroupService.getGroupUserByGroupId(roomId.toString());
-//        }
-        List<Integer> list = new ArrayList<>();
-        list.add(111);
-        list.add(222);
-        // TODO
-        return list;
+    private List<Integer> getUserIdsByToId(Integer toId, Integer type){
+        // TODO 还差道友的情况
+        List<Long> tempRet = null;
+        List<Integer> result = null;
+        if (type.toString().startsWith("2")){ // 群聊相关
+            switch (type){
+                case 204:
+                    tempRet = getUserIdsFromGroup(toId.toString());
+                    break;
+                case 205:
+                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
+                    break;
+                default:
+                    tempRet = getUserIdsFromGroup(toId.toString());
+                    break;
+            }
+        } else { // 室聊相关
+            switch (type) {
+                case 304:
+                    tempRet = getUserIdsFromGroup(toId.toString());
+                    break;
+                case 305:
+                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
+                    break;
+                default:
+                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
+                    break;
+            }
+        }
+        for (Long temp : tempRet){
+            result.add(temp.intValue());
+        }
+        return result;
+//        List<Integer> list = new ArrayList<>();
+//        list.add(111);
+//        list.add(222);
+//        // TODO
+//        return list;
+    }
+
+    private List<Long> getUserIdsFromRoom(Long roomId) {
+        BusinessResult<List<Long>> result = tzLiveVideoService.getUserIdsByRoomId(3, roomId);
+        return result.getData();
+    }
+
+    private List<Long> getUserIdsFromGroup(String groupId){
+        List<Long> retList = new ArrayList<>();
+
+        BusinessResult<List<GroupUserVO>> result = deskMateGroupService.getGroupUserByGroupId(groupId);
+        List<GroupUserVO> list = result.getData();
+        if (list != null){
+            for (GroupUserVO vo : list){
+                retList.add(Long.valueOf(vo.getUserId()));
+            }
+        }
+        return retList;
     }
 
     private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest request) {
@@ -248,7 +332,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         Set<String> containers = userIdContainerMap.get(ctx.channel().attr(USER_KEY).get());
         if (containers != null){
             for (String key : containers){
-                onlineMap.get(key).remove(ctx.channel().attr(USER_KEY).get());
+                if (onlineMap.get(key) != null){
+                    onlineMap.get(key).remove(ctx.channel().attr(USER_KEY).get());
+                }
             }
             userIdContainerMap.remove(ctx.channel().attr(USER_KEY).get());
         }
@@ -277,5 +363,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             removeFromOnlineMap(ctx);
         }
         super.handlerRemoved(ctx);
+    }
+
+    public void inform(MsgEntity msgEntity){
+        ChannelHandlerContext ctx = ctxMap.get(msgEntity.getToId());
+        ctx.write(msgEntity);
     }
 }
