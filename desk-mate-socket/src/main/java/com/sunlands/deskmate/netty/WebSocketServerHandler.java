@@ -231,43 +231,43 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     private List<Integer> getUserIdsByToId(Integer toId, Integer type){
-        // TODO 还差道友的情况
-        List<Long> tempRet = null;
-        List<Integer> result = null;
-        if (type.toString().startsWith("2")){ // 群聊相关
-            switch (type){
-                case 204:
-                    tempRet = getUserIdsFromGroup(toId.toString());
-                    break;
-                case 205:
-                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
-                    break;
-                default:
-                    tempRet = getUserIdsFromGroup(toId.toString());
-                    break;
-            }
-        } else { // 室聊相关
-            switch (type) {
-                case 304:
-                    tempRet = getUserIdsFromGroup(toId.toString());
-                    break;
-                case 305:
-                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
-                    break;
-                default:
-                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
-                    break;
-            }
-        }
-        for (Long temp : tempRet){
-            result.add(temp.intValue());
-        }
-        return result;
-//        List<Integer> list = new ArrayList<>();
-//        list.add(111);
-//        list.add(222);
-//        // TODO
-//        return list;
+//        // TODO 还差道友的情况
+//        List<Long> tempRet = null;
+//        List<Integer> result = null;
+//        if (type.toString().startsWith("2")){ // 群聊相关
+//            switch (type){
+//                case 204:
+//                    tempRet = getUserIdsFromGroup(toId.toString());
+//                    break;
+//                case 205:
+//                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
+//                    break;
+//                default:
+//                    tempRet = getUserIdsFromGroup(toId.toString());
+//                    break;
+//            }
+//        } else { // 室聊相关
+//            switch (type) {
+//                case 304:
+//                    tempRet = getUserIdsFromGroup(toId.toString());
+//                    break;
+//                case 305:
+//                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
+//                    break;
+//                default:
+//                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
+//                    break;
+//            }
+//        }
+//        for (Long temp : tempRet){
+//            result.add(temp.intValue());
+//        }
+//        return result;
+        List<Integer> list = new ArrayList<>();
+        list.add(111);
+        list.add(222);
+        // TODO
+        return list;
     }
 
     private List<Long> getUserIdsFromRoom(Long roomId) {
