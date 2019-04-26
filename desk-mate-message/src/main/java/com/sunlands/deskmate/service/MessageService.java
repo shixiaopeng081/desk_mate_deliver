@@ -79,21 +79,7 @@ public class MessageService implements BeanPropertiesUtil {
 
         messageRepository.save(messageDOList);
         //调用消息通知接口
-        MsgChangeInformEntity msgChangeInformEntity = new MsgChangeInformEntity();
-        msgChangeInformEntity.setType("999");
-        List<String> stringList = userIds.stream().map(userId -> String.valueOf(userId)).collect(Collectors.toList());
-        msgChangeInformEntity.setUserIds(stringList);
-        deskMateSocketService.inform(msgChangeInformEntity);
-
-        CompletableFuture.runAsync(() -> {
-            MessageRecordDO messageRecordDO = new MessageRecordDO();
-            copyNonNullProperties(messageDTO, messageRecordDO);
-            log.info("messageRecordDO = {} ", messageRecordDO);
-            messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
-            messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
-            messageRecordRepository.save(messageRecordDO);
-            messageSystemRepository.save(messageSystemDOList);
-        });
+        noticeAndSave(messageDTO, userIds, messageSystemDOList);
     }
 
     public void createGroup(MessageDTO messageDTO){
@@ -148,24 +134,29 @@ public class MessageService implements BeanPropertiesUtil {
             }
             log.info("messageDOList = {} ", messageDOList);
             messageRepository.save(messageDOList);
+            noticeAndSave(messageDTO, userIds, messageSystemDOList);
 
-            //调用消息通知接口
-            MsgChangeInformEntity msgChangeInformEntity = new MsgChangeInformEntity();
-            msgChangeInformEntity.setType("999");
-            List<String> stringList = userIds.stream().map(userId -> String.valueOf(userId)).collect(Collectors.toList());
-            msgChangeInformEntity.setUserIds(stringList);
-            deskMateSocketService.inform(msgChangeInformEntity);
 
-            CompletableFuture.runAsync(() -> {
-                MessageRecordDO messageRecordDO = new MessageRecordDO();
-                copyNonNullProperties(messageDTO, messageRecordDO);
-                log.info("messageRecordDO = {} ", messageRecordDO);
-                messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
-                messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
-                messageRecordRepository.save(messageRecordDO);
-                messageSystemRepository.save(messageSystemDOList);
-            });
         }
+    }
+
+    private void noticeAndSave(MessageDTO messageDTO, List<Integer> userIds, List<MessageSystemDO> messageSystemDOList) {
+        //调用消息通知接口
+        MsgChangeInformEntity msgChangeInformEntity = new MsgChangeInformEntity();
+        msgChangeInformEntity.setType("999");
+        List<String> stringList = userIds.stream().map(userId -> String.valueOf(userId)).collect(Collectors.toList());
+        msgChangeInformEntity.setUserIds(stringList);
+        deskMateSocketService.inform(msgChangeInformEntity);
+
+        CompletableFuture.runAsync(() -> {
+            MessageRecordDO messageRecordDO = new MessageRecordDO();
+            copyNonNullProperties(messageDTO, messageRecordDO);
+            log.info("messageRecordDO = {} ", messageRecordDO);
+            messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
+            messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
+            messageRecordRepository.save(messageRecordDO);
+            messageSystemRepository.save(messageSystemDOList);
+        });
     }
 
     public List<Message> getMessageList(Integer userId){
