@@ -6,7 +6,7 @@ import com.sunlands.deskmate.client.DeskMateGroupService;
 import com.sunlands.deskmate.client.TzLiveVideoService;
 import com.sunlands.deskmate.client.TzPushInformService;
 import com.sunlands.deskmate.client.TzPushMessageService;
-import com.sunlands.deskmate.dto.MsgChangeInformEntity;
+import com.sunlands.deskmate.vo.MsgChangeInformEntity;
 import com.sunlands.deskmate.entity.MsgEntity;
 import com.sunlands.deskmate.entity.PushInformEntity;
 import com.sunlands.deskmate.entity.PushMessageEntity;
@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 

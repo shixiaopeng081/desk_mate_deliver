@@ -1,4 +1,4 @@
-package com.sunlands.deskmate.dto;
+package com.sunlands.deskmate.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
