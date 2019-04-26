@@ -268,8 +268,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 //        }
 //        return result;
         List<Integer> list = new ArrayList<>();
-        list.add(111);
-        list.add(222);
+        list.add(123);
+        list.add(456);
         // TODO
         return list;
     }
@@ -327,7 +327,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.info("Exception accoured e={}, stack={}", cause.getMessage(), cause.getStackTrace());
         ctxMap.remove(ctx.channel().attr(USER_KEY).get());
-        removeFromOnlineMap(ctx);
+//        removeFromOnlineMap(ctx);
         cause.printStackTrace();
         ctx.close();
     }
@@ -364,7 +364,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 ctx.channel().attr(USER_KEY).get() != null) {
             log.info("handleRemoved userId={}", ctx.channel().attr(USER_KEY).get());
             ctxMap.remove(ctx.channel().attr(USER_KEY).get());
-            removeFromOnlineMap(ctx);
+//            removeFromOnlineMap(ctx);
         }
         super.handlerRemoved(ctx);
     }
