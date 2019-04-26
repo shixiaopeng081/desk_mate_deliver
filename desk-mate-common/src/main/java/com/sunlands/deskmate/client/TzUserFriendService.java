@@ -20,7 +20,7 @@ public interface TzUserFriendService {
      * @param userId
      * @return
      */
-    @GetMapping("/user/friends")
+    @GetMapping("/user/friendsAll")
     BusinessResult<List<TzUserFriendInfo>> friends(@RequestParam(value = "userId") Long userId);
 }
 
