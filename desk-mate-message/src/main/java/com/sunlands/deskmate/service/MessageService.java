@@ -1,9 +1,8 @@
 package com.sunlands.deskmate.service;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sunlands.deskmate.client.DeskMateGroupService;
-import com.sunlands.deskmate.client.TzUserCenterService;
+import com.sunlands.deskmate.client.DeskMateSocketService;
 import com.sunlands.deskmate.domain.MessageDO;
 import com.sunlands.deskmate.domain.MessageRecordDO;
 import com.sunlands.deskmate.domain.MessageSystemDO;
@@ -14,6 +13,7 @@ import com.sunlands.deskmate.util.BeanPropertiesUtil;
 import com.sunlands.deskmate.vo.GroupUserVO;
 import com.sunlands.deskmate.vo.Message;
 import com.sunlands.deskmate.vo.MessageDTO;
+import com.sunlands.deskmate.vo.MsgChangeInformEntity;
 import com.sunlands.deskmate.vo.response.BusinessResult;
 import com.sunlands.deskmate.vo.response.PageResultVO;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +23,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneOffset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -76,15 +78,8 @@ public class MessageService implements BeanPropertiesUtil {
         }
 
         messageRepository.save(messageDOList);
-        CompletableFuture.runAsync(() -> {
-            MessageRecordDO messageRecordDO = new MessageRecordDO();
-            copyNonNullProperties(messageDTO, messageRecordDO);
-            log.info("messageRecordDO = {} ", messageRecordDO);
-            messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
-            messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
-            messageRecordRepository.save(messageRecordDO);
-            messageSystemRepository.save(messageSystemDOList);
-        });
+        //调用消息通知接口
+        noticeAndSave(messageDTO, userIds, messageSystemDOList);
     }
 
     public void createGroup(MessageDTO messageDTO){
@@ -139,17 +134,29 @@ public class MessageService implements BeanPropertiesUtil {
             }
             log.info("messageDOList = {} ", messageDOList);
             messageRepository.save(messageDOList);
+            noticeAndSave(messageDTO, userIds, messageSystemDOList);
 
-            CompletableFuture.runAsync(() -> {
-                MessageRecordDO messageRecordDO = new MessageRecordDO();
-                copyNonNullProperties(messageDTO, messageRecordDO);
-                log.info("messageRecordDO = {} ", messageRecordDO);
-                messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
-                messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
-                messageRecordRepository.save(messageRecordDO);
-                messageSystemRepository.save(messageSystemDOList);
-            });
+
         }
+    }
+
+    private void noticeAndSave(MessageDTO messageDTO, List<Integer> userIds, List<MessageSystemDO> messageSystemDOList) {
+        //调用消息通知接口
+        MsgChangeInformEntity msgChangeInformEntity = new MsgChangeInformEntity();
+        msgChangeInformEntity.setType("999");
+        List<String> stringList = userIds.stream().map(userId -> String.valueOf(userId)).collect(Collectors.toList());
+        msgChangeInformEntity.setUserIds(stringList);
+        deskMateSocketService.inform(msgChangeInformEntity);
+
+        CompletableFuture.runAsync(() -> {
+            MessageRecordDO messageRecordDO = new MessageRecordDO();
+            copyNonNullProperties(messageDTO, messageRecordDO);
+            log.info("messageRecordDO = {} ", messageRecordDO);
+            messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
+            messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
+            messageRecordRepository.save(messageRecordDO);
+            messageSystemRepository.save(messageSystemDOList);
+        });
     }
 
     public List<Message> getMessageList(Integer userId){
@@ -188,11 +195,13 @@ public class MessageService implements BeanPropertiesUtil {
     private final DeskMateGroupService deskMateGroupService;
     private final MessageRecordRepository messageRecordRepository;
     private final MessageSystemRepository messageSystemRepository;
+    private final DeskMateSocketService deskMateSocketService;
 
-    public MessageService(MessageRepository messageRepository, DeskMateGroupService deskMateGroupService, MessageRecordRepository messageRecordRepository, MessageSystemRepository messageSystemRepository) {
+    public MessageService(MessageRepository messageRepository, DeskMateGroupService deskMateGroupService, MessageRecordRepository messageRecordRepository, MessageSystemRepository messageSystemRepository, DeskMateSocketService deskMateSocketService) {
         this.messageRepository = messageRepository;
         this.deskMateGroupService = deskMateGroupService;
         this.messageRecordRepository = messageRecordRepository;
         this.messageSystemRepository = messageSystemRepository;
+        this.deskMateSocketService = deskMateSocketService;
     }
 }

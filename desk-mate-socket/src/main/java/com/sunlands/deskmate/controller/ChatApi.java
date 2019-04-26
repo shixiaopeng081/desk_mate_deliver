@@ -1,7 +1,7 @@
 package com.sunlands.deskmate.controller;
 
 import com.sunlands.deskmate.client.TzUserCenterService;
-import com.sunlands.deskmate.dto.MsgChangeInformEntity;
+import com.sunlands.deskmate.vo.MsgChangeInformEntity;
 import com.sunlands.deskmate.dto.OnLinePeopleRequestDTO;
 import com.sunlands.deskmate.dto.RequestDTO;
 import com.sunlands.deskmate.entity.MsgEntity;
@@ -10,7 +10,6 @@ import com.sunlands.deskmate.enums.MessageType;
 import com.sunlands.deskmate.netty.WebSocketServerHandler;
 import com.sunlands.deskmate.service.MessageService;
 import com.sunlands.deskmate.vo.CommonResultMessage;
-import com.sunlands.deskmate.vo.UsersVO;
 import com.sunlands.deskmate.vo.response.BusinessResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -84,7 +82,7 @@ public class ChatApi {
 
     @ApiOperation(value = "消息变动通知接口")
     @PostMapping("/inform")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAnonymous()")
     public BusinessResult inform(@RequestBody MsgChangeInformEntity msgChangeInformEntity) {
         if (msgChangeInformEntity.getUserIds() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
