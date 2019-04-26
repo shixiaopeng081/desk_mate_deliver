@@ -127,7 +127,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         String key = "";
         if (MessageType.PRIVATE_CHAT.getType().equals(msgEntity.getType())
                 || MessageType.SHARE_GROUP_TO_PRIVATE.getType().equals(msgEntity.getType())
-                || MessageType.SHARE_ROOM_TO_PRIVATE.getType().equals(msgEntity.getType())){
+                || MessageType.SHARE_ROOM_TO_PRIVATE.getType().equals(msgEntity.getType())
+                || MessageType.ENTER_PRIVATE_CHAT.getType().equals(msgEntity.getType())
+                || MessageType.QUIT_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
             key = getPrivateChatRoomKey(msgEntity);
         } else {
             key = msgEntity.getType().substring(0, 1) + ":" + msgEntity.getToId();
