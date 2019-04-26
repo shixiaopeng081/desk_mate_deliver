@@ -6,6 +6,7 @@ import com.sunlands.deskmate.client.DeskMateGroupService;
 import com.sunlands.deskmate.client.TzLiveVideoService;
 import com.sunlands.deskmate.client.TzPushInformService;
 import com.sunlands.deskmate.client.TzPushMessageService;
+import com.sunlands.deskmate.dto.MsgChangeInformEntity;
 import com.sunlands.deskmate.entity.MsgEntity;
 import com.sunlands.deskmate.entity.PushInformEntity;
 import com.sunlands.deskmate.entity.PushMessageEntity;
@@ -367,8 +368,18 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         super.handlerRemoved(ctx);
     }
 
-    public void inform(MsgEntity msgEntity){
-        ChannelHandlerContext ctx = ctxMap.get(msgEntity.getToId());
-        ctx.write(msgEntity);
+    public void inform(MsgChangeInformEntity msgChangeInformEntity){
+        List<String> userIds = msgChangeInformEntity.getUserIds();
+        for (String userId : userIds){
+            try {
+                MsgEntity msgEntity = new MsgEntity();
+                msgEntity.setType(msgEntity.getType());
+                msgEntity.setToId(userId);
+                ChannelHandlerContext ctx = ctxMap.get(Integer.valueOf(userId));
+                ctx.write(msgEntity);
+            } catch (Exception e){
+                log.error("send inform msg error, userId={}", userId, e);
+            }
+        }
     }
 }

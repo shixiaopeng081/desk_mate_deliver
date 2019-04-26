@@ -1,6 +1,7 @@
 package com.sunlands.deskmate.controller;
 
 import com.sunlands.deskmate.client.TzUserCenterService;
+import com.sunlands.deskmate.dto.MsgChangeInformEntity;
 import com.sunlands.deskmate.dto.OnLinePeopleRequestDTO;
 import com.sunlands.deskmate.dto.RequestDTO;
 import com.sunlands.deskmate.entity.MsgEntity;
@@ -14,6 +15,7 @@ import com.sunlands.deskmate.vo.response.BusinessResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +49,7 @@ public class ChatApi {
 
         }
         if (requestDTO.getMaxReadId() == null){
-            requestDTO.setMaxReadId(0L);
+            requestDTO.setMaxReadId("0");
         }
         List<TzChatRecord> tzChatRecords = messageService.queryUnreadRecord(requestDTO);
         return BusinessResult.createSuccessInstance(tzChatRecords);
@@ -58,10 +60,10 @@ public class ChatApi {
     @GetMapping("/userIdsOnline")
     @PreAuthorize("isAuthenticated()")
     public BusinessResult<Set<Integer>> peopleNum(OnLinePeopleRequestDTO requestDTO) {
-        if (requestDTO.getDestId() == null){
+        if (StringUtils.isBlank(requestDTO.getDestId())){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
-        Set<Integer> list = webSocketServerHandler.getOnlineUserIdByRoomId(requestDTO.getDestId(), Integer.valueOf(MessageType.ROOM_CHAT.getType()));
+        Set<Integer> list = webSocketServerHandler.getOnlineUserIdByRoomId(Integer.valueOf(requestDTO.getDestId()), Integer.valueOf(MessageType.ROOM_CHAT.getType()));
         return BusinessResult.createSuccessInstance(list);
     }
 
@@ -83,11 +85,11 @@ public class ChatApi {
     @ApiOperation(value = "消息变动通知接口")
     @PostMapping("/inform")
     @PreAuthorize("isAuthenticated()")
-    public BusinessResult inform(@RequestBody MsgEntity msgEntity) {
-        if (msgEntity.getToId() == null){
+    public BusinessResult inform(@RequestBody MsgChangeInformEntity msgChangeInformEntity) {
+        if (msgChangeInformEntity.getUserIds() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
-        webSocketServerHandler.inform(msgEntity);
+        webSocketServerHandler.inform(msgChangeInformEntity);
         return BusinessResult.createSuccessInstance(null);
     }
 

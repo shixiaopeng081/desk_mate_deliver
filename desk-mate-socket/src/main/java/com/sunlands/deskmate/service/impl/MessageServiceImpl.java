@@ -57,11 +57,11 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<TzChatRecord> queryUnreadRecord(RequestDTO requestDTO) {
         TzChatRecordExample example = new TzChatRecordExample();
-        if (MessageType.PRIVATE_CHAT.getType().equals(requestDTO.getType().toString())){
-            example.createCriteria().andSenderUserIdIn(Arrays.asList(requestDTO.getUserId(), requestDTO.getDestId())).andTypeEqualTo(requestDTO.getType()).andIdGreaterThan(requestDTO.getMaxReadId());
-        } else if (MessageType.GROUP_CHAT.getType().equals(requestDTO.getType().toString())
-                || MessageType.ROOM_CHAT.getType().equals(requestDTO.getType().toString())){
-            example.createCriteria().andDestIdEqualTo(requestDTO.getDestId()).andTypeEqualTo(requestDTO.getType()).andIdGreaterThan(requestDTO.getMaxReadId());
+        if (MessageType.PRIVATE_CHAT.getType().equals(requestDTO.getType())){
+            example.createCriteria().andSenderUserIdIn(Arrays.asList(Integer.valueOf(requestDTO.getUserId()), Integer.valueOf(requestDTO.getDestId()))).andTypeEqualTo(Integer.valueOf(requestDTO.getType())).andIdGreaterThan(Long.valueOf(requestDTO.getMaxReadId()));
+        } else if (MessageType.GROUP_CHAT.getType().equals(requestDTO.getType())
+                || MessageType.ROOM_CHAT.getType().equals(requestDTO.getType())){
+            example.createCriteria().andDestIdEqualTo(Integer.valueOf(requestDTO.getDestId())).andTypeEqualTo(Integer.valueOf(requestDTO.getType())).andIdGreaterThan(Long.valueOf(requestDTO.getMaxReadId()));
         }
         example.setOrderByClause("create_time");
         List<TzChatRecord> tzChatRecords = messageMapper.selectByExample(example);
