@@ -344,19 +344,19 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         }
     }
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        new java.util.Timer().schedule(new TimerTask() {
-
-            @Override
-            public void run() {
-                if (handshaker != null) {
-                    //ctx.channel().write(new TextWebSocketFrame("server:主动给客户端发消息"));
-                    ctx.flush();
-                }
-            }
-        }, 1000, 1000);
-    }
+//    @Override
+//    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+//        new java.util.Timer().schedule(new TimerTask() {
+//
+//            @Override
+//            public void run() {
+//                if (handshaker != null) {
+//                    //ctx.channel().write(new TextWebSocketFrame("server:主动给客户端发消息"));
+//                    ctx.flush();
+//                }
+//            }
+//        }, 1000, 1000);
+//    }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {

@@ -1,6 +1,7 @@
 package com.sunlands.deskmate.controller;
 
 import com.sunlands.deskmate.client.TzUserCenterService;
+import com.sunlands.deskmate.mapper.TzChatRecordMapper;
 import com.sunlands.deskmate.vo.MsgChangeInformEntity;
 import com.sunlands.deskmate.dto.OnLinePeopleRequestDTO;
 import com.sunlands.deskmate.dto.RequestDTO;
@@ -37,16 +38,18 @@ public class ChatApi {
     private MessageService messageService;
     @Autowired
     private WebSocketServerHandler webSocketServerHandler;
+    @Autowired
+    private TzChatRecordMapper tzChatRecordMapper;
 
     @ApiOperation(value = "查询未读聊天信息接口")
     @GetMapping("/unread")
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     public BusinessResult<List<TzChatRecord>> unreadMessage(RequestDTO requestDTO) {
         if (requestDTO.getType() == null || requestDTO.getDestId() == null || requestDTO.getUserId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
 
         }
-        if (requestDTO.getMaxReadId() == null){
+        if (StringUtils.isBlank(requestDTO.getMaxReadId())){
             requestDTO.setMaxReadId("0");
         }
         List<TzChatRecord> tzChatRecords = messageService.queryUnreadRecord(requestDTO);

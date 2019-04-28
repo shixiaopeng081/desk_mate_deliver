@@ -56,15 +56,18 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<TzChatRecord> queryUnreadRecord(RequestDTO requestDTO) {
-        TzChatRecordExample example = new TzChatRecordExample();
+        List<TzChatRecord> tzChatRecords = null;
         if (MessageType.PRIVATE_CHAT.getType().equals(requestDTO.getType())){
-            example.createCriteria().andSenderUserIdIn(Arrays.asList(Integer.valueOf(requestDTO.getUserId()), Integer.valueOf(requestDTO.getDestId()))).andTypeEqualTo(Integer.valueOf(requestDTO.getType())).andIdGreaterThan(Long.valueOf(requestDTO.getMaxReadId()));
+            tzChatRecords = messageMapper.selectPrivateChatRecord(requestDTO);
         } else if (MessageType.GROUP_CHAT.getType().equals(requestDTO.getType())
                 || MessageType.ROOM_CHAT.getType().equals(requestDTO.getType())){
+            TzChatRecordExample example = new TzChatRecordExample();
             example.createCriteria().andDestIdEqualTo(Integer.valueOf(requestDTO.getDestId())).andTypeEqualTo(Integer.valueOf(requestDTO.getType())).andIdGreaterThan(Long.valueOf(requestDTO.getMaxReadId()));
+            example.setOrderByClause("create_time");
+            tzChatRecords = messageMapper.selectByExample(example);
+        } else {
+            return new ArrayList<>();
         }
-        example.setOrderByClause("create_time");
-        List<TzChatRecord> tzChatRecords = messageMapper.selectByExample(example);
         for (TzChatRecord r : tzChatRecords){
            r.setExtrasMap(JSON.parseObject(r.getExtras(), Map.class));
         }

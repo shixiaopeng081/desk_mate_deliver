@@ -269,7 +269,7 @@
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.sunlands.deskmate.entity.TzChatRecord">
+   <update id="updateByPrimaryKey" parameterType="com.sunlands.deskmate.entity.TzChatRecord">
     update tz_chat_record
     set sender_user_id = #{senderUserId,jdbcType=INTEGER},
       type = #{type,jdbcType=INTEGER},
@@ -281,4 +281,16 @@
       content_type = #{contentType,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="selectPrivateChatRecord" parameterType="com.sunlands.deskmate.dto.RequestDTO" resultMap="BaseResultMap">
+    select
+      <include refid="Base_Column_List" />
+    from tz_chat_record
+    where
+      (sender_user_id = #{userId} and dest_id = #{destId} and type = #{type}) and id > #{maxReadId}
+    or
+      (sender_user_id = #{destId} and dest_id = #{userId} and type = #{type}) and id > #{maxReadId}
+
+    order by create_time desc
+  </select>
 </mapper>

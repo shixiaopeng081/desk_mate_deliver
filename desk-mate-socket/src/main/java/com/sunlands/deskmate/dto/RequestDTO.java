@@ -18,7 +18,7 @@ public class RequestDTO {
     private String destId;
     @ApiModelProperty(value = "已读消息最大id值", required = true)
     private String maxReadId;
-    @ApiModelProperty(value = "消息类型（1：私聊 2：群聊 3：房间聊）", required = true)
+    @ApiModelProperty(value = "消息类型（100：私聊 200：群聊 300：房间聊）", required = true)
     private String type;
 
 }

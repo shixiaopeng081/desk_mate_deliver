@@ -1,5 +1,6 @@
 package com.sunlands.deskmate.mapper;
 
+import com.sunlands.deskmate.dto.RequestDTO;
 import com.sunlands.deskmate.entity.TzChatRecord;
 import com.sunlands.deskmate.entity.TzChatRecordExample;
 import java.util.List;
@@ -30,4 +31,6 @@ public interface TzChatRecordMapper {
     int updateByPrimaryKeySelective(TzChatRecord record);
 
     int updateByPrimaryKey(TzChatRecord record);
+
+    List<TzChatRecord> selectPrivateChatRecord(RequestDTO requestDTO);
 }
