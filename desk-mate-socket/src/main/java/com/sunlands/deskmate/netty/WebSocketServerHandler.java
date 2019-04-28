@@ -143,6 +143,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     public void pushMsgToContainer(MsgEntity msgEntity){
+        log.info("msgEntity = {}", msgEntity);
         Long pId = saveChatRecord(msgEntity);
         msgEntity.setId(pId.toString());
         List<Integer> userIdsInContainer = new ArrayList<>();
@@ -162,6 +163,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             return;
         }
         Set<Integer> onlineUserIds = onlineMap.get(key);
+        log.info("onlineUserIds = {}", onlineUserIds);
         if (onlineUserIds == null){
             return;
         }
