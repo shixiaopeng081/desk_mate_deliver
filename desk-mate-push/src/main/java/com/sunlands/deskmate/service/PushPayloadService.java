@@ -70,7 +70,9 @@ public class PushPayloadService implements BeanPropertiesUtil{
             for (String roomId : pushDTO.getIds()){
                 BusinessResult<List<Long>> roomUserByRoomId = tzLiveVideoService.getUserIdsByRoomId(0, Long.parseLong(roomId));
                 log.info("roomUserByRoomId.getData() = {} ", roomUserByRoomId.getData());
-                userIds.addAll(roomUserByRoomId.getData());
+                if(roomUserByRoomId.getData() != null){
+                    userIds.addAll(roomUserByRoomId.getData());
+                }
             }
         }
         userIds.removeAll(pushDTO.getExcludeUserIds());
