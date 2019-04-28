@@ -81,7 +81,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
         log.info("businessResult = {}", businessResult);
         List<UsersVO> resultData = (List<UsersVO>) businessResult.getData();
         log.info("List<UsersVO> = {}", resultData);
-        List<String> regIds = resultData.stream().map(usersVO -> usersVO.getDeviceId()).collect(Collectors.toList());
+        List<String> regIds = resultData.stream().filter(usersVO -> usersVO.getDeviceId() != null).map(usersVO -> usersVO.getDeviceId()).collect(Collectors.toList());
 
         JPushClient jPushClient = new JPushClient(MASTER_SECRET, APP_KEY);
         PushPayload pushPayload = buildPushObject_android_and_ios(pushDTO, regIds);
