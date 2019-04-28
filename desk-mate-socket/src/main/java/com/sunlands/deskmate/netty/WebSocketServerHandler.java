@@ -144,6 +144,34 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     public void pushMsgToContainer(MsgEntity msgEntity){
         log.info("msgEntity = {}", msgEntity);
+        if (MessageType.ENTER_GROUP.getType().equals(msgEntity.getType())
+                || MessageType.ENTER_ROOM.getType().equals(msgEntity.getType())
+                || MessageType.ENTER_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
+            String key = generateKey(msgEntity);
+            Set<Integer> set = new HashSet<>();
+            set.add(Integer.valueOf(msgEntity.getFromUserId()));
+            Set<Integer> oldSet = onlineMap.putIfAbsent(key, set);
+            if (oldSet != null){
+                oldSet.add(Integer.valueOf(msgEntity.getFromUserId()));
+            }
+            Set<String> set2 = new HashSet<>();
+            set2.add(key);
+            Set<String> oldSet2 = userIdContainerMap.putIfAbsent(Integer.valueOf(msgEntity.getFromUserId()), set2);
+            if (oldSet2 != null){
+                oldSet2.add(key);
+            }
+            return;
+        }
+        if (MessageType.QUIT_GROUP.getType().equals(msgEntity.getType())
+                || MessageType.QUIT_ROOM.getType().equals(msgEntity.getType())
+                || MessageType.QUIT_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
+            String key = generateKey(msgEntity);
+            onlineMap.get(key).remove(msgEntity.getFromUserId());
+            userIdContainerMap.get(Integer.valueOf(msgEntity.getFromUserId())).remove(key);
+            return;
+        }
+
+
         Long pId = saveChatRecord(msgEntity);
         msgEntity.setId(pId.toString());
         List<Integer> userIdsInContainer = new ArrayList<>();
