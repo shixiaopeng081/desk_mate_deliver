@@ -11,6 +11,7 @@ import com.sunlands.deskmate.enums.MessageType;
 import com.sunlands.deskmate.netty.WebSocketServerHandler;
 import com.sunlands.deskmate.service.MessageService;
 import com.sunlands.deskmate.vo.CommonResultMessage;
+import com.sunlands.deskmate.vo.TzChatRecordVO;
 import com.sunlands.deskmate.vo.response.BusinessResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,7 +45,7 @@ public class ChatApi {
     @ApiOperation(value = "查询未读聊天信息接口")
     @GetMapping("/unread")
 //    @PreAuthorize("isAuthenticated()")
-    public BusinessResult<List<TzChatRecord>> unreadMessage(RequestDTO requestDTO) {
+    public BusinessResult<List<TzChatRecordVO>> unreadMessage(RequestDTO requestDTO) {
         if (requestDTO.getType() == null || requestDTO.getDestId() == null || requestDTO.getUserId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
 
@@ -52,7 +53,7 @@ public class ChatApi {
         if (StringUtils.isBlank(requestDTO.getMaxReadId())){
             requestDTO.setMaxReadId("0");
         }
-        List<TzChatRecord> tzChatRecords = messageService.queryUnreadRecord(requestDTO);
+        List<TzChatRecordVO> tzChatRecords = messageService.queryUnreadRecord(requestDTO);
         return BusinessResult.createSuccessInstance(tzChatRecords);
     }
 

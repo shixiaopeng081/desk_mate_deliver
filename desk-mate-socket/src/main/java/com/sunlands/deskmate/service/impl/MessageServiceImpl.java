@@ -8,6 +8,7 @@ import com.sunlands.deskmate.enums.MessageType;
 import com.sunlands.deskmate.mapper.TzChatRecordMapper;
 import com.sunlands.deskmate.netty.WebSocketServerHandler;
 import com.sunlands.deskmate.service.MessageService;
+import com.sunlands.deskmate.vo.TzChatRecordVO;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class MessageServiceImpl implements MessageService {
     
     @Override
     public String sendMessage(TzChatRecord message) {
-        log.info("【"+ message.getSenderUserId() + ": " + message.getMessage()+"】");
+        log.info("【"+ message.getFromUserId() + ": " + message.getMessage()+"】");
         String str = null;
         try {
             str = JSON.toJSONString(message);
@@ -55,23 +56,34 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<TzChatRecord> queryUnreadRecord(RequestDTO requestDTO) {
+    public List<TzChatRecordVO> queryUnreadRecord(RequestDTO requestDTO) {
         List<TzChatRecord> tzChatRecords = null;
+        List<TzChatRecordVO> result = new ArrayList<>();
         if (MessageType.PRIVATE_CHAT.getType().equals(requestDTO.getType())){
             tzChatRecords = messageMapper.selectPrivateChatRecord(requestDTO);
         } else if (MessageType.GROUP_CHAT.getType().equals(requestDTO.getType())
                 || MessageType.ROOM_CHAT.getType().equals(requestDTO.getType())){
             TzChatRecordExample example = new TzChatRecordExample();
-            example.createCriteria().andDestIdEqualTo(Integer.valueOf(requestDTO.getDestId())).andTypeEqualTo(Integer.valueOf(requestDTO.getType())).andIdGreaterThan(Long.valueOf(requestDTO.getMaxReadId()));
+            example.createCriteria().andToIdEqualTo(Integer.valueOf(requestDTO.getDestId())).andTypeEqualTo(Integer.valueOf(requestDTO.getType())).andIdGreaterThan(Long.valueOf(requestDTO.getMaxReadId()));
             example.setOrderByClause("create_time");
             tzChatRecords = messageMapper.selectByExample(example);
         } else {
             return new ArrayList<>();
         }
         for (TzChatRecord r : tzChatRecords){
-           r.setExtrasMap(JSON.parseObject(r.getExtras(), Map.class));
+            TzChatRecordVO vo = new TzChatRecordVO();
+            vo.setId(r.getId());
+            vo.setContentId(r.getContentId());
+            vo.setContentType(r.getContentType());
+            vo.setCreateTime(r.getCreateTime());
+            vo.setToId(r.getToId());
+            vo.setType(r.getType());
+            vo.setExtras(JSON.parseObject(r.getExtras(), Map.class));
+            vo.setFromUserId(r.getFromUserId());
+            vo.setMessage(r.getMessage());
+            result.add(vo);
         }
-        return tzChatRecords;
+        return result;
     }
 
     @Override

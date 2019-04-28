@@ -195,63 +195,63 @@ public class TzChatRecordExample {
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdIsNull() {
-            addCriterion("sender_user_id is null");
+        public Criteria andFromUserIdIsNull() {
+            addCriterion("from_user_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdIsNotNull() {
-            addCriterion("sender_user_id is not null");
+        public Criteria andFromUserIdIsNotNull() {
+            addCriterion("from_user_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdEqualTo(Integer value) {
-            addCriterion("sender_user_id =", value, "senderUserId");
+        public Criteria andFromUserIdEqualTo(Integer value) {
+            addCriterion("from_user_id =", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdNotEqualTo(Integer value) {
-            addCriterion("sender_user_id <>", value, "senderUserId");
+        public Criteria andFromUserIdNotEqualTo(Integer value) {
+            addCriterion("from_user_id <>", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdGreaterThan(Integer value) {
-            addCriterion("sender_user_id >", value, "senderUserId");
+        public Criteria andFromUserIdGreaterThan(Integer value) {
+            addCriterion("from_user_id >", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdGreaterThanOrEqualTo(Integer value) {
-            addCriterion("sender_user_id >=", value, "senderUserId");
+        public Criteria andFromUserIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("from_user_id >=", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdLessThan(Integer value) {
-            addCriterion("sender_user_id <", value, "senderUserId");
+        public Criteria andFromUserIdLessThan(Integer value) {
+            addCriterion("from_user_id <", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdLessThanOrEqualTo(Integer value) {
-            addCriterion("sender_user_id <=", value, "senderUserId");
+        public Criteria andFromUserIdLessThanOrEqualTo(Integer value) {
+            addCriterion("from_user_id <=", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdIn(List<Integer> values) {
-            addCriterion("sender_user_id in", values, "senderUserId");
+        public Criteria andFromUserIdIn(List<Integer> values) {
+            addCriterion("from_user_id in", values, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdNotIn(List<Integer> values) {
-            addCriterion("sender_user_id not in", values, "senderUserId");
+        public Criteria andFromUserIdNotIn(List<Integer> values) {
+            addCriterion("from_user_id not in", values, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdBetween(Integer value1, Integer value2) {
-            addCriterion("sender_user_id between", value1, value2, "senderUserId");
+        public Criteria andFromUserIdBetween(Integer value1, Integer value2) {
+            addCriterion("from_user_id between", value1, value2, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andSenderUserIdNotBetween(Integer value1, Integer value2) {
-            addCriterion("sender_user_id not between", value1, value2, "senderUserId");
+        public Criteria andFromUserIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("from_user_id not between", value1, value2, "fromUserId");
             return (Criteria) this;
         }
 
@@ -515,63 +515,63 @@ public class TzChatRecordExample {
             return (Criteria) this;
         }
 
-        public Criteria andDestIdIsNull() {
-            addCriterion("dest_id is null");
+        public Criteria andToIdIsNull() {
+            addCriterion("to_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andDestIdIsNotNull() {
-            addCriterion("dest_id is not null");
+        public Criteria andToIdIsNotNull() {
+            addCriterion("to_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andDestIdEqualTo(Integer value) {
-            addCriterion("dest_id =", value, "destId");
+        public Criteria andToIdEqualTo(Integer value) {
+            addCriterion("to_id =", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andDestIdNotEqualTo(Integer value) {
-            addCriterion("dest_id <>", value, "destId");
+        public Criteria andToIdNotEqualTo(Integer value) {
+            addCriterion("to_id <>", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andDestIdGreaterThan(Integer value) {
-            addCriterion("dest_id >", value, "destId");
+        public Criteria andToIdGreaterThan(Integer value) {
+            addCriterion("to_id >", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andDestIdGreaterThanOrEqualTo(Integer value) {
-            addCriterion("dest_id >=", value, "destId");
+        public Criteria andToIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("to_id >=", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andDestIdLessThan(Integer value) {
-            addCriterion("dest_id <", value, "destId");
+        public Criteria andToIdLessThan(Integer value) {
+            addCriterion("to_id <", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andDestIdLessThanOrEqualTo(Integer value) {
-            addCriterion("dest_id <=", value, "destId");
+        public Criteria andToIdLessThanOrEqualTo(Integer value) {
+            addCriterion("to_id <=", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andDestIdIn(List<Integer> values) {
-            addCriterion("dest_id in", values, "destId");
+        public Criteria andToIdIn(List<Integer> values) {
+            addCriterion("to_id in", values, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andDestIdNotIn(List<Integer> values) {
-            addCriterion("dest_id not in", values, "destId");
+        public Criteria andToIdNotIn(List<Integer> values) {
+            addCriterion("to_id not in", values, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andDestIdBetween(Integer value1, Integer value2) {
-            addCriterion("dest_id between", value1, value2, "destId");
+        public Criteria andToIdBetween(Integer value1, Integer value2) {
+            addCriterion("to_id between", value1, value2, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andDestIdNotBetween(Integer value1, Integer value2) {
-            addCriterion("dest_id not between", value1, value2, "destId");
+        public Criteria andToIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("to_id not between", value1, value2, "toId");
             return (Criteria) this;
         }
 

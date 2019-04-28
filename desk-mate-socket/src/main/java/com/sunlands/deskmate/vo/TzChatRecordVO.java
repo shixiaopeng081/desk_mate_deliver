@@ -1,4 +1,4 @@
-package com.sunlands.deskmate.entity;
+package com.sunlands.deskmate.vo;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @author 
  */
-public class TzChatRecord implements Serializable {
+public class TzChatRecordVO implements Serializable {
     /**
      * 主键
      */
@@ -36,7 +36,7 @@ public class TzChatRecord implements Serializable {
     /**
      * 额外数据
      */
-    private String extras;
+    private Map<String, String> extras;
 
     /**
      * 发送到哪
@@ -50,12 +50,10 @@ public class TzChatRecord implements Serializable {
 
     /**
      * contentId 的 type
-contentId 的 type
      */
     private Integer contentType;
 
     private static final long serialVersionUID = 1L;
-
 
     public Long getId() {
         return id;
@@ -97,11 +95,11 @@ contentId 的 type
         this.createTime = createTime;
     }
 
-    public String getExtras() {
+    public Map<String, String> getExtras() {
         return extras;
     }
 
-    public void setExtras(String extras) {
+    public void setExtras(Map<String, String> extras) {
         this.extras = extras;
     }
 
@@ -140,7 +138,7 @@ contentId 的 type
         if (getClass() != that.getClass()) {
             return false;
         }
-        TzChatRecord other = (TzChatRecord) that;
+        TzChatRecordVO other = (TzChatRecordVO) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.getFromUserId() == null ? other.getFromUserId() == null : this.getFromUserId().equals(other.getFromUserId()))
             && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))

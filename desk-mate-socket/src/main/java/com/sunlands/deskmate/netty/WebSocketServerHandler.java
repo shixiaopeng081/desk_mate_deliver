@@ -215,8 +215,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     private Long saveChatRecord(MsgEntity msgEntity) {
         TzChatRecord record = new TzChatRecord();
-        record.setSenderUserId(msgEntity.getFromUserId() == null ? null : Integer.valueOf(msgEntity.getFromUserId()));
-        record.setDestId(msgEntity.getToId() == null ? null : Integer.valueOf(msgEntity.getToId()));
+        record.setFromUserId(msgEntity.getFromUserId() == null ? null : Integer.valueOf(msgEntity.getFromUserId()));
+        record.setToId(msgEntity.getToId() == null ? null : Integer.valueOf(msgEntity.getToId()));
         record.setType(msgEntity.getType() == null ? null : Integer.valueOf(msgEntity.getType()));
         record.setMessage(msgEntity.getMessage());
 //        record.setTitle(msgEntity.getTitle());
