@@ -256,8 +256,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     private List<Integer> getUserIdsByToId(Integer userId, Integer toId, Integer type){
-        List<Long> tempRet = null;
-        List<Integer> result = null;
+        List<Long> tempRet = new ArrayList<>();
+        List<Integer> result = new ArrayList<>();
         if (type.toString().startsWith("2")){ // 群聊相关
             switch (type){
                 case 205:
