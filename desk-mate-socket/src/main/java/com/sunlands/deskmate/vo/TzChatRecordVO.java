@@ -1,5 +1,8 @@
 package com.sunlands.deskmate.vo;
 
+import lombok.Data;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
@@ -7,21 +10,23 @@ import java.util.Map;
 /**
  * @author 
  */
+@Data
+@ToString
 public class TzChatRecordVO implements Serializable {
     /**
      * 主键
      */
-    private Long id;
+    private String id;
 
     /**
      * 发送者用户ID
      */
-    private Integer fromUserId;
+    private String fromUserId;
 
     /**
      * 消息类型1：普通聊天 2：分享的卡片
      */
-    private Integer type;
+    private String type;
 
     /**
      * 消息内容
@@ -41,41 +46,41 @@ public class TzChatRecordVO implements Serializable {
     /**
      * 发送到哪
      */
-    private Integer toId;
+    private String toId;
 
     /**
      * 业务id，用来承载业务相关id，如群id、房间id，一般分享、邀请的时候会用到
      */
-    private Integer contentId;
+    private String contentId;
 
     /**
      * contentId 的 type
      */
-    private Integer contentType;
+    private String contentType;
 
     private static final long serialVersionUID = 1L;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Integer getFromUserId() {
+    public String getFromUserId() {
         return fromUserId;
     }
 
-    public void setFromUserId(Integer fromUserId) {
+    public void setFromUserId(String fromUserId) {
         this.fromUserId = fromUserId;
     }
 
-    public Integer getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -103,86 +108,29 @@ public class TzChatRecordVO implements Serializable {
         this.extras = extras;
     }
 
-    public Integer getToId() {
+    public String getToId() {
         return toId;
     }
 
-    public void setToId(Integer toId) {
+    public void setToId(String toId) {
         this.toId = toId;
     }
 
-    public Integer getContentId() {
+    public String getContentId() {
         return contentId;
     }
 
-    public void setContentId(Integer contentId) {
+    public void setContentId(String contentId) {
         this.contentId = contentId;
     }
 
-    public Integer getContentType() {
+    public String getContentType() {
         return contentType;
     }
 
-    public void setContentType(Integer contentType) {
+    public void setContentType(String contentType) {
         this.contentType = contentType;
     }
 
-    @Override
-    public boolean equals(Object that) {
-        if (this == that) {
-            return true;
-        }
-        if (that == null) {
-            return false;
-        }
-        if (getClass() != that.getClass()) {
-            return false;
-        }
-        TzChatRecordVO other = (TzChatRecordVO) that;
-        return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getFromUserId() == null ? other.getFromUserId() == null : this.getFromUserId().equals(other.getFromUserId()))
-            && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
-            && (this.getMessage() == null ? other.getMessage() == null : this.getMessage().equals(other.getMessage()))
-            && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
-            && (this.getExtras() == null ? other.getExtras() == null : this.getExtras().equals(other.getExtras()))
-            && (this.getToId() == null ? other.getToId() == null : this.getToId().equals(other.getToId()))
-            && (this.getContentId() == null ? other.getContentId() == null : this.getContentId().equals(other.getContentId()))
-            && (this.getContentType() == null ? other.getContentType() == null : this.getContentType().equals(other.getContentType()));
-    }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-        result = prime * result + ((getFromUserId() == null) ? 0 : getFromUserId().hashCode());
-        result = prime * result + ((getType() == null) ? 0 : getType().hashCode());
-        result = prime * result + ((getMessage() == null) ? 0 : getMessage().hashCode());
-        result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
-        result = prime * result + ((getExtras() == null) ? 0 : getExtras().hashCode());
-        result = prime * result + ((getToId() == null) ? 0 : getToId().hashCode());
-        result = prime * result + ((getContentId() == null) ? 0 : getContentId().hashCode());
-        result = prime * result + ((getContentType() == null) ? 0 : getContentType().hashCode());
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", fromUserId=").append(fromUserId);
-        sb.append(", type=").append(type);
-        sb.append(", message=").append(message);
-        sb.append(", createTime=").append(createTime);
-        sb.append(", extras=").append(extras);
-        sb.append(", toId=").append(toId);
-        sb.append(", contentId=").append(contentId);
-        sb.append(", contentType=").append(contentType);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
-    }
 }

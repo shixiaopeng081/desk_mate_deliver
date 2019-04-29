@@ -72,14 +72,14 @@ public class MessageServiceImpl implements MessageService {
         }
         for (TzChatRecord r : tzChatRecords){
             TzChatRecordVO vo = new TzChatRecordVO();
-            vo.setId(r.getId());
-            vo.setContentId(r.getContentId());
-            vo.setContentType(r.getContentType());
+            vo.setId(r.getId() == null ? "" : r.getId().toString());
+            vo.setContentId(r.getContentId() == null ? "" : r.getContentId().toString());
+            vo.setContentType(r.getContentType() == null ? "" : r.getContentType().toString());
             vo.setCreateTime(r.getCreateTime());
-            vo.setToId(r.getToId());
-            vo.setType(r.getType());
+            vo.setToId(r.getToId() == null ? "" : r.getToId().toString());
+            vo.setType(r.getType() == null ? "" : r.getType().toString());
             vo.setExtras(JSON.parseObject(r.getExtras(), Map.class));
-            vo.setFromUserId(r.getFromUserId());
+            vo.setFromUserId(r.getFromUserId() == null ? "" : r.getFromUserId().toString());
             vo.setMessage(r.getMessage());
             result.add(vo);
         }

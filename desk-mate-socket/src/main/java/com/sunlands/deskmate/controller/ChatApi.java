@@ -1,8 +1,11 @@
 package com.sunlands.deskmate.controller;
 
+import com.sunlands.deskmate.client.DeskMateGroupService;
+import com.sunlands.deskmate.client.TzLiveVideoService;
 import com.sunlands.deskmate.client.TzUserCenterService;
+import com.sunlands.deskmate.client.TzUserFriendService;
 import com.sunlands.deskmate.mapper.TzChatRecordMapper;
-import com.sunlands.deskmate.vo.MsgChangeInformEntity;
+import com.sunlands.deskmate.vo.*;
 import com.sunlands.deskmate.dto.OnLinePeopleRequestDTO;
 import com.sunlands.deskmate.dto.RequestDTO;
 import com.sunlands.deskmate.entity.MsgEntity;
@@ -10,8 +13,6 @@ import com.sunlands.deskmate.entity.TzChatRecord;
 import com.sunlands.deskmate.enums.MessageType;
 import com.sunlands.deskmate.netty.WebSocketServerHandler;
 import com.sunlands.deskmate.service.MessageService;
-import com.sunlands.deskmate.vo.CommonResultMessage;
-import com.sunlands.deskmate.vo.TzChatRecordVO;
 import com.sunlands.deskmate.vo.response.BusinessResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,6 +42,8 @@ public class ChatApi {
     private WebSocketServerHandler webSocketServerHandler;
     @Autowired
     private TzChatRecordMapper tzChatRecordMapper;
+    @Autowired
+    private TzLiveVideoService tzLiveVideoService;
 
     @ApiOperation(value = "查询未读聊天信息接口")
     @GetMapping("/unread")
@@ -82,7 +85,10 @@ public class ChatApi {
         webSocketServerHandler.pushMsgToContainer(msgEntity);
         return BusinessResult.createSuccessInstance(null);
     }
-
+    @Autowired
+    private TzUserFriendService tzUserFriendService;
+    @Autowired
+    private DeskMateGroupService deskMateGroupService;
 
     @ApiOperation(value = "消息变动通知接口")
     @PostMapping("/inform")

@@ -2,10 +2,7 @@ package com.sunlands.deskmate.netty;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.sunlands.deskmate.client.DeskMateGroupService;
-import com.sunlands.deskmate.client.TzLiveVideoService;
-import com.sunlands.deskmate.client.TzPushInformService;
-import com.sunlands.deskmate.client.TzPushMessageService;
+import com.sunlands.deskmate.client.*;
 import com.sunlands.deskmate.vo.MsgChangeInformEntity;
 import com.sunlands.deskmate.entity.MsgEntity;
 import com.sunlands.deskmate.entity.PushInformEntity;
@@ -15,6 +12,7 @@ import com.sunlands.deskmate.enums.MessageType;
 import com.sunlands.deskmate.service.MessageService;
 import com.sunlands.deskmate.service.UserService;
 import com.sunlands.deskmate.vo.GroupUserVO;
+import com.sunlands.deskmate.vo.TzUserFriendInfo;
 import com.sunlands.deskmate.vo.response.BusinessResult;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -42,13 +40,14 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     @Autowired
     private MessageService messageService;
-    @Autowired
-    private UserService userService;
 
     private WebSocketServerHandshaker handshaker;
 
     @Autowired
     private DeskMateGroupService deskMateGroupService;
+
+    @Autowired
+    private TzUserFriendService tzUserFriendService;
 
     private static final AttributeKey<Integer> USER_KEY = AttributeKey.newInstance("USER_KEY");
 
@@ -57,11 +56,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     // 用户与所在群或room对应关系
     private static final ConcurrentHashMap<Integer, Set<String>> userIdContainerMap = new ConcurrentHashMap<>();
-    @Autowired
-    private TzPushInformService tzPushInformService;
 
-    @Autowired
-    private TzPushMessageService tzPushMessageService;
     @Autowired
     private TzLiveVideoService tzLiveVideoService;
 
@@ -144,32 +139,32 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     public void pushMsgToContainer(MsgEntity msgEntity){
         log.info("msgEntity = {}", msgEntity);
-        if (MessageType.ENTER_GROUP.getType().equals(msgEntity.getType())
-                || MessageType.ENTER_ROOM.getType().equals(msgEntity.getType())
-                || MessageType.ENTER_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
-            String key = generateKey(msgEntity);
-            Set<Integer> set = new HashSet<>();
-            set.add(Integer.valueOf(msgEntity.getFromUserId()));
-            Set<Integer> oldSet = onlineMap.putIfAbsent(key, set);
-            if (oldSet != null){
-                oldSet.add(Integer.valueOf(msgEntity.getFromUserId()));
-            }
-            Set<String> set2 = new HashSet<>();
-            set2.add(key);
-            Set<String> oldSet2 = userIdContainerMap.putIfAbsent(Integer.valueOf(msgEntity.getFromUserId()), set2);
-            if (oldSet2 != null){
-                oldSet2.add(key);
-            }
-            return;
-        }
-        if (MessageType.QUIT_GROUP.getType().equals(msgEntity.getType())
-                || MessageType.QUIT_ROOM.getType().equals(msgEntity.getType())
-                || MessageType.QUIT_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
-            String key = generateKey(msgEntity);
-            onlineMap.get(key).remove(msgEntity.getFromUserId());
-            userIdContainerMap.get(Integer.valueOf(msgEntity.getFromUserId())).remove(key);
-            return;
-        }
+//        if (MessageType.ENTER_GROUP.getType().equals(msgEntity.getType())
+//                || MessageType.ENTER_ROOM.getType().equals(msgEntity.getType())
+//                || MessageType.ENTER_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
+//            String key = generateKey(msgEntity);
+//            Set<Integer> set = new HashSet<>();
+//            set.add(Integer.valueOf(msgEntity.getFromUserId()));
+//            Set<Integer> oldSet = onlineMap.putIfAbsent(key, set);
+//            if (oldSet != null){
+//                oldSet.add(Integer.valueOf(msgEntity.getFromUserId()));
+//            }
+//            Set<String> set2 = new HashSet<>();
+//            set2.add(key);
+//            Set<String> oldSet2 = userIdContainerMap.putIfAbsent(Integer.valueOf(msgEntity.getFromUserId()), set2);
+//            if (oldSet2 != null){
+//                oldSet2.add(key);
+//            }
+//            return;
+//        }
+//        if (MessageType.QUIT_GROUP.getType().equals(msgEntity.getType())
+//                || MessageType.QUIT_ROOM.getType().equals(msgEntity.getType())
+//                || MessageType.QUIT_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
+//            String key = generateKey(msgEntity);
+//            onlineMap.get(key).remove(msgEntity.getFromUserId());
+//            userIdContainerMap.get(Integer.valueOf(msgEntity.getFromUserId())).remove(key);
+//            return;
+//        }
 
 
         Long pId = saveChatRecord(msgEntity);
@@ -184,7 +179,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             key = getPrivateChatRoomKey(msgEntity);
 
         } else {
-            userIdsInContainer = getUserIdsByToId(Integer.valueOf(msgEntity.getToId()), Integer.valueOf(msgEntity.getType()));
+            userIdsInContainer = getUserIdsByToId(Integer.valueOf(msgEntity.getFromUserId()), Integer.valueOf(msgEntity.getToId()), Integer.valueOf(msgEntity.getType()));
             key = msgEntity.getType().substring(0,1) + ":" + msgEntity.getToId();
         }
         if (userIdsInContainer == null){
@@ -224,7 +219,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         PushInformEntity informEntity = new PushInformEntity();
         informEntity.setContent(msgEntity.getMessage());
         informEntity.setIds(offlineUserIds);
-//        informEntity.setTitle(msgEntity.getTitle());
         log.info("push inform = {} start", informEntity);
 //        BusinessResult businessResult = tzPushInformService.pushInform(informEntity);
 //        log.info("push inform end resut={}", businessResult);
@@ -237,7 +231,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         messageEntity.setBusinessId(msgEntity.getToId());
         messageEntity.setContent(msgEntity.getMessage());
         messageEntity.setIsGroupSend(false);
-//        messageEntity.setTitle(msgEntity.getTitle());
         log.info("push message = {} start", messageEntity);
 //        BusinessResult businessResult = tzPushMessageService.pushMessage(messageEntity);
 //        log.info("push message end result={}", businessResult);
@@ -249,7 +242,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         record.setToId(msgEntity.getToId() == null ? null : Integer.valueOf(msgEntity.getToId()));
         record.setType(msgEntity.getType() == null ? null : Integer.valueOf(msgEntity.getType()));
         record.setMessage(msgEntity.getMessage());
-//        record.setTitle(msgEntity.getTitle());
         record.setExtras(JSON.toJSONString(msgEntity.getExtras()));
         record.setContentId(msgEntity.getContentId() == null ? null : Integer.valueOf(msgEntity.getContentId()));
         record.setContentType(msgEntity.getContentType() == null ? null : Integer.valueOf(msgEntity.getContentType()));
@@ -261,58 +253,85 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         String key = type + ":" + roomId;
         Set<Integer> userIdsSet = onlineMap.get(key);
         return userIdsSet;
-
     }
 
-    private List<Integer> getUserIdsByToId(Integer toId, Integer type){
-//        // TODO 还差道友的情况
-//        List<Long> tempRet = null;
-//        List<Integer> result = null;
-//        if (type.toString().startsWith("2")){ // 群聊相关
-//            switch (type){
-//                case 204:
-//                    tempRet = getUserIdsFromGroup(toId.toString());
-//                    break;
-//                case 205:
-//                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
-//                    break;
-//                default:
-//                    tempRet = getUserIdsFromGroup(toId.toString());
-//                    break;
-//            }
-//        } else { // 室聊相关
-//            switch (type) {
-//                case 304:
-//                    tempRet = getUserIdsFromGroup(toId.toString());
-//                    break;
-//                case 305:
-//                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
-//                    break;
-//                default:
-//                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
-//                    break;
-//            }
-//        }
-//        for (Long temp : tempRet){
-//            result.add(temp.intValue());
-//        }
-//        return result;
-        List<Integer> list = new ArrayList<>();
-        list.add(123);
-        list.add(456);
-        // TODO
-        return list;
+    private List<Integer> getUserIdsByToId(Integer userId, Integer toId, Integer type){
+        List<Long> tempRet = null;
+        List<Integer> result = null;
+        if (type.toString().startsWith("2")){ // 群聊相关
+            switch (type){
+                case 205:
+                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
+                    break;
+                default:
+                    tempRet = getUserIdsFromGroup(toId.toString());
+                    break;
+            }
+        } else { // 室聊相关
+            switch (type) {
+                case 304:
+                    tempRet = getUserIdsFromGroup(toId.toString());
+                    break;
+                case 303:
+                    tempRet = getUsersFriends(Long.valueOf(userId));
+                    break;
+                default:
+                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
+                    break;
+            }
+        }
+        for (Long temp : tempRet){
+            result.add(temp.intValue());
+        }
+        return result;
+
+//        List<Integer> list = new ArrayList<>();
+//        list.add(123);
+//        list.add(456);
+//        return list;
+    }
+
+    private List<Long> getUsersFriends(Long userId){
+        BusinessResult<List<TzUserFriendInfo>> friends = tzUserFriendService.friends(userId);
+        log.info("getUsersFriends result={}", friends);
+        if (friends.getCode() != 0){
+            log.warn("get friends userId abnormal! message={}", friends.getMessage());
+            return new ArrayList<>();
+        }
+        List<TzUserFriendInfo> data = friends.getData();
+        List<Long> userIdList = new ArrayList<>();
+        if (data != null){
+            for (TzUserFriendInfo info : data){
+                userIdList.add(info.getFriendsUserId());
+            }
+        }
+        return userIdList;
     }
 
     private List<Long> getUserIdsFromRoom(Long roomId) {
         BusinessResult<List<Long>> result = tzLiveVideoService.getUserIdsByRoomId(3, roomId);
-        return result.getData();
+        log.info("getUserIdsFromRoom result={}", result);
+        Long code = result.getCode();
+        if (code.longValue() != 0){
+            log.warn("get userIds from room abnormal! message={}", result.getMessage());
+            return new ArrayList<>();
+        }
+        List<Long> data = result.getData();
+        if (data != null){
+            return data;
+        }
+        return new ArrayList<>();
     }
 
     private List<Long> getUserIdsFromGroup(String groupId){
         List<Long> retList = new ArrayList<>();
-
         BusinessResult<List<GroupUserVO>> result = deskMateGroupService.getGroupUserByGroupId(groupId);
+        log.info("getUserIdsFromGroup result={}", result);
+        Long code = result.getCode();
+        if (code != 0){
+            log.warn("get userIds from group abnormal! message={}", result.getMessage());
+            return new ArrayList<>();
+        }
         List<GroupUserVO> list = result.getData();
         if (list != null){
             for (GroupUserVO vo : list){

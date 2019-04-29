@@ -291,6 +291,6 @@
     or
     (from_user_id = #{destId} and to_id = #{userId} and type = #{type}) and id > #{maxReadId}
 
-    order by create_time desc
+    order by create_time
   </select>
 </mapper>
