@@ -33,4 +33,4 @@ spring:
         port: 6379
 
 message:
-    type: system
+    type: 76

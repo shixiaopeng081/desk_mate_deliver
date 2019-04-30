@@ -58,4 +58,4 @@ ribbon:
   ReadTimeout: 20000
 
 message:
-    type: system
+    type: 76
