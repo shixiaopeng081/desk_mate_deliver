@@ -48,7 +48,7 @@ public class MessageService implements BeanPropertiesUtil {
         //小书童--即系统消息
         List<MessageSystemDO> messageSystemDOList = new ArrayList<>();
         Boolean isSystem = false;
-        if(messageDTO.getType().equals(messageType)){
+        if(messageDTO.getType().startsWith(messageType)){
             isSystem= true;
         }
 
@@ -104,7 +104,7 @@ public class MessageService implements BeanPropertiesUtil {
             //小书童--即系统消息
             List<MessageSystemDO> messageSystemDOList = new ArrayList<>();
             Boolean isSystem = false;
-            if(messageDTO.getType().equals(messageType)){
+            if(messageDTO.getType().startsWith(messageType)){
                 isSystem= true;
             }
 
