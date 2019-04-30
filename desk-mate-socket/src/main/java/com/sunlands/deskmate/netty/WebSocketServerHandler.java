@@ -83,7 +83,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 log.error("message format error. message = {}", request, e);
                 msgEntity.setType("9000");
                 msgEntity.setMessage("消息格式异常");
-                ctxMap.get(msgEntity.getFromUserId()).write(msgEntity);
+                sendMessage(Integer.valueOf(msgEntity.getFromUserId()), msgEntity);
                 return;
             }
             log.info("recieve msgEntity={}", msgEntity);
@@ -117,6 +117,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         }
     }
 
+    private void sendMessage(Integer userId, Object msg){
+        ChannelHandlerContext ctx = ctxMap.get(userId);
+        ctx.write(new TextWebSocketFrame(JSON.toJSONString(msg)));
+        ctx.flush();
+    }
+
     private String generateKey(MsgEntity msgEntity) {
         String key = "";
         if (MessageType.PRIVATE_CHAT.getType().equals(msgEntity.getType())
@@ -139,34 +145,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     public void pushMsgToContainer(MsgEntity msgEntity){
         log.info("msgEntity = {}", msgEntity);
-//        if (MessageType.ENTER_GROUP.getType().equals(msgEntity.getType())
-//                || MessageType.ENTER_ROOM.getType().equals(msgEntity.getType())
-//                || MessageType.ENTER_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
-//            String key = generateKey(msgEntity);
-//            Set<Integer> set = new HashSet<>();
-//            set.add(Integer.valueOf(msgEntity.getFromUserId()));
-//            Set<Integer> oldSet = onlineMap.putIfAbsent(key, set);
-//            if (oldSet != null){
-//                oldSet.add(Integer.valueOf(msgEntity.getFromUserId()));
-//            }
-//            Set<String> set2 = new HashSet<>();
-//            set2.add(key);
-//            Set<String> oldSet2 = userIdContainerMap.putIfAbsent(Integer.valueOf(msgEntity.getFromUserId()), set2);
-//            if (oldSet2 != null){
-//                oldSet2.add(key);
-//            }
-//            return;
-//        }
-//        if (MessageType.QUIT_GROUP.getType().equals(msgEntity.getType())
-//                || MessageType.QUIT_ROOM.getType().equals(msgEntity.getType())
-//                || MessageType.QUIT_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
-//            String key = generateKey(msgEntity);
-//            onlineMap.get(key).remove(msgEntity.getFromUserId());
-//            userIdContainerMap.get(Integer.valueOf(msgEntity.getFromUserId())).remove(key);
-//            return;
-//        }
-
-
         Long pId = saveChatRecord(msgEntity);
         msgEntity.setId(pId.toString());
         List<Integer> userIdsInContainer = new ArrayList<>();
@@ -193,7 +171,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         for(Integer userId : onlineUserIds){
             ChannelHandlerContext ctx = ctxMap.get(userId);
             if (ctx != null){
-                ctxMap.get(userId).write(new TextWebSocketFrame(JSON.toJSONString(msgEntity)));
+                sendMessage(userId, msgEntity);
             }
         }
         userIdsInContainer.removeAll(onlineUserIds);
@@ -374,7 +352,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.info("Exception accoured e={}, stack={}", cause.getMessage(), cause.getStackTrace());
+        log.error("Exception accoured ", cause);
         ctxMap.remove(ctx.channel().attr(USER_KEY).get());
 //        removeFromOnlineMap(ctx);
         cause.printStackTrace();
@@ -426,7 +404,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 msgEntity.setType(msgEntity.getType());
                 msgEntity.setToId(userId);
                 ChannelHandlerContext ctx = ctxMap.get(Integer.valueOf(userId));
-                ctx.write(msgEntity);
+                sendMessage(Integer.valueOf(userId), msgEntity);
             } catch (Exception e){
                 log.error("send inform msg error, userId={}", userId, e);
             }
