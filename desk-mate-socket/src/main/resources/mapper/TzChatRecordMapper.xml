@@ -3,14 +3,14 @@
 <mapper namespace="com.sunlands.deskmate.mapper.TzChatRecordMapper">
   <resultMap id="BaseResultMap" type="com.sunlands.deskmate.entity.TzChatRecord">
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="from_user_id" jdbcType="INTEGER" property="fromUserId" />
-    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="from_user_id" jdbcType="VARCHAR" property="fromUserId" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
     <result column="message" jdbcType="VARCHAR" property="message" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="extras" jdbcType="VARCHAR" property="extras" />
-    <result column="to_id" jdbcType="INTEGER" property="toId" />
-    <result column="content_id" jdbcType="INTEGER" property="contentId" />
-    <result column="content_type" jdbcType="INTEGER" property="contentType" />
+    <result column="to_id" jdbcType="VARCHAR" property="toId" />
+    <result column="content_id" jdbcType="VARCHAR" property="contentId" />
+    <result column="content_type" jdbcType="VARCHAR" property="contentType" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -121,9 +121,9 @@
     insert into tz_chat_record (from_user_id, type, message, 
       create_time, extras, to_id, 
       content_id, content_type)
-    values (#{fromUserId,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{message,jdbcType=VARCHAR}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{extras,jdbcType=VARCHAR}, #{toId,jdbcType=INTEGER}, 
-      #{contentId,jdbcType=INTEGER}, #{contentType,jdbcType=INTEGER})
+    values (#{fromUserId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{message,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{extras,jdbcType=VARCHAR}, #{toId,jdbcType=VARCHAR}, 
+      #{contentId,jdbcType=VARCHAR}, #{contentType,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.sunlands.deskmate.entity.TzChatRecord">
     <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
@@ -158,10 +158,10 @@
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="fromUserId != null">
-        #{fromUserId,jdbcType=INTEGER},
+        #{fromUserId,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
-        #{type,jdbcType=INTEGER},
+        #{type,jdbcType=VARCHAR},
       </if>
       <if test="message != null">
         #{message,jdbcType=VARCHAR},
@@ -173,13 +173,13 @@
         #{extras,jdbcType=VARCHAR},
       </if>
       <if test="toId != null">
-        #{toId,jdbcType=INTEGER},
+        #{toId,jdbcType=VARCHAR},
       </if>
       <if test="contentId != null">
-        #{contentId,jdbcType=INTEGER},
+        #{contentId,jdbcType=VARCHAR},
       </if>
       <if test="contentType != null">
-        #{contentType,jdbcType=INTEGER},
+        #{contentType,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -196,10 +196,10 @@
         id = #{record.id,jdbcType=BIGINT},
       </if>
       <if test="record.fromUserId != null">
-        from_user_id = #{record.fromUserId,jdbcType=INTEGER},
+        from_user_id = #{record.fromUserId,jdbcType=VARCHAR},
       </if>
       <if test="record.type != null">
-        type = #{record.type,jdbcType=INTEGER},
+        type = #{record.type,jdbcType=VARCHAR},
       </if>
       <if test="record.message != null">
         message = #{record.message,jdbcType=VARCHAR},
@@ -211,13 +211,13 @@
         extras = #{record.extras,jdbcType=VARCHAR},
       </if>
       <if test="record.toId != null">
-        to_id = #{record.toId,jdbcType=INTEGER},
+        to_id = #{record.toId,jdbcType=VARCHAR},
       </if>
       <if test="record.contentId != null">
-        content_id = #{record.contentId,jdbcType=INTEGER},
+        content_id = #{record.contentId,jdbcType=VARCHAR},
       </if>
       <if test="record.contentType != null">
-        content_type = #{record.contentType,jdbcType=INTEGER},
+        content_type = #{record.contentType,jdbcType=VARCHAR},
       </if>
     </set>
     <if test="_parameter != null">
@@ -227,14 +227,14 @@
   <update id="updateByExample" parameterType="map">
     update tz_chat_record
     set id = #{record.id,jdbcType=BIGINT},
-      from_user_id = #{record.fromUserId,jdbcType=INTEGER},
-      type = #{record.type,jdbcType=INTEGER},
+      from_user_id = #{record.fromUserId,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=VARCHAR},
       message = #{record.message,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       extras = #{record.extras,jdbcType=VARCHAR},
-      to_id = #{record.toId,jdbcType=INTEGER},
-      content_id = #{record.contentId,jdbcType=INTEGER},
-      content_type = #{record.contentType,jdbcType=INTEGER}
+      to_id = #{record.toId,jdbcType=VARCHAR},
+      content_id = #{record.contentId,jdbcType=VARCHAR},
+      content_type = #{record.contentType,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -243,10 +243,10 @@
     update tz_chat_record
     <set>
       <if test="fromUserId != null">
-        from_user_id = #{fromUserId,jdbcType=INTEGER},
+        from_user_id = #{fromUserId,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
-        type = #{type,jdbcType=INTEGER},
+        type = #{type,jdbcType=VARCHAR},
       </if>
       <if test="message != null">
         message = #{message,jdbcType=VARCHAR},
@@ -258,30 +258,29 @@
         extras = #{extras,jdbcType=VARCHAR},
       </if>
       <if test="toId != null">
-        to_id = #{toId,jdbcType=INTEGER},
+        to_id = #{toId,jdbcType=VARCHAR},
       </if>
       <if test="contentId != null">
-        content_id = #{contentId,jdbcType=INTEGER},
+        content_id = #{contentId,jdbcType=VARCHAR},
       </if>
       <if test="contentType != null">
-        content_type = #{contentType,jdbcType=INTEGER},
+        content_type = #{contentType,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.sunlands.deskmate.entity.TzChatRecord">
     update tz_chat_record
-    set from_user_id = #{fromUserId,jdbcType=INTEGER},
-      type = #{type,jdbcType=INTEGER},
+    set from_user_id = #{fromUserId,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
       message = #{message,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       extras = #{extras,jdbcType=VARCHAR},
-      to_id = #{toId,jdbcType=INTEGER},
-      content_id = #{contentId,jdbcType=INTEGER},
-      content_type = #{contentType,jdbcType=INTEGER}
+      to_id = #{toId,jdbcType=VARCHAR},
+      content_id = #{contentId,jdbcType=VARCHAR},
+      content_type = #{contentType,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
-
   <select id="selectPrivateChatRecord" parameterType="com.sunlands.deskmate.dto.RequestDTO" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />

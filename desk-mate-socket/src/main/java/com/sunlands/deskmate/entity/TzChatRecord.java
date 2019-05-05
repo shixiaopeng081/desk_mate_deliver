@@ -2,7 +2,6 @@ package com.sunlands.deskmate.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * @author 
@@ -16,12 +15,12 @@ public class TzChatRecord implements Serializable {
     /**
      * 发送者用户ID
      */
-    private Integer fromUserId;
+    private String fromUserId;
 
     /**
      * 消息类型1：普通聊天 2：分享的卡片
      */
-    private Integer type;
+    private String type;
 
     /**
      * 消息内容
@@ -41,21 +40,20 @@ public class TzChatRecord implements Serializable {
     /**
      * 发送到哪
      */
-    private Integer toId;
+    private String toId;
 
     /**
      * 业务id，用来承载业务相关id，如群id、房间id，一般分享、邀请的时候会用到
      */
-    private Integer contentId;
+    private String contentId;
 
     /**
      * contentId 的 type
 contentId 的 type
      */
-    private Integer contentType;
+    private String contentType;
 
     private static final long serialVersionUID = 1L;
-
 
     public Long getId() {
         return id;
@@ -65,19 +63,19 @@ contentId 的 type
         this.id = id;
     }
 
-    public Integer getFromUserId() {
+    public String getFromUserId() {
         return fromUserId;
     }
 
-    public void setFromUserId(Integer fromUserId) {
+    public void setFromUserId(String fromUserId) {
         this.fromUserId = fromUserId;
     }
 
-    public Integer getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -105,27 +103,27 @@ contentId 的 type
         this.extras = extras;
     }
 
-    public Integer getToId() {
+    public String getToId() {
         return toId;
     }
 
-    public void setToId(Integer toId) {
+    public void setToId(String toId) {
         this.toId = toId;
     }
 
-    public Integer getContentId() {
+    public String getContentId() {
         return contentId;
     }
 
-    public void setContentId(Integer contentId) {
+    public void setContentId(String contentId) {
         this.contentId = contentId;
     }
 
-    public Integer getContentType() {
+    public String getContentType() {
         return contentType;
     }
 
-    public void setContentType(Integer contentType) {
+    public void setContentType(String contentType) {
         this.contentType = contentType;
     }
 

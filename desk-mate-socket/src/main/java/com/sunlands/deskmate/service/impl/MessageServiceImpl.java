@@ -64,7 +64,7 @@ public class MessageServiceImpl implements MessageService {
         } else if (MessageType.GROUP_CHAT.getType().equals(requestDTO.getType())
                 || MessageType.ROOM_CHAT.getType().equals(requestDTO.getType())){
             TzChatRecordExample example = new TzChatRecordExample();
-            example.createCriteria().andToIdEqualTo(Integer.valueOf(requestDTO.getDestId())).andTypeEqualTo(Integer.valueOf(requestDTO.getType())).andIdGreaterThan(Long.valueOf(requestDTO.getMaxReadId()));
+            example.createCriteria().andToIdEqualTo(requestDTO.getDestId()).andTypeEqualTo(requestDTO.getType()).andIdGreaterThan(Long.valueOf(requestDTO.getMaxReadId()));
             example.setOrderByClause("create_time");
             tzChatRecords = messageMapper.selectByExample(example);
         } else {

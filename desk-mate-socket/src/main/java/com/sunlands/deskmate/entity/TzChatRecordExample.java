@@ -205,52 +205,62 @@ public class TzChatRecordExample {
             return (Criteria) this;
         }
 
-        public Criteria andFromUserIdEqualTo(Integer value) {
+        public Criteria andFromUserIdEqualTo(String value) {
             addCriterion("from_user_id =", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andFromUserIdNotEqualTo(Integer value) {
+        public Criteria andFromUserIdNotEqualTo(String value) {
             addCriterion("from_user_id <>", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andFromUserIdGreaterThan(Integer value) {
+        public Criteria andFromUserIdGreaterThan(String value) {
             addCriterion("from_user_id >", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andFromUserIdGreaterThanOrEqualTo(Integer value) {
+        public Criteria andFromUserIdGreaterThanOrEqualTo(String value) {
             addCriterion("from_user_id >=", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andFromUserIdLessThan(Integer value) {
+        public Criteria andFromUserIdLessThan(String value) {
             addCriterion("from_user_id <", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andFromUserIdLessThanOrEqualTo(Integer value) {
+        public Criteria andFromUserIdLessThanOrEqualTo(String value) {
             addCriterion("from_user_id <=", value, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andFromUserIdIn(List<Integer> values) {
+        public Criteria andFromUserIdLike(String value) {
+            addCriterion("from_user_id like", value, "fromUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromUserIdNotLike(String value) {
+            addCriterion("from_user_id not like", value, "fromUserId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFromUserIdIn(List<String> values) {
             addCriterion("from_user_id in", values, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andFromUserIdNotIn(List<Integer> values) {
+        public Criteria andFromUserIdNotIn(List<String> values) {
             addCriterion("from_user_id not in", values, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andFromUserIdBetween(Integer value1, Integer value2) {
+        public Criteria andFromUserIdBetween(String value1, String value2) {
             addCriterion("from_user_id between", value1, value2, "fromUserId");
             return (Criteria) this;
         }
 
-        public Criteria andFromUserIdNotBetween(Integer value1, Integer value2) {
+        public Criteria andFromUserIdNotBetween(String value1, String value2) {
             addCriterion("from_user_id not between", value1, value2, "fromUserId");
             return (Criteria) this;
         }
@@ -265,52 +275,62 @@ public class TzChatRecordExample {
             return (Criteria) this;
         }
 
-        public Criteria andTypeEqualTo(Integer value) {
+        public Criteria andTypeEqualTo(String value) {
             addCriterion("type =", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotEqualTo(Integer value) {
+        public Criteria andTypeNotEqualTo(String value) {
             addCriterion("type <>", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeGreaterThan(Integer value) {
+        public Criteria andTypeGreaterThan(String value) {
             addCriterion("type >", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeGreaterThanOrEqualTo(Integer value) {
+        public Criteria andTypeGreaterThanOrEqualTo(String value) {
             addCriterion("type >=", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeLessThan(Integer value) {
+        public Criteria andTypeLessThan(String value) {
             addCriterion("type <", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeLessThanOrEqualTo(Integer value) {
+        public Criteria andTypeLessThanOrEqualTo(String value) {
             addCriterion("type <=", value, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeIn(List<Integer> values) {
+        public Criteria andTypeLike(String value) {
+            addCriterion("type like", value, "type");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeNotLike(String value) {
+            addCriterion("type not like", value, "type");
+            return (Criteria) this;
+        }
+
+        public Criteria andTypeIn(List<String> values) {
             addCriterion("type in", values, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotIn(List<Integer> values) {
+        public Criteria andTypeNotIn(List<String> values) {
             addCriterion("type not in", values, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeBetween(Integer value1, Integer value2) {
+        public Criteria andTypeBetween(String value1, String value2) {
             addCriterion("type between", value1, value2, "type");
             return (Criteria) this;
         }
 
-        public Criteria andTypeNotBetween(Integer value1, Integer value2) {
+        public Criteria andTypeNotBetween(String value1, String value2) {
             addCriterion("type not between", value1, value2, "type");
             return (Criteria) this;
         }
@@ -525,52 +545,62 @@ public class TzChatRecordExample {
             return (Criteria) this;
         }
 
-        public Criteria andToIdEqualTo(Integer value) {
+        public Criteria andToIdEqualTo(String value) {
             addCriterion("to_id =", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andToIdNotEqualTo(Integer value) {
+        public Criteria andToIdNotEqualTo(String value) {
             addCriterion("to_id <>", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andToIdGreaterThan(Integer value) {
+        public Criteria andToIdGreaterThan(String value) {
             addCriterion("to_id >", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andToIdGreaterThanOrEqualTo(Integer value) {
+        public Criteria andToIdGreaterThanOrEqualTo(String value) {
             addCriterion("to_id >=", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andToIdLessThan(Integer value) {
+        public Criteria andToIdLessThan(String value) {
             addCriterion("to_id <", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andToIdLessThanOrEqualTo(Integer value) {
+        public Criteria andToIdLessThanOrEqualTo(String value) {
             addCriterion("to_id <=", value, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andToIdIn(List<Integer> values) {
+        public Criteria andToIdLike(String value) {
+            addCriterion("to_id like", value, "toId");
+            return (Criteria) this;
+        }
+
+        public Criteria andToIdNotLike(String value) {
+            addCriterion("to_id not like", value, "toId");
+            return (Criteria) this;
+        }
+
+        public Criteria andToIdIn(List<String> values) {
             addCriterion("to_id in", values, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andToIdNotIn(List<Integer> values) {
+        public Criteria andToIdNotIn(List<String> values) {
             addCriterion("to_id not in", values, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andToIdBetween(Integer value1, Integer value2) {
+        public Criteria andToIdBetween(String value1, String value2) {
             addCriterion("to_id between", value1, value2, "toId");
             return (Criteria) this;
         }
 
-        public Criteria andToIdNotBetween(Integer value1, Integer value2) {
+        public Criteria andToIdNotBetween(String value1, String value2) {
             addCriterion("to_id not between", value1, value2, "toId");
             return (Criteria) this;
         }
@@ -585,52 +615,62 @@ public class TzChatRecordExample {
             return (Criteria) this;
         }
 
-        public Criteria andContentIdEqualTo(Integer value) {
+        public Criteria andContentIdEqualTo(String value) {
             addCriterion("content_id =", value, "contentId");
             return (Criteria) this;
         }
 
-        public Criteria andContentIdNotEqualTo(Integer value) {
+        public Criteria andContentIdNotEqualTo(String value) {
             addCriterion("content_id <>", value, "contentId");
             return (Criteria) this;
         }
 
-        public Criteria andContentIdGreaterThan(Integer value) {
+        public Criteria andContentIdGreaterThan(String value) {
             addCriterion("content_id >", value, "contentId");
             return (Criteria) this;
         }
 
-        public Criteria andContentIdGreaterThanOrEqualTo(Integer value) {
+        public Criteria andContentIdGreaterThanOrEqualTo(String value) {
             addCriterion("content_id >=", value, "contentId");
             return (Criteria) this;
         }
 
-        public Criteria andContentIdLessThan(Integer value) {
+        public Criteria andContentIdLessThan(String value) {
             addCriterion("content_id <", value, "contentId");
             return (Criteria) this;
         }
 
-        public Criteria andContentIdLessThanOrEqualTo(Integer value) {
+        public Criteria andContentIdLessThanOrEqualTo(String value) {
             addCriterion("content_id <=", value, "contentId");
             return (Criteria) this;
         }
 
-        public Criteria andContentIdIn(List<Integer> values) {
+        public Criteria andContentIdLike(String value) {
+            addCriterion("content_id like", value, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdNotLike(String value) {
+            addCriterion("content_id not like", value, "contentId");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentIdIn(List<String> values) {
             addCriterion("content_id in", values, "contentId");
             return (Criteria) this;
         }
 
-        public Criteria andContentIdNotIn(List<Integer> values) {
+        public Criteria andContentIdNotIn(List<String> values) {
             addCriterion("content_id not in", values, "contentId");
             return (Criteria) this;
         }
 
-        public Criteria andContentIdBetween(Integer value1, Integer value2) {
+        public Criteria andContentIdBetween(String value1, String value2) {
             addCriterion("content_id between", value1, value2, "contentId");
             return (Criteria) this;
         }
 
-        public Criteria andContentIdNotBetween(Integer value1, Integer value2) {
+        public Criteria andContentIdNotBetween(String value1, String value2) {
             addCriterion("content_id not between", value1, value2, "contentId");
             return (Criteria) this;
         }
@@ -645,52 +685,62 @@ public class TzChatRecordExample {
             return (Criteria) this;
         }
 
-        public Criteria andContentTypeEqualTo(Integer value) {
+        public Criteria andContentTypeEqualTo(String value) {
             addCriterion("content_type =", value, "contentType");
             return (Criteria) this;
         }
 
-        public Criteria andContentTypeNotEqualTo(Integer value) {
+        public Criteria andContentTypeNotEqualTo(String value) {
             addCriterion("content_type <>", value, "contentType");
             return (Criteria) this;
         }
 
-        public Criteria andContentTypeGreaterThan(Integer value) {
+        public Criteria andContentTypeGreaterThan(String value) {
             addCriterion("content_type >", value, "contentType");
             return (Criteria) this;
         }
 
-        public Criteria andContentTypeGreaterThanOrEqualTo(Integer value) {
+        public Criteria andContentTypeGreaterThanOrEqualTo(String value) {
             addCriterion("content_type >=", value, "contentType");
             return (Criteria) this;
         }
 
-        public Criteria andContentTypeLessThan(Integer value) {
+        public Criteria andContentTypeLessThan(String value) {
             addCriterion("content_type <", value, "contentType");
             return (Criteria) this;
         }
 
-        public Criteria andContentTypeLessThanOrEqualTo(Integer value) {
+        public Criteria andContentTypeLessThanOrEqualTo(String value) {
             addCriterion("content_type <=", value, "contentType");
             return (Criteria) this;
         }
 
-        public Criteria andContentTypeIn(List<Integer> values) {
+        public Criteria andContentTypeLike(String value) {
+            addCriterion("content_type like", value, "contentType");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeNotLike(String value) {
+            addCriterion("content_type not like", value, "contentType");
+            return (Criteria) this;
+        }
+
+        public Criteria andContentTypeIn(List<String> values) {
             addCriterion("content_type in", values, "contentType");
             return (Criteria) this;
         }
 
-        public Criteria andContentTypeNotIn(List<Integer> values) {
+        public Criteria andContentTypeNotIn(List<String> values) {
             addCriterion("content_type not in", values, "contentType");
             return (Criteria) this;
         }
 
-        public Criteria andContentTypeBetween(Integer value1, Integer value2) {
+        public Criteria andContentTypeBetween(String value1, String value2) {
             addCriterion("content_type between", value1, value2, "contentType");
             return (Criteria) this;
         }
 
-        public Criteria andContentTypeNotBetween(Integer value1, Integer value2) {
+        public Criteria andContentTypeNotBetween(String value1, String value2) {
             addCriterion("content_type not between", value1, value2, "contentType");
             return (Criteria) this;
         }

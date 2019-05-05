@@ -225,13 +225,13 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     private Long saveChatRecord(MsgEntity msgEntity) {
         TzChatRecord record = new TzChatRecord();
-        record.setFromUserId(msgEntity.getFromUserId() == null ? null : Integer.valueOf(msgEntity.getFromUserId()));
-        record.setToId(msgEntity.getToId() == null ? null : Integer.valueOf(msgEntity.getToId()));
-        record.setType(msgEntity.getType() == null ? null : Integer.valueOf(msgEntity.getType()));
+        record.setFromUserId(msgEntity.getFromUserId());
+        record.setToId(msgEntity.getToId());
+        record.setType(msgEntity.getType());
         record.setMessage(msgEntity.getMessage());
         record.setExtras(JSON.toJSONString(msgEntity.getExtras()));
-        record.setContentId(msgEntity.getContentId() == null ? null : Integer.valueOf(msgEntity.getContentId()));
-        record.setContentType(msgEntity.getContentType() == null ? null : Integer.valueOf(msgEntity.getContentType()));
+        record.setContentId(msgEntity.getContentId());
+        record.setContentType(msgEntity.getContentType());
         messageService.saveChatRecord(record);
         return record.getId();
     }
