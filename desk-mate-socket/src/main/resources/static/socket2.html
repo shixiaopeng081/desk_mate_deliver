@@ -18,9 +18,10 @@
     if(!window.WebSocket){
         window.WebSocket = window.MozWebSocket
     }
+    //"62.234.180.200";//
     var server = (window.location.host).split(":")[0];
     if(window.WebSocket){
-        socket = new WebSocket("ws://"+server+":9961/websocket?token=token2&type=2&userId=222&toId=999")
+        socket = new WebSocket("ws://"+server+":9961/websocket?token=token2&type=2&userId=654321&toId=9999")
         socket.onmessage = function(event){
             var returns = document.getElementById("returns")
             returns.value = returns.value + "\n"

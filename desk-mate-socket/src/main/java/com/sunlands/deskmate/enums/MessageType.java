@@ -12,18 +12,19 @@ public enum MessageType {
 
     ENTER_PRIVATE_CHAT("101", "进入私聊"),
     QUIT_PRIVATE_CHAT("102", "退出私聊"),
+    SHARE_GROUP_TO_PRIVATE("103", "分享群到私聊"),
+    SHARE_ROOM_TO_PRIVATE("104", "分享room到私聊"),
 
     ENTER_GROUP("201", "进入群聊"),
     QUIT_GROUP("202", "退出群聊"),
-    SHARE_GROUP_TO_PRIVATE("203", "分享群到私聊"),
-    SHARE_GROUP_TO_GROUP("204", "分享群到群聊"),
-    SHARE_GROUP_TO_ROOM("205", "分享群到室聊"),
+    SHARE_GROUP_TO_GROUP("203", "分享群到群聊"),
+    SHARE_ROOM_TO_GROUP("204", "分享房间到群聊"),
 
     ENTER_ROOM("301", "进入室聊"),
     QUIT_ROOM("302", "退出室聊"),
-    SHARE_ROOM_TO_PRIVATE("303", "分享room到私聊"),
-    SHARE_ROOM_TO_GROUP("304", "分享room到群聊"),
-    SHARE_ROOM_TO_ROOM("305", "分享room到其它room聊");
+    SHARE_GROUP_TO_ROOM("303", "分享群到room"),
+    SHARE_ROOM_TO_ROOM("304", "分享room到其它room聊"),
+    CLOSE_ROOM("314", "关闭房间");
 
     private String type;
     private String name;

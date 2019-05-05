@@ -180,6 +180,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 sendMessage(userId, msgEntity);
             }
         }
+        if (MessageType.CLOSE_ROOM.getType().equals(msgEntity.getType())){
+            onlineMap.remove(key);
+        }
         userIdsInContainer.removeAll(onlineUserIds);
         if (userIdsInContainer.size() > 0){
             // 推送离线消息和通知
@@ -243,25 +246,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         List<Long> tempRet = new ArrayList<>();
         List<Integer> result = new ArrayList<>();
         if (type.toString().startsWith("2")){ // 群聊相关
-            switch (type){
-                case 205:
-                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
-                    break;
-                default:
-                    tempRet = getUserIdsFromGroup(toId.toString());
-                    break;
-            }
-        } else { // 室聊相关
-            switch (type) {
-                case 304:
-                    tempRet = getUserIdsFromGroup(toId.toString());
-                    break;
-                case 303:
-                    tempRet = getUsersFriends(Long.valueOf(userId));
-                    break;
-                default:
-                    tempRet = getUserIdsFromRoom(Long.valueOf(toId));
-                    break;
+            tempRet = getUserIdsFromGroup(toId.toString());
+        } else if (type.toString().startsWith("3")){ // 室聊相关
+            if (303 == type){
+                tempRet = getUsersFriends(Long.valueOf(userId));
+            } else {
+                tempRet = getUserIdsFromRoom(Long.valueOf(toId));
             }
         }
         for (Long temp : tempRet){
