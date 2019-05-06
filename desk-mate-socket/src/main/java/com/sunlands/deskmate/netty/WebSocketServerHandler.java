@@ -185,7 +185,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             log.info("online users is null, key={}", key);
             return;
         }
+        int fromUserId = Integer.valueOf(msgEntity.getFromUserId());
         for(Integer userId : onlineUserIds){
+            if (MessageType.CLOSE_ROOM.getType().equals(msgEntity.getType()) && userId == fromUserId){
+                continue;
+            }
             ChannelHandlerContext ctx = ctxMap.get(userId);
             if (ctx != null){
                 sendMessage(userId, msgEntity);
