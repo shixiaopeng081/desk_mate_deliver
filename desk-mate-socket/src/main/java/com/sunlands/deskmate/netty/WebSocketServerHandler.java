@@ -177,9 +177,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             userIdsInContainer = getUserIdsByToId(Integer.valueOf(msgEntity.getFromUserId()), Integer.valueOf(msgEntity.getToId()), Integer.valueOf(msgEntity.getType()));
             key = msgEntity.getType().substring(0,1) + ":" + msgEntity.getToId();
         }
-        if (userIdsInContainer == null){
-            return;
-        }
         Set<Integer> onlineUserIds = onlineMap.get(key);
         if (onlineUserIds == null){
             log.info("online users is null, key={}", key);
