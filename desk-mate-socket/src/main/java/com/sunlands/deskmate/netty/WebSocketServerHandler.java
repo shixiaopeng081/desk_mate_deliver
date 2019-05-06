@@ -110,9 +110,14 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 oldSet2.add(key);
             }
             if (!MessageType.ENTER_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
-                log.info("send enter room msg to={}" + oldSet);
-                for (Integer userId : oldSet){
-                    sendMessage(userId, msgEntity);
+                Set<Integer> onlineSet = onlineMap.get(key);
+                log.info("send enter room msg to={}" , onlineSet);
+                if (onlineSet != null){
+                    for (Integer userId : onlineSet){
+                        if (ctx.channel().attr(USER_KEY).get() != Integer.valueOf(msgEntity.getFromUserId())){
+                            sendMessage(userId, msgEntity);
+                        }
+                    }
                 }
             }
             return true;
