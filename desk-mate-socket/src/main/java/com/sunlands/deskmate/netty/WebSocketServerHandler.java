@@ -259,21 +259,15 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         if (type.toString().startsWith("2")){ // 群聊相关
             tempRet = getUserIdsFromGroup(toId.toString());
         } else if (type.toString().startsWith("3")){ // 室聊相关
-            if (303 == type){
-                tempRet = getUsersFriends(Long.valueOf(userId));
-            } else {
-                tempRet = getUserIdsFromRoom(Long.valueOf(toId));
-            }
+            tempRet = getUserIdsFromRoom(Long.valueOf(toId));
+        } else if (MessageType.DYNAMIC_CREATE_ROOM.getType().equals(type.toString())
+                || MessageType.DYNAMIC_CLOSE_ROOM.getType().equals(type.toString())){ // 动态 创建、关闭房间
+            tempRet = getUsersFriends(Long.valueOf(userId));
         }
         for (Long temp : tempRet){
             result.add(temp.intValue());
         }
         return result;
-
-//        List<Integer> list = new ArrayList<>();
-//        list.add(123);
-//        list.add(456);
-//        return list;
     }
 
     private List<Long> getUsersFriends(Long userId){

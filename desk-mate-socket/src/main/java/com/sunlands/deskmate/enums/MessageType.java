@@ -22,9 +22,12 @@ public enum MessageType {
 
     ENTER_ROOM("301", "进入室聊"),
     QUIT_ROOM("302", "退出室聊"),
-    SHARE_GROUP_TO_ROOM("303", "分享群到room"),
+    SHARE_GROUP_TO_ROOM("303", "分享群到room聊"),
     SHARE_ROOM_TO_ROOM("304", "分享room到其它room聊"),
-    CLOSE_ROOM("314", "关闭房间");
+    CLOSE_ROOM("314", "关闭房间"),
+
+    DYNAMIC_CREATE_ROOM("750", "动态创建房间"),
+    DYNAMIC_CLOSE_ROOM("751", "动态关闭房间");
 
     private String type;
     private String name;
