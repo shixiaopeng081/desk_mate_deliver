@@ -181,8 +181,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             return;
         }
         Set<Integer> onlineUserIds = onlineMap.get(key);
-        log.info("onlineUserIds = {}", onlineUserIds);
         if (onlineUserIds == null){
+            log.info("online users is null, key={}", key);
             return;
         }
         for(Integer userId : onlineUserIds){
@@ -192,8 +192,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             }
         }
         if (MessageType.CLOSE_ROOM.getType().equals(msgEntity.getType())){
+            log.info("close room, key={}", key);
             onlineMap.remove(key);
         }
+        log.info("onlineUserIds = {}", onlineMap.get(key));
         userIdsInContainer.removeAll(onlineUserIds);
         if (userIdsInContainer.size() > 0){
             // 推送离线消息和通知
@@ -355,7 +357,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         log.error("Exception accoured ", cause);
         ctxMap.remove(ctx.channel().attr(USER_KEY).get());
-//        removeFromOnlineMap(ctx);
+        removeFromOnlineMap(ctx);
         cause.printStackTrace();
         ctx.close();
     }
@@ -392,7 +394,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 ctx.channel().attr(USER_KEY).get() != null) {
             log.info("handleRemoved userId={}", ctx.channel().attr(USER_KEY).get());
             ctxMap.remove(ctx.channel().attr(USER_KEY).get());
-//            removeFromOnlineMap(ctx);
+            removeFromOnlineMap(ctx);
         }
         super.handlerRemoved(ctx);
     }
@@ -404,7 +406,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 MsgEntity msgEntity = new MsgEntity();
                 msgEntity.setType(msgEntity.getType());
                 msgEntity.setToId(userId);
-                ChannelHandlerContext ctx = ctxMap.get(Integer.valueOf(userId));
                 sendMessage(Integer.valueOf(userId), msgEntity);
             } catch (Exception e){
                 log.error("send inform msg error, userId={}", userId, e);
