@@ -126,8 +126,20 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 || MessageType.QUIT_ROOM.getType().equals(msgEntity.getType())
                 || MessageType.QUIT_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
             String key = generateKey(msgEntity);
-            onlineMap.get(key).remove(ctx.channel().attr(USER_KEY).get());
-            userIdContainerMap.get(Integer.valueOf(msgEntity.getFromUserId())).remove(key);
+            Set<Integer> onlineSet = onlineMap.get(key);
+            if (onlineSet != null){
+                onlineSet.remove(ctx.channel().attr(USER_KEY).get());
+            } else {
+                log.warn("key not exist when try quit onlineMap, key={}", key);
+            }
+
+            Set<String> userIdContainerSet = userIdContainerMap.get(Integer.valueOf(msgEntity.getFromUserId()));
+            if (userIdContainerSet != null){
+                userIdContainerSet.remove(key);
+            } else {
+                log.warn("key not exist when try quit userIdContainerMap, key={}", key);
+            }
+
             return true;
         }
         return false;

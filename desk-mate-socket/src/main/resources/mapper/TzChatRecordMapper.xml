@@ -292,4 +292,22 @@
 
     order by create_time
   </select>
+
+  <select id="selectGroupChatRecord" parameterType="com.sunlands.deskmate.dto.RequestDTO" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tz_chat_record
+    where
+      to_id = #{destId} and type between 200 and 299 and id > #{maxReadId}
+    order by create_time
+  </select>
+
+  <select id="selectRoomChatRecord" parameterType="com.sunlands.deskmate.dto.RequestDTO" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tz_chat_record
+    where
+    to_id = #{destId} and type between 300 and 399 and id > #{maxReadId}
+    order by create_time
+  </select>
 </mapper>

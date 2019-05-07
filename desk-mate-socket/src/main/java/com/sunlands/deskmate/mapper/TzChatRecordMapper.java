@@ -33,4 +33,8 @@ public interface TzChatRecordMapper {
     int updateByPrimaryKey(TzChatRecord record);
 
     List<TzChatRecord> selectPrivateChatRecord(RequestDTO requestDTO);
+
+    List<TzChatRecord> selectGroupChatRecord(RequestDTO requestDTO);
+
+    List<TzChatRecord> selectRoomChatRecord(RequestDTO requestDTO);
 }
