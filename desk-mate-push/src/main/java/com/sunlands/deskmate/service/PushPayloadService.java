@@ -76,7 +76,9 @@ public class PushPayloadService implements BeanPropertiesUtil{
                 }
             }
         }
-        userIds.removeAll(pushDTO.getExcludeUserIds());
+        if(pushDTO.getExcludeUserIds() != null){
+            userIds.removeAll(pushDTO.getExcludeUserIds());
+        }
 
         if(userIds.size() == 0){
             result = new PushResult();
