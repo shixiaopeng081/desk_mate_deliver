@@ -51,6 +51,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
     private boolean APNS_PRODUCTION;
 
     public PushResult sendPushWithRegIds(PushDTO pushDTO) throws IOException {
+        PushResult result = null;
         Integer type = pushDTO.getType();
         List<Long> userIds = new ArrayList<>();
 
@@ -77,6 +78,9 @@ public class PushPayloadService implements BeanPropertiesUtil{
         }
         userIds.removeAll(pushDTO.getExcludeUserIds());
 
+        if(userIds.size() == 0){
+            result.statusCode = 0;
+        }
         //根据用户id，查询注册regid集合
         log.info("userIds = {}", userIds);
         BusinessResult businessResult = tzUserCenterService.findByIdIn(userIds);
@@ -87,7 +91,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
 
         JPushClient jPushClient = new JPushClient(MASTER_SECRET, APP_KEY);
         PushPayload pushPayload = buildPushObject_android_and_ios(pushDTO, regIds);
-        PushResult result = null;
+
         ObjectMapper mapper = new ObjectMapper();
         try {
             result = jPushClient.sendPush(pushPayload);
