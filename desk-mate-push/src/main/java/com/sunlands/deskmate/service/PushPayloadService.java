@@ -79,6 +79,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
         userIds.removeAll(pushDTO.getExcludeUserIds());
 
         if(userIds.size() == 0){
+            result = new PushResult();
             result.statusCode = 0;
         }
         //根据用户id，查询注册regid集合
