@@ -27,8 +27,8 @@ public class TestServiceTest {
     @Test
     public void test1() throws Exception {
 
-        List<Integer> list = new ArrayList<>();
-        list.add(1);
+        List<Long> list = new ArrayList<>();
+        list.add(1L);
         tzUserCenterService.findByIdIn(list);
     }
 
