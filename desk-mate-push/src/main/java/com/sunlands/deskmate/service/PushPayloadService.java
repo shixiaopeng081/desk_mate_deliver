@@ -81,6 +81,7 @@ public class PushPayloadService implements BeanPropertiesUtil{
         if(userIds.size() == 0){
             result = new PushResult();
             result.statusCode = 0;
+            return result;
         }
         //根据用户id，查询注册regid集合
         log.info("userIds = {}", userIds);
