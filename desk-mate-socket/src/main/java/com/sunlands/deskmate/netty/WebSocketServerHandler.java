@@ -3,6 +3,7 @@ package com.sunlands.deskmate.netty;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sunlands.deskmate.client.*;
+import com.sunlands.deskmate.sstwds.ContentSecCheck;
 import com.sunlands.deskmate.thread.ThreadFactory;
 import com.sunlands.deskmate.vo.MsgChangeInformEntity;
 import com.sunlands.deskmate.entity.MsgEntity;
@@ -50,6 +51,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     @Autowired
     private TzUserFriendService tzUserFriendService;
 
+    @Autowired
+    private ContentSecCheck contentSecCheck;
+
     private static final AttributeKey<Integer> USER_KEY = AttributeKey.newInstance("USER_KEY");
 
     private static final ConcurrentHashMap<Integer, ChannelHandlerContext> ctxMap = new ConcurrentHashMap<>();
@@ -93,6 +97,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             }
             log.info("recieve msgEntity={}", msgEntity);
             if (enterOrQuitProcess(ctx, msgEntity)) return;
+            msgEntity.setMessage(contentSecCheck.filterSensitiveWords(msgEntity.getMessage()));
             dealMsgEntiy(msgEntity);
         }
     }

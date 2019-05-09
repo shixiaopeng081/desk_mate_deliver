@@ -5,6 +5,7 @@ import com.sunlands.deskmate.client.TzLiveVideoService;
 import com.sunlands.deskmate.client.TzUserCenterService;
 import com.sunlands.deskmate.client.TzUserFriendService;
 import com.sunlands.deskmate.mapper.TzChatRecordMapper;
+import com.sunlands.deskmate.sstwds.ContentSecCheck;
 import com.sunlands.deskmate.vo.*;
 import com.sunlands.deskmate.dto.OnLinePeopleRequestDTO;
 import com.sunlands.deskmate.dto.RequestDTO;
@@ -44,6 +45,8 @@ public class ChatApi {
     private TzChatRecordMapper tzChatRecordMapper;
     @Autowired
     private TzLiveVideoService tzLiveVideoService;
+    @Autowired
+    private ContentSecCheck contentSecCheck;
 
     @ApiOperation(value = "查询未读聊天信息接口")
     @GetMapping("/unread")
@@ -89,6 +92,7 @@ public class ChatApi {
             msgEntity.setFromUserId("0");
         }
         log.info("send request start param={}", msgEntity);
+        msgEntity.setMessage(contentSecCheck.filterSensitiveWords(msgEntity.getMessage()));
         webSocketServerHandler.pushMsgToContainer(msgEntity);
         log.info("send request end");
         return BusinessResult.createSuccessInstance(null);
