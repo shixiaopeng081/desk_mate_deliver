@@ -120,6 +120,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 if (onlineSet != null){
                     for (Integer userId : onlineSet){
                         if (ctx.channel().attr(USER_KEY).get().intValue() != userId){
+                            log.info("send enter message to userId={}", userId);
                             sendMessage(userId, msgEntity);
                         }
                     }
@@ -312,7 +313,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     private List<Long> getUsersFriends(Long userId){
-        log.info("getUsersFriends start");
+        log.info("getUsersFriends start userId={}", userId);
         BusinessResult<List<TzUserFriendInfo>> friends = tzUserFriendService.friends(userId);
         log.info("getUsersFriends result={}", friends);
         if (friends.getCode().longValue() != 0){
@@ -330,7 +331,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     private List<Long> getUserIdsFromRoom(Long roomId) {
-        log.info("getUserIdsFromRoom start");
+        log.info("getUserIdsFromRoom start roomId={}", roomId);
         BusinessResult<List<Long>> result = tzLiveVideoService.getUserIdsByRoomId(3, roomId);
         log.info("getUserIdsFromRoom result={}", result);
         Long code = result.getCode();
@@ -347,7 +348,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     private List<Long> getUserIdsFromGroup(String groupId){
         List<Long> retList = new ArrayList<>();
-        log.info("getUserIdsFromGroup start");
+        log.info("getUserIdsFromGroup start groupId={}", groupId);
         BusinessResult<List<GroupUserVO>> result = deskMateGroupService.getGroupUserByGroupId(groupId);
         log.info("getUserIdsFromGroup result={}", result);
         long code = result.getCode();
