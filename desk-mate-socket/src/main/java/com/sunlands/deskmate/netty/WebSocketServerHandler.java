@@ -122,6 +122,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                         if (ctx.channel().attr(USER_KEY).get().intValue() != userId){
                             log.info("send enter message to userId={}", userId);
                             sendMessage(userId, msgEntity);
+                        } else {
+                            log.info("enter message not sent idOne={}, idTwo={}", ctx.channel().attr(USER_KEY).get(), userId);
                         }
                     }
                 }
@@ -160,6 +162,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         if (ctx != null){
             ctx.write(new TextWebSocketFrame(JSON.toJSONString(msg)));
             ctx.flush();
+        } else {
+            log.warn("connection not find userId={}", userId);
         }
     }
 
@@ -184,7 +188,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     public void pushMsgToContainer(MsgEntity msgEntity){
-        log.info("msgEntity = {}", msgEntity);
         Long pId = saveChatRecord(msgEntity);
         msgEntity.setId(pId.toString());
         List<Integer> userIdsInContainer = new ArrayList<>();
@@ -219,9 +222,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             log.info("close room, key={}", key);
             onlineMap.remove(key);
         }
-        log.info("onlineUserIds = {}", onlineMap.get(key));
+        log.info("key={}, onlineUserIds = {}", key, onlineMap.get(key));
         if (isContainer){
-            userIdsInContainer = getUserIdsByToId(Integer.valueOf(msgEntity.getFromUserId()), Integer.valueOf(msgEntity.getToId()), Integer.valueOf(msgEntity.getType()));
+            userIdsInContainer = getUserIdsByToId(msgEntity.getFromUserId(), msgEntity.getToId(), msgEntity.getType());
         }
         if (onlineUserIds != null){
             userIdsInContainer.removeAll(onlineUserIds);
@@ -295,15 +298,15 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         return userIdsSet;
     }
 
-    private List<Integer> getUserIdsByToId(Integer userId, Integer toId, Integer type){
+    private List<Integer> getUserIdsByToId(String userId, String toId, String type){
         List<Long> tempRet = new ArrayList<>();
         List<Integer> result = new ArrayList<>();
-        if (type.toString().startsWith("2")){ // 群聊相关
-            tempRet = getUserIdsFromGroup(toId.toString());
-        } else if (type.toString().startsWith("3")){ // 室聊相关
+        if (type.startsWith("2")){ // 群聊相关
+            tempRet = getUserIdsFromGroup(toId);
+        } else if (type.startsWith("3")){ // 室聊相关
             tempRet = getUserIdsFromRoom(Long.valueOf(toId));
-        } else if (MessageType.DYNAMIC_CREATE_ROOM.getType().equals(type.toString())
-                || MessageType.DYNAMIC_CLOSE_ROOM.getType().equals(type.toString())){ // 动态 创建、关闭房间
+        } else if (MessageType.DYNAMIC_CREATE_ROOM.getType().equals(type)
+                || MessageType.DYNAMIC_CLOSE_ROOM.getType().equals(type)){ // 动态 创建、关闭房间
             tempRet = getUsersFriends(Long.valueOf(userId));
         }
         for (Long temp : tempRet){
