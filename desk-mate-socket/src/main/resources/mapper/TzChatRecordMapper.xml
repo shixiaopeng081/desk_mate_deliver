@@ -286,9 +286,9 @@
     <include refid="Base_Column_List" />
     from tz_chat_record
     where
-    (from_user_id = #{userId} and to_id = #{destId} and type = #{type}) and id > #{maxReadId}
+    (from_user_id = #{userId} and to_id = #{destId} and type between 100 and 199) and id > #{maxReadId}
     or
-    (from_user_id = #{destId} and to_id = #{userId} and type = #{type}) and id > #{maxReadId}
+    (from_user_id = #{destId} and to_id = #{userId} and type between 100 and 199) and id > #{maxReadId}
 
     order by create_time
   </select>

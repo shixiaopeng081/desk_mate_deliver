@@ -320,7 +320,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         BusinessResult<List<TzUserFriendInfo>> friends = tzUserFriendService.friends(userId);
         log.info("getUsersFriends result={}", friends);
         if (friends.getCode().longValue() != 0){
-            log.warn("get friends userId abnormal! message={}", friends.getMessage());
+            log.warn("get friends userId abnormal! userId={}, message={}", userId, friends.getMessage());
             return new ArrayList<>();
         }
         List<TzUserFriendInfo> data = friends.getData();
@@ -339,7 +339,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         log.info("getUserIdsFromRoom result={}", result);
         Long code = result.getCode();
         if (code.longValue() != 0){
-            log.warn("get userIds from room abnormal! message={}", result.getMessage());
+            log.warn("get userIds from room abnormal! roomId={}, message={}", roomId, result.getMessage());
             return new ArrayList<>();
         }
         List<Long> data = result.getData();
@@ -356,7 +356,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         log.info("getUserIdsFromGroup result={}", result);
         long code = result.getCode();
         if (code != 0){
-            log.warn("get userIds from group abnormal! message={}", result.getMessage());
+            log.warn("get userIds from group abnormal! groupId={}, message={}", groupId, result.getMessage());
             return new ArrayList<>();
         }
         List<GroupUserVO> list = result.getData();
@@ -375,7 +375,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             String userIdStr = decoder.parameters() != null && decoder.parameters().containsKey("userId") ? decoder.parameters().get("userId").get(0) : null;
 
             if (userIdStr == null) {
-                log.info("paramter error. userId = {} ", userIdStr);
+                log.info("paramter userId is null");
                 return;
             }
             ctx.channel().attr(USER_KEY).set(Integer.valueOf(userIdStr));

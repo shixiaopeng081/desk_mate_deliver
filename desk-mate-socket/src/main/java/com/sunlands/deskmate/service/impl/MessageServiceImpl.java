@@ -30,7 +30,7 @@ import java.util.Map;
 @Service("messageService")
 @Slf4j
 public class MessageServiceImpl implements MessageService {
-    
+
     @Autowired
     private TzChatRecordMapper messageMapper;
     @Autowired
@@ -61,25 +61,23 @@ public class MessageServiceImpl implements MessageService {
         List<TzChatRecordVO> result = new ArrayList<>();
         if (MessageType.PRIVATE_CHAT.getType().equals(requestDTO.getType())){
             tzChatRecords = messageMapper.selectPrivateChatRecord(requestDTO);
-        } else if (MessageType.GROUP_CHAT.getType().equals(requestDTO.getType())
-                || MessageType.ROOM_CHAT.getType().equals(requestDTO.getType())){
-            TzChatRecordExample example = new TzChatRecordExample();
-            example.createCriteria().andToIdEqualTo(requestDTO.getDestId()).andTypeEqualTo(requestDTO.getType()).andIdGreaterThan(Long.valueOf(requestDTO.getMaxReadId()));
-            example.setOrderByClause("create_time");
-            tzChatRecords = messageMapper.selectByExample(example);
+        } else if (MessageType.GROUP_CHAT.getType().equals(requestDTO.getType())){
+            tzChatRecords = messageMapper.selectGroupChatRecord(requestDTO);
+        } else if (MessageType.ROOM_CHAT.getType().equals(requestDTO.getType())){
+            tzChatRecords = messageMapper.selectRoomChatRecord(requestDTO);
         } else {
             return new ArrayList<>();
         }
         for (TzChatRecord r : tzChatRecords){
             TzChatRecordVO vo = new TzChatRecordVO();
             vo.setId(r.getId() == null ? "" : r.getId().toString());
-            vo.setContentId(r.getContentId() == null ? "" : r.getContentId().toString());
-            vo.setContentType(r.getContentType() == null ? "" : r.getContentType().toString());
+            vo.setContentId(r.getContentId());
+            vo.setContentType(r.getContentType());
             vo.setCreateTime(r.getCreateTime());
-            vo.setToId(r.getToId() == null ? "" : r.getToId().toString());
-            vo.setType(r.getType() == null ? "" : r.getType().toString());
+            vo.setToId(r.getToId());
+            vo.setType(r.getType());
             vo.setExtras(JSON.parseObject(r.getExtras(), Map.class));
-            vo.setFromUserId(r.getFromUserId() == null ? "" : r.getFromUserId().toString());
+            vo.setFromUserId(r.getFromUserId());
             vo.setMessage(r.getMessage());
             result.add(vo);
         }
