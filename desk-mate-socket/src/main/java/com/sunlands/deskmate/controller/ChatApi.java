@@ -47,16 +47,17 @@ public class ChatApi {
 
     @ApiOperation(value = "查询未读聊天信息接口")
     @GetMapping("/unread")
-//    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     public BusinessResult<List<TzChatRecordVO>> unreadMessage(RequestDTO requestDTO) {
+        log.info("unreadMessage request start param={}", requestDTO);
         if (requestDTO.getType() == null || requestDTO.getDestId() == null || requestDTO.getUserId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
-
         }
         if (StringUtils.isBlank(requestDTO.getMaxReadId())){
             requestDTO.setMaxReadId("0");
         }
         List<TzChatRecordVO> tzChatRecords = messageService.queryUnreadRecord(requestDTO);
+        log.info("unreadMessage request end result={}", tzChatRecords);
         return BusinessResult.createSuccessInstance(tzChatRecords);
     }
 
@@ -68,7 +69,9 @@ public class ChatApi {
         if (StringUtils.isBlank(requestDTO.getDestId())){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
+        log.info("peopleNum request start param={}", requestDTO);
         Set<Integer> list = webSocketServerHandler.getOnlineUserIdByRoomId(Integer.valueOf(requestDTO.getDestId()), Integer.valueOf(MessageType.ROOM_CHAT.getType()));
+        log.info("peopleNum request end result={}", list);
         return BusinessResult.createSuccessInstance(list);
     }
 
@@ -85,7 +88,9 @@ public class ChatApi {
         if (StringUtils.isBlank(msgEntity.getFromUserId())){
             msgEntity.setFromUserId("0");
         }
+        log.info("send request start param={}", msgEntity);
         webSocketServerHandler.pushMsgToContainer(msgEntity);
+        log.info("send request end");
         return BusinessResult.createSuccessInstance(null);
     }
     @Autowired
@@ -100,7 +105,9 @@ public class ChatApi {
         if (msgChangeInformEntity.getUserIds() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
+        log.info("inform request start param={}", msgChangeInformEntity);
         webSocketServerHandler.inform(msgChangeInformEntity);
+        log.info("inform reqeust end");
         return BusinessResult.createSuccessInstance(null);
     }
 

@@ -119,7 +119,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 log.info("send enter room msg to={}" , onlineSet);
                 if (onlineSet != null){
                     for (Integer userId : onlineSet){
-                        if (ctx.channel().attr(USER_KEY).get().intValue() != Integer.valueOf(msgEntity.getFromUserId())){
+                        if (ctx.channel().attr(USER_KEY).get().intValue() != userId){
                             sendMessage(userId, msgEntity);
                         }
                     }
@@ -135,9 +135,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             if (onlineSet != null){
                 onlineSet.remove(ctx.channel().attr(USER_KEY).get());
                 for (Integer userId : onlineSet){
-                    if (ctx.channel().attr(USER_KEY).get().intValue() != Integer.valueOf(msgEntity.getFromUserId())){
-                        sendMessage(userId, msgEntity);
-                    }
+                    sendMessage(userId, msgEntity);
                 }
             } else {
                 log.warn("key not exist when try quit onlineMap, key={}", key);
@@ -190,6 +188,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         msgEntity.setId(pId.toString());
         List<Integer> userIdsInContainer = new ArrayList<>();
         String key = "";
+        boolean isContainer = false;
         if (MessageType.PRIVATE_CHAT.getType().equals(msgEntity.getType())
                 || MessageType.SHARE_GROUP_TO_PRIVATE.getType().equals(msgEntity.getType())
                 || MessageType.SHARE_ROOM_TO_PRIVATE.getType().equals(msgEntity.getType())){
@@ -197,7 +196,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             userIdsInContainer.add(Integer.valueOf(msgEntity.getToId()));
             key = getPrivateChatRoomKey(msgEntity);
         } else {
-            userIdsInContainer = getUserIdsByToId(Integer.valueOf(msgEntity.getFromUserId()), Integer.valueOf(msgEntity.getToId()), Integer.valueOf(msgEntity.getType()));
+            isContainer = true;
             key = msgEntity.getType().substring(0,1) + ":" + msgEntity.getToId();
         }
         Set<Integer> onlineUserIds = onlineMap.get(key);
@@ -215,12 +214,14 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         } else {
             log.warn("online users is null, key={}", key);
         }
-
         if (MessageType.CLOSE_ROOM.getType().equals(msgEntity.getType())){
             log.info("close room, key={}", key);
             onlineMap.remove(key);
         }
         log.info("onlineUserIds = {}", onlineMap.get(key));
+        if (isContainer){
+            userIdsInContainer = getUserIdsByToId(Integer.valueOf(msgEntity.getFromUserId()), Integer.valueOf(msgEntity.getToId()), Integer.valueOf(msgEntity.getType()));
+        }
         if (onlineUserIds != null){
             userIdsInContainer.removeAll(onlineUserIds);
         }
@@ -259,7 +260,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         informEntity.setType(Integer.valueOf(msgEntity.getType().substring(0,1)));
         log.info("push inform start entity={} ", informEntity);
         BusinessResult businessResult = tzPushInformService.pushInform(informEntity);
-        log.info("push inform end resut={}", businessResult);
+        log.info("push inform end result={}", businessResult);
     }
 
     private void doPushMessage(MsgEntity msgEntity, List<Integer> uIds) {
@@ -314,7 +315,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         log.info("getUsersFriends start");
         BusinessResult<List<TzUserFriendInfo>> friends = tzUserFriendService.friends(userId);
         log.info("getUsersFriends result={}", friends);
-        if (friends.getCode() != 0){
+        if (friends.getCode().longValue() != 0){
             log.warn("get friends userId abnormal! message={}", friends.getMessage());
             return new ArrayList<>();
         }
@@ -349,7 +350,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         log.info("getUserIdsFromGroup start");
         BusinessResult<List<GroupUserVO>> result = deskMateGroupService.getGroupUserByGroupId(groupId);
         log.info("getUserIdsFromGroup result={}", result);
-        Long code = result.getCode();
+        long code = result.getCode();
         if (code != 0){
             log.warn("get userIds from group abnormal! message={}", result.getMessage());
             return new ArrayList<>();
