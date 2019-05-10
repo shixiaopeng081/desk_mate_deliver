@@ -25,6 +25,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -97,7 +98,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             }
             log.info("recieve msgEntity={}", msgEntity);
             if (enterOrQuitProcess(ctx, msgEntity)) return;
-            msgEntity.setMessage(contentSecCheck.filterSensitiveWords(msgEntity.getMessage()));
+            if (StringUtils.isNotBlank(msgEntity.getMessage())){
+                msgEntity.setMessage(contentSecCheck.filterSensitiveWords(msgEntity.getMessage()));
+            }
             dealMsgEntiy(msgEntity);
         }
     }

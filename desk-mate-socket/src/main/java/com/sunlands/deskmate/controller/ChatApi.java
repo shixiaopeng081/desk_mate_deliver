@@ -92,7 +92,9 @@ public class ChatApi {
             msgEntity.setFromUserId("0");
         }
         log.info("send request start param={}", msgEntity);
-        msgEntity.setMessage(contentSecCheck.filterSensitiveWords(msgEntity.getMessage()));
+        if (StringUtils.isNotBlank(msgEntity.getMessage())){
+            msgEntity.setMessage(contentSecCheck.filterSensitiveWords(msgEntity.getMessage()));
+        }
         webSocketServerHandler.pushMsgToContainer(msgEntity);
         log.info("send request end");
         return BusinessResult.createSuccessInstance(null);
