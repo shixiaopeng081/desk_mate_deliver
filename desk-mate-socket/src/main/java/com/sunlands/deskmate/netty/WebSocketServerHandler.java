@@ -229,6 +229,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         if (MessageType.CLOSE_ROOM.getType().equals(msgEntity.getType())){
             log.info("close room, key={}", key);
             onlineMap.remove(key);
+            return;
         }
         log.info("key={}, onlineUserIds = {}", key, onlineMap.get(key));
         if (isContainer){
