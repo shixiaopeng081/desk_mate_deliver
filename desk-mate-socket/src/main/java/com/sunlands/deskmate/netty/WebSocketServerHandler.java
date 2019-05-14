@@ -464,7 +464,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         for (String userId : userIds){
             try {
                 MsgEntity msgEntity = new MsgEntity();
-                msgEntity.setType(msgEntity.getType());
+                msgEntity.setType(msgChangeInformEntity.getType());
                 msgEntity.setToId(userId);
                 sendMessage(Integer.valueOf(userId), msgEntity);
             } catch (Exception e){
