@@ -15,6 +15,8 @@ public interface MessageRepository extends JpaRepository<MessageDO, Integer> {
 
     MessageDO findAllByUserIdAndBusinessIdAndType(Integer userId, String businessId, String type);
 
+    MessageDO findFirstByUserIdAndType(Integer userId, String type);
+
     List<MessageDO> findAllByBusinessIdAndType(String businessId, String type);
 
     List<MessageDO> findAllByUserIdAndIsReadOrderByUpdateDateTimeDesc(Integer userId, Boolean isRead);
