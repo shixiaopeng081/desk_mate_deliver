@@ -279,8 +279,13 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     private void doPushMessage(MsgEntity msgEntity, List<Integer> uIds) {
         PushMessageEntity messageEntity  = new PushMessageEntity();
         messageEntity.setUserIds(uIds);
-        messageEntity.setType(msgEntity.getType());
-        messageEntity.setBusinessId(msgEntity.getToId());
+        String type = msgEntity.getType();
+        messageEntity.setType(type);
+        if (type.startsWith("1")){
+            messageEntity.setBusinessId(msgEntity.getFromUserId());
+        } else {
+            messageEntity.setBusinessId(msgEntity.getToId());
+        }
         messageEntity.setContent(msgEntity.getMessage());
         messageEntity.setIsGroupSend(false);
         log.info("push message start entity={} ", messageEntity);
