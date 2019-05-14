@@ -106,7 +106,6 @@ public class ChatApi {
 
     @ApiOperation(value = "消息变动通知接口")
     @PostMapping("/inform")
-    @PreAuthorize("isAnonymous()")
     public BusinessResult inform(@RequestBody MsgChangeInformEntity msgChangeInformEntity) {
         if (msgChangeInformEntity.getUserIds() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
