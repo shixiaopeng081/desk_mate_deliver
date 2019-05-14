@@ -3,9 +3,10 @@ eureka:
         fetch-registry: true
         register-with-eureka: true
         service-url:
-            defaultZone: http://sunlands:HL9i8gWoHuKLmEr9@62.234.206.233:8761/eureka/
+            defaultZone: http://172.17.127.71:8761/eureka,http://172.17.127.72:8761/eureka,http://172.17.127.73:8761/eureka
     instance:
         hostname: localhost
+        instance-id: ${spring.cloud.client.ipAddress}:${spring.application.name}:${server.port}
         lease-expiration-duration-in-seconds: 10
         lease-renewal-interval-in-seconds: 3
         prefer-ip-address: true
@@ -16,9 +17,9 @@ eureka:
 
 spring:
     datasource:
-        url: jdbc:mysql://bj-cdb-fmhcv6zw.sql.tencentcdb.com:3306/zlcx_tongzhuo?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
-        username: zlcx_wx
-        password: root456$%^
+        url: jdbc:mysql://rm-2ze587km5m0ccrlmu.mysql.rds.aliyuncs.com:3306/zlcx_tongzhuo?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+        username: tongzhuo
+        password: tz20190513=-
         #连接池的配置信息
         initialSize: 10
         minIdle: 3
@@ -34,11 +35,23 @@ spring:
         poolPreparedStatements: true
         maxPoolPreparedStatementPerConnectionSize: 20
     redis:
-            open: true  # 是否开启redis缓存  true开启   false关闭
-            database: 2
-            host: 62.234.206.233
-            port: 16379
-            password: SunLands2018      # 密码（默认为空）
-            timeout: 6000  # 连接超时时长（毫秒）
+        open: true  # 是否开启redis缓存  true开启   false关闭
+        database: 22
+        host: r-2zed8ab56d8f15b4.redis.rds.aliyuncs.com
+        port: 6379
+        password: Sunlands2017      # 密码（默认为空）
+        timeout: 6000  # 连接超时时长（毫秒）
 
 queue: hsk_queue_pro
+
+security:
+   oauth2:
+     resource:
+       token-info-uri: http://localhost:9666/oauth/check_token
+     client:
+       client-id: message
+       client-secret: 123456
+       access-token-uri: http://localhost:9666/oauth/token
+
+ribbon:
+  ReadTimeout: 20000
