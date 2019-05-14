@@ -146,6 +146,7 @@ public class MessageService implements BeanPropertiesUtil {
         msgChangeInformEntity.setType("999");
         List<String> stringList = userIds.stream().map(userId -> String.valueOf(userId)).collect(Collectors.toList());
         msgChangeInformEntity.setUserIds(stringList);
+        log.info("调用 socket 服务通知");
         deskMateSocketService.inform(msgChangeInformEntity);
 
         CompletableFuture.runAsync(() -> {
