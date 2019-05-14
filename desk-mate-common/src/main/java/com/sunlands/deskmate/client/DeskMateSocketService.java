@@ -16,7 +16,7 @@ import java.util.List;
  * @author shixiaopeng
  */
 @SuppressWarnings("unused")
-@FeignClient(value = "desk-mate-socket", configuration = OauthFeignConfig.class)
+@FeignClient(value = "desk-mate-socket")
 public interface DeskMateSocketService {
 
     @PostMapping("/chat/inform")
