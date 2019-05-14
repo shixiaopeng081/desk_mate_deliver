@@ -52,6 +52,7 @@ security:
        client-id: message
        client-secret: 123456
        access-token-uri: http://172.17.127.119:9666/oauth/token
+       grant-type: client_credentials
 
 ribbon:
   ReadTimeout: 20000
