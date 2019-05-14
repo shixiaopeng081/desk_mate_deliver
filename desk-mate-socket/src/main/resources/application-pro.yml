@@ -45,14 +45,14 @@ spring:
 queue: hsk_queue_pro
 
 security:
-   oauth2:
-     resource:
-       token-info-uri: http://172.17.127.119:9666/oauth/check_token
-     client:
-       client-id: message
-       client-secret: 123456
-       access-token-uri: http://172.17.127.119:9666/oauth/token
-       grant-type: client_credentials
+  oauth2:
+    resource:
+      token-info-uri: http://172.17.127.119:9666/oauth/check_token
+    client:
+      client-id: message
+      client-secret: 123456
+      access-token-uri: http://172.17.127.119:9666/oauth/token
+      grant-type: client_credentials
 
 ribbon:
   ReadTimeout: 20000
