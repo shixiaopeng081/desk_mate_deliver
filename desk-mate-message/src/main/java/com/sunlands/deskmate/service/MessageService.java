@@ -154,8 +154,12 @@ public class MessageService implements BeanPropertiesUtil {
             MessageRecordDO messageRecordDO = new MessageRecordDO();
             copyNonNullProperties(messageDTO, messageRecordDO);
             log.info("messageRecordDO = {} ", messageRecordDO);
-            messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
-            messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
+            if(messageDTO.getExcludeUserIds() != null){
+                messageRecordDO.setExcludeUserIds(String.join(",", messageDTO.getExcludeUserIds().toString()));
+            }
+            if(messageDTO.getUserIds() != null){
+                messageRecordDO.setUserIds(String.join(",", messageDTO.getUserIds().toString()));
+            }
             messageRecordRepository.save(messageRecordDO);
             messageSystemRepository.save(messageSystemDOList);
         });
