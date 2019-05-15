@@ -44,7 +44,7 @@ public class MessageService implements BeanPropertiesUtil {
 
     final  String [] userId_type_type  = {"798", "799"};//根据userId和type定义一条消息
 
-    final  String [] userId_businessId_type  = {"1", "2", "3", "70", "71"};//根据userId和business定义一条消息
+    final  String [] userId_businessId_type  = {"1", "2", "3", "70", "71", "74", "75"};//根据userId和business定义一条消息
 
     @Transactional(rollbackFor = Exception.class)
     public void createPerson(MessageDTO messageDTO){
