@@ -41,7 +41,9 @@ public class MessageService implements BeanPropertiesUtil {
     @Value("${message.type}")
     private String messageType;
 
-    final  String [] specialType  = {"798", "799"};
+    final  String [] userId_type_type  = {"798", "799"};//根据userId和type定义一条消息
+
+    final  String [] userId_businessId_type  = {"1", "2", "3"};//根据userId和business定义一条消息
 
     public void createPerson(MessageDTO messageDTO){
         MessageDO messageDO = new MessageDO();
@@ -55,16 +57,32 @@ public class MessageService implements BeanPropertiesUtil {
             isSystem= true;
         }
 
-        List<String> list = Lists.newArrayList(specialType);
+        boolean userId_businessId_type_flag = false;
+        List<String> userIdBusinessIdType = Lists.newArrayList(userId_businessId_type);
+        for(String str : userIdBusinessIdType){
+            if(messageDO.getType().startsWith(str)){
+                userId_businessId_type_flag = true;
+                break;
+            }
+        }
+
+        List<String> userIdTypeType = Lists.newArrayList(userId_type_type);
+        boolean userId_type_type_flag = false;
+        if(userIdTypeType.contains(messageDO.getType())){
+            userId_type_type_flag = true;
+        }
 
         List<Integer> userIds = messageDTO.getUserIds();
         for(Integer userId : userIds){
             MessageDO messageDODB;
-            if(list.contains(messageDO.getType())){
+            if(userId_businessId_type_flag){
+                messageDODB = messageRepository.findFirstByUserIdAndBusinessId(userId, messageDO.getBusinessId());
+            }else if(userId_type_type_flag){
                 messageDODB = messageRepository.findFirstByUserIdAndType(userId, messageDO.getType());
             }else{
                 messageDODB = messageRepository.findAllByUserIdAndBusinessIdAndType(userId, messageDO.getBusinessId(), messageDO.getType());
             }
+
             if(messageDODB != null){
                 //修改
                 messageDODB.setUnreadCount(messageDODB.getUnreadCount() + 1);
