@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +46,7 @@ public class MessageService implements BeanPropertiesUtil {
 
     final  String [] userId_businessId_type  = {"1", "2", "3", "70", "71"};//根据userId和business定义一条消息
 
+    @Transactional(rollbackFor = Exception.class)
     public void createPerson(MessageDTO messageDTO){
         MessageDO messageDO = new MessageDO();
         copyNonNullProperties(messageDTO, messageDO);
@@ -110,6 +112,7 @@ public class MessageService implements BeanPropertiesUtil {
         noticeAndSave(messageDTO, userIds, messageSystemDOList);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void createGroup(MessageDTO messageDTO){
         MessageDO messageDO = new MessageDO();
         copyNonNullProperties(messageDTO, messageDO);
