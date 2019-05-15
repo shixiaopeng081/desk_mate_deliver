@@ -122,7 +122,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             if (oldSet2 != null){
                 oldSet2.add(key);
             }
-            if (!MessageType.ENTER_PRIVATE_CHAT.getType().equals(msgEntity.getType())){
+            if (MessageType.ENTER_ROOM.getType().equals(msgEntity.getType())){
                 Set<Integer> onlineSet = onlineMap.get(key);
                 log.info("send enter room msg to={}" , onlineSet);
                 if (onlineSet != null){
@@ -145,9 +145,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             Set<Integer> onlineSet = onlineMap.get(key);
             if (onlineSet != null){
                 onlineSet.remove(ctx.channel().attr(USER_KEY).get());
-                for (Integer userId : onlineSet){
-                    sendMessage(userId, msgEntity);
-                }
             } else {
                 log.warn("key not exist when try quit onlineMap, key={}", key);
             }
@@ -277,9 +274,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     private void doPushMessage(MsgEntity msgEntity, List<Integer> uIds) {
+        String type = msgEntity.getType();
+        if (type.startsWith("3")){
+            return;
+        }
         PushMessageEntity messageEntity  = new PushMessageEntity();
         messageEntity.setUserIds(uIds);
-        String type = msgEntity.getType();
         messageEntity.setType(type);
         if (type.startsWith("1")){
             messageEntity.setBusinessId(msgEntity.getFromUserId());
