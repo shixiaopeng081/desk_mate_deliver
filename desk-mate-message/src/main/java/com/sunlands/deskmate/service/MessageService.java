@@ -92,6 +92,7 @@ public class MessageService implements BeanPropertiesUtil {
                 messageDODB.setContent(messageDTO.getContent());
                 messageDODB.setTitle(messageDTO.getTitle());
                 messageDODB.setType(messageDO.getType());
+                messageDODB.setBusinessId(messageDO.getBusinessId());
 //            messageDODB.setAvatarUrl(messageDTO.getAvatarUrl());
                 messageDOList.add(messageDODB);
             }else{
@@ -156,6 +157,7 @@ public class MessageService implements BeanPropertiesUtil {
                     messageDB.setContent(messageDTO.getContent());
                     messageDB.setTitle(messageDTO.getTitle());
                     messageDB.setType(messageDO.getType());
+                    messageDB.setBusinessId(messageDO.getBusinessId());
                     messageDOList.add(messageDB);
                 }
                 if(isSystem){
