@@ -1,6 +1,7 @@
 package com.sunlands.deskmate.service;
 
 
+import com.google.common.collect.Lists;
 import com.sunlands.deskmate.client.DeskMateGroupService;
 import com.sunlands.deskmate.client.DeskMateSocketService;
 import com.sunlands.deskmate.domain.MessageDO;
@@ -40,6 +41,8 @@ public class MessageService implements BeanPropertiesUtil {
     @Value("${message.type}")
     private String messageType;
 
+    final  String [] specialType  = {"798", "799"};
+
     public void createPerson(MessageDTO messageDTO){
         MessageDO messageDO = new MessageDO();
         copyNonNullProperties(messageDTO, messageDO);
@@ -52,9 +55,16 @@ public class MessageService implements BeanPropertiesUtil {
             isSystem= true;
         }
 
+        List<String> list = Lists.newArrayList(specialType);
+
         List<Integer> userIds = messageDTO.getUserIds();
         for(Integer userId : userIds){
-            MessageDO messageDODB = messageRepository.findAllByUserIdAndBusinessIdAndType(userId, messageDO.getBusinessId(), messageDO.getType());
+            MessageDO messageDODB;
+            if(list.contains(messageDO.getType())){
+                messageDODB = messageRepository.findFirstByUserIdAndType(userId, messageDO.getType());
+            }else{
+                messageDODB = messageRepository.findAllByUserIdAndBusinessIdAndType(userId, messageDO.getBusinessId(), messageDO.getType());
+            }
             if(messageDODB != null){
                 //修改
                 messageDODB.setUnreadCount(messageDODB.getUnreadCount() + 1);
