@@ -33,7 +33,7 @@ spring:
         properties:
             hibernate:
                 format_sql: true
-        show-sql: true
+        show-sql: false
     redis:
         database: 22
         host: 172.17.69.178
