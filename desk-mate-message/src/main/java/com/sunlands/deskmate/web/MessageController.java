@@ -77,7 +77,7 @@ public class MessageController {
     }
 
     private String checkData(MessageDTO messageDTO){
-        if(!messageDTO.getIsGroupSend()){
+        if(messageDTO.getIsGroupSend() == null || !messageDTO.getIsGroupSend()){
             List<Integer> userIds = messageDTO.getUserIds();
             if(userIds == null || userIds.size() == 0){
                 return "userIdsb不能为空";
