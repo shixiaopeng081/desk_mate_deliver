@@ -97,10 +97,13 @@ public class MessageService implements BeanPropertiesUtil {
 //            messageDODB.setAvatarUrl(messageDTO.getAvatarUrl());
                 messageDOList.add(messageDODB);
             }else{
+                MessageDO messageDOSave = new MessageDO();
+                copyNonNullProperties(messageDO, messageDOSave);
+
                 //新增
-                messageDO.setUserId(userId);
-                messageDO.setUnreadCount(1);
-                messageDOList.add(messageDO);
+                messageDOSave.setUserId(userId);
+                messageDOSave.setUnreadCount(1);
+                messageDOList.add(messageDOSave);
             }
             if(isSystem){
                 MessageSystemDO messageSystemDO = new MessageSystemDO();
