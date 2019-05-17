@@ -36,7 +36,7 @@ public class JpushApiController {
         if(result != null){
             BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_INVALIDE, result);
         }
-
+        log.info("pushDTO = {}", pushDTO);
         PushResult pushResult = pushPayloadService.sendPushWithRegIds(pushDTO);
         if(pushResult.statusCode == 0){
             return BusinessResult.createSuccessInstance(null);
