@@ -143,6 +143,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             Set<Integer> onlineSet = onlineMap.get(key);
             if (onlineSet != null){
                 onlineSet.remove(ctx.channel().attr(USER_KEY).get());
+                if (MessageType.QUIT_ROOM.getType().equals(msgEntity.getType())){
+                    for (Integer userId : onlineSet){
+                        sendMessage(userId, msgEntity);
+                    }
+                }
             } else {
                 log.warn("key not exist when try quit onlineMap, key={}", key);
             }
