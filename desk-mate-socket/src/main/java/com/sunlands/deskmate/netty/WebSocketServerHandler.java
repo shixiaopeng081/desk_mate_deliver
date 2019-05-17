@@ -276,7 +276,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         PushInformEntity informEntity = new PushInformEntity();
         informEntity.setContent(msgEntity.getMessage());
         informEntity.setIds(offlineUserIds);
-        informEntity.setType(Integer.valueOf(msgEntity.getType().substring(0,1)));
+        informEntity.setType(1);
         log.info("push inform start entity={} ", informEntity);
         BusinessResult businessResult = tzPushInformService.pushInform(informEntity);
         log.info("push inform end result={}", businessResult);
