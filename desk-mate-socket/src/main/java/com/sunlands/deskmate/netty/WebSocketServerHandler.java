@@ -70,6 +70,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     @Autowired
     private TzPushMessageService tzPushMessageService;
 
+    public static final String PING_MSG = "ping";
+    public static final String PONG_MSG = "pong";
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof FullHttpRequest) {//建立连接的请求
@@ -86,6 +89,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
         } else if (frame instanceof TextWebSocketFrame) {//文本消息
             String request = ((TextWebSocketFrame) frame).text();
+            if (PING_MSG.equalsIgnoreCase(request)){
+                ctx.channel().write(new TextWebSocketFrame(PONG_MSG));
+                return;
+            }
             MsgEntity msgEntity = null;
             try {
                 msgEntity = JSONObject.parseObject(request, MsgEntity.class);
