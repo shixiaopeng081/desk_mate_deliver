@@ -15,25 +15,21 @@ eureka:
         wait-time-in-ms-when-sync-empty: 0
 spring:
     datasource:
-        driver-class-name: com.mysql.jdbc.Driver
-        druid:
-            initial-size: 50
-            max-active: 500
-            max-wait: 60000
-            min-idle: 50
-            test-on-borrow: false
-            test-on-return: false
-            test-while-idle: true
-            validation-query: SELECT 'x'
+        driver-class-name: com.p6spy.engine.spy.P6SpyDriver
         password: tz20190513=-
-        type: com.alibaba.druid.pool.DruidDataSource
-        url: jdbc:mysql://rm-2ze587km5m0ccrlmu.mysql.rds.aliyuncs.com:3306/zlcx_tongzhuo?useUnicode=true&autoReconnect=true&rewriteBatchedStatements=TRUE&useSSL=false
+#        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:p6spy:mysql://rm-2ze587km5m0ccrlmu.mysql.rds.aliyuncs.com:3306/zlcx_tongzhuo?useUnicode=true&autoReconnect=true&rewriteBatchedStatements=TRUE&useSSL=false
         username: tongzhuo
+        tomcat:
+            initial-size: 2
+            max-active: 2
+            min-idle: 2
+            max-idle: 2
+            test-on-borrow: true
     jpa:
         properties:
             hibernate:
-                format_sql: true
-        show-sql: true
+              show_sql: false
     redis:
         database: 22
         host: 172.17.69.178
@@ -53,6 +49,11 @@ security:
 
 ribbon:
   ReadTimeout: 20000
+
+logging:
+  level:
+    org.springframework.security: INFO
+    com.sunlands: INFO
 
 message:
     type: 76

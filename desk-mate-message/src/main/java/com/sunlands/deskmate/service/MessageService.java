@@ -23,6 +23,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,8 +45,9 @@ public class MessageService implements BeanPropertiesUtil {
 
     final  String [] userId_type_type  = {"798", "799"};//根据userId和type定义一条消息
 
-    final  String [] userId_businessId_type  = {"1", "2", "3", "70", "71"};//根据userId和business定义一条消息
+    final  String [] userId_businessId_type  = {"1", "2", "3", "70", "71", "74", "75"};//根据userId和business定义一条消息
 
+    @Transactional( rollbackFor = Exception.class, isolation = Isolation.REPEATABLE_READ)
     public void createPerson(MessageDTO messageDTO){
         MessageDO messageDO = new MessageDO();
         copyNonNullProperties(messageDTO, messageDO);
@@ -89,13 +92,18 @@ public class MessageService implements BeanPropertiesUtil {
                 messageDODB.setIsRead(false);
                 messageDODB.setContent(messageDTO.getContent());
                 messageDODB.setTitle(messageDTO.getTitle());
+                messageDODB.setType(messageDO.getType());
+                messageDODB.setBusinessId(messageDO.getBusinessId());
 //            messageDODB.setAvatarUrl(messageDTO.getAvatarUrl());
                 messageDOList.add(messageDODB);
             }else{
+                MessageDO messageDOSave = new MessageDO();
+                copyNonNullProperties(messageDO, messageDOSave);
+
                 //新增
-                messageDO.setUserId(userId);
-                messageDO.setUnreadCount(1);
-                messageDOList.add(messageDO);
+                messageDOSave.setUserId(userId);
+                messageDOSave.setUnreadCount(1);
+                messageDOList.add(messageDOSave);
             }
             if(isSystem){
                 MessageSystemDO messageSystemDO = new MessageSystemDO();
@@ -110,6 +118,7 @@ public class MessageService implements BeanPropertiesUtil {
         noticeAndSave(messageDTO, userIds, messageSystemDOList);
     }
 
+    @Transactional( rollbackFor = Exception.class, isolation = Isolation.REPEATABLE_READ)
     public void createGroup(MessageDTO messageDTO){
         MessageDO messageDO = new MessageDO();
         copyNonNullProperties(messageDTO, messageDO);
@@ -151,6 +160,8 @@ public class MessageService implements BeanPropertiesUtil {
                     messageDB.setIsRead(false);
                     messageDB.setContent(messageDTO.getContent());
                     messageDB.setTitle(messageDTO.getTitle());
+                    messageDB.setType(messageDO.getType());
+                    messageDB.setBusinessId(messageDO.getBusinessId());
                     messageDOList.add(messageDB);
                 }
                 if(isSystem){
