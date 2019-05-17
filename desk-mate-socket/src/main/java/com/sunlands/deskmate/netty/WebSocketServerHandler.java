@@ -86,7 +86,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
         } else if (frame instanceof TextWebSocketFrame) {//文本消息
             String request = ((TextWebSocketFrame) frame).text();
-            MsgEntity msgEntity =   null;
+            MsgEntity msgEntity = null;
             try {
                 msgEntity = JSONObject.parseObject(request, MsgEntity.class);
             } catch (Exception e){
@@ -130,8 +130,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                         if (ctx.channel().attr(USER_KEY).get().intValue() != userId){
                             log.info("send enter message to userId={}", userId);
                             sendMessage(userId, msgEntity);
-                        } else {
-                            log.info("enter message not sent idOne={}, idTwo={}", ctx.channel().attr(USER_KEY).get(), userId);
                         }
                     }
                 }
@@ -148,7 +146,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             } else {
                 log.warn("key not exist when try quit onlineMap, key={}", key);
             }
-
             Set<String> userIdContainerSet = userIdContainerMap.get(Integer.valueOf(msgEntity.getFromUserId()));
             if (userIdContainerSet != null){
                 userIdContainerSet.remove(key);
@@ -466,7 +463,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 MsgEntity msgEntity = new MsgEntity();
                 msgEntity.setType(msgChangeInformEntity.getType());
                 msgEntity.setToId(userId);
-                log.info("inform msgEntity={}", msgEntity);
                 sendMessage(Integer.valueOf(userId), msgEntity);
             } catch (Exception e){
                 log.error("send inform msg error, userId={}", userId, e);

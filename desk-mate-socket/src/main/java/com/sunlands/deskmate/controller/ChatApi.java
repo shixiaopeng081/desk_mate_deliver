@@ -69,10 +69,10 @@ public class ChatApi {
     @GetMapping("/userIdsOnline")
     @PreAuthorize("isAuthenticated()")
     public BusinessResult<Set<Integer>> peopleNum(OnLinePeopleRequestDTO requestDTO) {
+        log.info("peopleNum request start param={}", requestDTO);
         if (StringUtils.isBlank(requestDTO.getDestId())){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
-        log.info("peopleNum request start param={}", requestDTO);
         Set<Integer> list = webSocketServerHandler.getOnlineUserIdByRoomId(Integer.valueOf(requestDTO.getDestId()), Integer.valueOf(MessageType.ROOM_CHAT.getType()));
         log.info("peopleNum request end result={}", list);
         return BusinessResult.createSuccessInstance(list);
@@ -85,13 +85,13 @@ public class ChatApi {
     @PostMapping("/send")
     @PreAuthorize("isAuthenticated()")
     public BusinessResult send(@RequestBody MsgEntity msgEntity) {
+        log.info("send request start param={}", msgEntity);
         if (msgEntity.getToId() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
         if (StringUtils.isBlank(msgEntity.getFromUserId())){
             msgEntity.setFromUserId("0");
         }
-        log.info("send request start param={}", msgEntity);
         if (StringUtils.isNotBlank(msgEntity.getMessage())){
             msgEntity.setMessage(contentSecCheck.filterSensitiveWords(msgEntity.getMessage()));
         }
@@ -107,10 +107,10 @@ public class ChatApi {
     @ApiOperation(value = "消息变动通知接口")
     @PostMapping("/inform")
     public BusinessResult inform(@RequestBody MsgChangeInformEntity msgChangeInformEntity) {
+        log.info("inform request start param={}", msgChangeInformEntity);
         if (msgChangeInformEntity.getUserIds() == null){
             return BusinessResult.createInstance(CommonResultMessage.PARAMS_NOT_NULL);
         }
-        log.info("inform request start param={}", msgChangeInformEntity);
         webSocketServerHandler.inform(msgChangeInformEntity);
         log.info("inform reqeust end");
         return BusinessResult.createSuccessInstance(null);
