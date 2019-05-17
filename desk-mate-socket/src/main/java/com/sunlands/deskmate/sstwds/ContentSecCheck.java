@@ -52,7 +52,10 @@ public class ContentSecCheck {
 //    }
 
     public String filterSensitiveWords(String words){
-        return sensitiveWordsCheck.replaceSenstiveWords(words, "*");
+        long start = System.currentTimeMillis();
+        String result = sensitiveWordsCheck.replaceSenstiveWords(words, "*");
+        log.info("sensitive words check use time={}", (System.currentTimeMillis() - start));
+        return result;
     }
 
     /**
