@@ -18,6 +18,8 @@ import com.sunlands.deskmate.vo.MsgChangeInformEntity;
 import com.sunlands.deskmate.vo.response.BusinessResult;
 import com.sunlands.deskmate.vo.response.PageResultVO;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -79,43 +82,70 @@ public class MessageService implements BeanPropertiesUtil {
         for(Integer userId : userIds){
             MessageDO messageDODB;
             if(userId_businessId_type_flag){
-                messageDODB = messageRepository.findFirstByUserIdAndBusinessId(userId, messageDO.getBusinessId());
+                redisFairLock(messageDTO, messageDO, messageDOList, messageSystemDOList, isSystem, userId);
             }else if(userId_type_type_flag){
                 messageDODB = messageRepository.findFirstByUserIdAndType(userId, messageDO.getType());
+                saveOrUpdate(messageDTO, messageDO, messageDOList, messageSystemDOList, isSystem, userId, messageDODB);
             }else{
                 messageDODB = messageRepository.findAllByUserIdAndBusinessIdAndType(userId, messageDO.getBusinessId(), messageDO.getType());
+                saveOrUpdate(messageDTO, messageDO, messageDOList, messageSystemDOList, isSystem, userId, messageDODB);
             }
 
-            if(messageDODB != null){
-                //修改
-                messageDODB.setUnreadCount(messageDODB.getUnreadCount() + 1);
-                messageDODB.setIsRead(false);
-                messageDODB.setContent(messageDTO.getContent());
-                messageDODB.setTitle(messageDTO.getTitle());
-                messageDODB.setType(messageDO.getType());
-                messageDODB.setBusinessId(messageDO.getBusinessId());
-//            messageDODB.setAvatarUrl(messageDTO.getAvatarUrl());
-                messageDOList.add(messageDODB);
-            }else{
-                MessageDO messageDOSave = new MessageDO();
-                copyNonNullProperties(messageDO, messageDOSave);
 
-                //新增
-                messageDOSave.setUserId(userId);
-                messageDOSave.setUnreadCount(1);
-                messageDOList.add(messageDOSave);
-            }
-            if(isSystem){
-                MessageSystemDO messageSystemDO = new MessageSystemDO();
-                copyNonNullProperties(messageDTO, messageSystemDO);
-                messageSystemDO.setUserId(userId);
-                messageSystemDOList.add(messageSystemDO);
-            }
         }
 
         messageRepository.save(messageDOList);
         //调用消息通知接口
         noticeAndSave(messageDTO, userIds, messageSystemDOList);
+    }
+
+    private void redisFairLock(MessageDTO messageDTO, MessageDO messageDO, List<MessageDO> messageDOList, List<MessageSystemDO> messageSystemDOList, Boolean isSystem, Integer userId) {
+        MessageDO messageDODB;
+        RLock fairLock = redissonClient.getFairLock(userId + messageDO.getBusinessId());
+        try {
+            int waitTimeInSeconds = 3;
+            int leaseTimeInSeconds = 6;
+            if (fairLock.tryLock(waitTimeInSeconds, leaseTimeInSeconds, TimeUnit.SECONDS)) {
+                messageDODB = messageRepository.findFirstByUserIdAndBusinessId(userId, messageDO.getBusinessId());
+                saveOrUpdate(messageDTO, messageDO, messageDOList, messageSystemDOList, isSystem, userId, messageDODB);
+            } else {
+                log.error("getLock fail ,userId : {}, messageDO.getBusinessId() :{}", userId, messageDO.getBusinessId());
+                //无限重试
+                redisFairLock(messageDTO, messageDO, messageDOList, messageSystemDOList, isSystem, userId);
+            }
+        } catch (InterruptedException e) {
+            log.error("", e);
+        } finally {
+            fairLock.unlock();
+        }
+    }
+
+    private void saveOrUpdate(MessageDTO messageDTO, MessageDO messageDO, List<MessageDO> messageDOList, List<MessageSystemDO> messageSystemDOList, Boolean isSystem, Integer userId, MessageDO messageDODB) {
+        if (messageDODB != null) {
+            //修改
+            messageDODB.setUnreadCount(messageDODB.getUnreadCount() + 1);
+            messageDODB.setIsRead(false);
+            messageDODB.setContent(messageDTO.getContent());
+            messageDODB.setTitle(messageDTO.getTitle());
+            messageDODB.setType(messageDO.getType());
+            messageDODB.setBusinessId(messageDO.getBusinessId());
+//            messageDODB.setAvatarUrl(messageDTO.getAvatarUrl());
+            messageDOList.add(messageDODB);
+        } else {
+            MessageDO messageDOSave = new MessageDO();
+            copyNonNullProperties(messageDO, messageDOSave);
+
+            //新增
+            messageDOSave.setUserId(userId);
+            messageDOSave.setUnreadCount(1);
+            messageDOList.add(messageDOSave);
+        }
+        if (isSystem) {
+            MessageSystemDO messageSystemDO = new MessageSystemDO();
+            copyNonNullProperties(messageDTO, messageSystemDO);
+            messageSystemDO.setUserId(userId);
+            messageSystemDOList.add(messageSystemDO);
+        }
     }
 
     @Transactional( rollbackFor = Exception.class, isolation = Isolation.REPEATABLE_READ)
@@ -241,12 +271,14 @@ public class MessageService implements BeanPropertiesUtil {
     private final MessageRecordRepository messageRecordRepository;
     private final MessageSystemRepository messageSystemRepository;
     private final DeskMateSocketService deskMateSocketService;
+    private final RedissonClient redissonClient;
 
-    public MessageService(MessageRepository messageRepository, DeskMateGroupService deskMateGroupService, MessageRecordRepository messageRecordRepository, MessageSystemRepository messageSystemRepository, DeskMateSocketService deskMateSocketService) {
+    public MessageService(MessageRepository messageRepository, DeskMateGroupService deskMateGroupService, MessageRecordRepository messageRecordRepository, MessageSystemRepository messageSystemRepository, DeskMateSocketService deskMateSocketService, RedissonClient redissonClient) {
         this.messageRepository = messageRepository;
         this.deskMateGroupService = deskMateGroupService;
         this.messageRecordRepository = messageRecordRepository;
         this.messageSystemRepository = messageSystemRepository;
         this.deskMateSocketService = deskMateSocketService;
+        this.redissonClient = redissonClient;
     }
 }
