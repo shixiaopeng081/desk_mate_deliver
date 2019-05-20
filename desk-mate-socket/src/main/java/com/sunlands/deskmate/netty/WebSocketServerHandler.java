@@ -2,6 +2,7 @@ package com.sunlands.deskmate.netty;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.sunlands.deskmate.client.*;
 import com.sunlands.deskmate.sstwds.ContentSecCheck;
 import com.sunlands.deskmate.thread.ThreadFactory;
@@ -26,6 +27,7 @@ import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -174,11 +176,22 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     private void sendMessage(Integer userId, Object msg){
         ChannelHandlerContext ctx = ctxMap.get(userId);
         if (ctx != null){
-            ctx.write(new TextWebSocketFrame(JSON.toJSONString(msg)));
+            ctx.write(new TextWebSocketFrame(JSON.toJSONString(msg, SerializerFeature.WriteMapNullValue)));
             ctx.flush();
         } else {
             log.warn("connection not find userId={}", userId);
         }
+    }
+
+
+    public static void main(String[] args) {
+        MsgEntity e = new MsgEntity();
+        e.setMessage("test");
+        Map<String, Object> map = new HashMap<>();
+        map.put("message", "test");
+        map.put("contentId", null);
+        System.out.println(JSON.toJSONString(e, SerializerFeature.WriteMapNullValue));
+        System.out.println(JSON.toJSONString(map));
     }
 
     private String generateKey(MsgEntity msgEntity) {
@@ -311,6 +324,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         record.setExtras(JSON.toJSONString(msgEntity.getExtras()));
         record.setContentId(msgEntity.getContentId());
         record.setContentType(msgEntity.getContentType());
+        Date now = new Date();
+        record.setCreateTime(now);
+        msgEntity.setCreateTime(DateFormatUtils.format(now, "yyyy-MM-dd HH:mm:ss"));
         messageService.saveChatRecord(record);
         return record.getId();
     }
