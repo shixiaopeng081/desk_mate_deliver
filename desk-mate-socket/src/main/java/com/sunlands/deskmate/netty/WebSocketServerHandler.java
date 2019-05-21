@@ -443,7 +443,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         log.error("Exception accoured ", cause);
         ctxMap.remove(ctx.channel().attr(USER_KEY).get());
         removeFromOnlineMap(ctx);
-        cause.printStackTrace();
         ctx.close();
     }
 
@@ -482,6 +481,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             removeFromOnlineMap(ctx);
         }
         super.handlerRemoved(ctx);
+        ctx.close();
     }
 
     public void inform(MsgChangeInformEntity msgChangeInformEntity){
