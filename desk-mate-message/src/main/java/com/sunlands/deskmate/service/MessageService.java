@@ -18,6 +18,8 @@ import com.sunlands.deskmate.vo.MsgChangeInformEntity;
 import com.sunlands.deskmate.vo.response.BusinessResult;
 import com.sunlands.deskmate.vo.response.PageResultVO;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -43,9 +46,19 @@ public class MessageService implements BeanPropertiesUtil {
     @Value("${message.type}")
     private String messageType;
 
-    final  String [] userId_type_type  = {"798", "799"};//根据userId和type定义一条消息
+    /**
+     * 根据userId和type定义一条消息
+     */
+    private final String [] userId_type_type  = {"798", "799"};
 
-    final  String [] userId_businessId_type  = {"1", "2", "3", "70", "71", "74", "75"};//根据userId和business定义一条消息
+    /**
+     * 根据userId和business定义一条消息
+     */
+    private final  String [] userId_businessId_type;
+
+    {
+        userId_businessId_type = new String[]{"1", "2", "3", "70", "71", "74", "75"};
+    }
 
     @Transactional( rollbackFor = Exception.class, isolation = Isolation.REPEATABLE_READ)
     public void createPerson(MessageDTO messageDTO){
@@ -60,62 +73,88 @@ public class MessageService implements BeanPropertiesUtil {
             isSystem= true;
         }
 
-        boolean userId_businessId_type_flag = false;
+        Boolean useridBusinessidTypeFlag = false;
         List<String> userIdBusinessIdType = Lists.newArrayList(userId_businessId_type);
         for(String str : userIdBusinessIdType){
             if(messageDO.getType().startsWith(str)){
-                userId_businessId_type_flag = true;
+                useridBusinessidTypeFlag = true;
                 break;
             }
         }
 
         List<String> userIdTypeType = Lists.newArrayList(userId_type_type);
-        boolean userId_type_type_flag = false;
+        Boolean useridTypeTypeFlag = false;
         if(userIdTypeType.contains(messageDO.getType())){
-            userId_type_type_flag = true;
+            useridTypeTypeFlag = true;
         }
 
         List<Integer> userIds = messageDTO.getUserIds();
         for(Integer userId : userIds){
             MessageDO messageDODB;
-            if(userId_businessId_type_flag){
-                messageDODB = messageRepository.findFirstByUserIdAndBusinessId(userId, messageDO.getBusinessId());
-            }else if(userId_type_type_flag){
+            if(useridBusinessidTypeFlag){
+                redisFairLock(messageDTO, messageDO, messageDOList, messageSystemDOList, isSystem, userId);
+            }else if(useridTypeTypeFlag){
                 messageDODB = messageRepository.findFirstByUserIdAndType(userId, messageDO.getType());
+                saveOrUpdate(messageDTO, messageDO, messageDOList, messageSystemDOList, isSystem, userId, messageDODB);
             }else{
                 messageDODB = messageRepository.findAllByUserIdAndBusinessIdAndType(userId, messageDO.getBusinessId(), messageDO.getType());
+                saveOrUpdate(messageDTO, messageDO, messageDOList, messageSystemDOList, isSystem, userId, messageDODB);
             }
 
-            if(messageDODB != null){
-                //修改
-                messageDODB.setUnreadCount(messageDODB.getUnreadCount() + 1);
-                messageDODB.setIsRead(false);
-                messageDODB.setContent(messageDTO.getContent());
-                messageDODB.setTitle(messageDTO.getTitle());
-                messageDODB.setType(messageDO.getType());
-                messageDODB.setBusinessId(messageDO.getBusinessId());
-//            messageDODB.setAvatarUrl(messageDTO.getAvatarUrl());
-                messageDOList.add(messageDODB);
-            }else{
-                MessageDO messageDOSave = new MessageDO();
-                copyNonNullProperties(messageDO, messageDOSave);
 
-                //新增
-                messageDOSave.setUserId(userId);
-                messageDOSave.setUnreadCount(1);
-                messageDOList.add(messageDOSave);
-            }
-            if(isSystem){
-                MessageSystemDO messageSystemDO = new MessageSystemDO();
-                copyNonNullProperties(messageDTO, messageSystemDO);
-                messageSystemDO.setUserId(userId);
-                messageSystemDOList.add(messageSystemDO);
-            }
         }
 
         messageRepository.save(messageDOList);
         //调用消息通知接口
         noticeAndSave(messageDTO, userIds, messageSystemDOList);
+    }
+
+    private void redisFairLock(MessageDTO messageDTO, MessageDO messageDO, List<MessageDO> messageDOList, List<MessageSystemDO> messageSystemDOList, Boolean isSystem, Integer userId) {
+        MessageDO messageDODB;
+        RLock fairLock = redissonClient.getFairLock(userId + messageDO.getBusinessId());
+        try {
+            int waitTimeInSeconds = 3;
+            int leaseTimeInSeconds = 6;
+            if (fairLock.tryLock(waitTimeInSeconds, leaseTimeInSeconds, TimeUnit.SECONDS)) {
+                messageDODB = messageRepository.findFirstByUserIdAndBusinessId(userId, messageDO.getBusinessId());
+                saveOrUpdate(messageDTO, messageDO, messageDOList, messageSystemDOList, isSystem, userId, messageDODB);
+            } else {
+                log.error("getLock fail ,userId : {}, messageDO.getBusinessId() :{}", userId, messageDO.getBusinessId());
+                //无限重试
+                redisFairLock(messageDTO, messageDO, messageDOList, messageSystemDOList, isSystem, userId);
+            }
+        } catch (InterruptedException e) {
+            log.error("", e);
+        } finally {
+            fairLock.unlock();
+        }
+    }
+
+    private void saveOrUpdate(MessageDTO messageDTO, MessageDO messageDO, List<MessageDO> messageDOList, List<MessageSystemDO> messageSystemDOList, Boolean isSystem, Integer userId, MessageDO messageDODB) {
+        if (messageDODB != null) {
+            //修改
+            messageDODB.setUnreadCount(messageDODB.getUnreadCount() + 1);
+            messageDODB.setIsRead(false);
+            messageDODB.setContent(messageDTO.getContent());
+            messageDODB.setTitle(messageDTO.getTitle());
+            messageDODB.setType(messageDO.getType());
+            messageDODB.setBusinessId(messageDO.getBusinessId());
+            messageDOList.add(messageDODB);
+        } else {
+            MessageDO messageDOSave = new MessageDO();
+            copyNonNullProperties(messageDO, messageDOSave);
+
+            //新增
+            messageDOSave.setUserId(userId);
+            messageDOSave.setUnreadCount(1);
+            messageDOList.add(messageDOSave);
+        }
+        if (isSystem) {
+            MessageSystemDO messageSystemDO = new MessageSystemDO();
+            copyNonNullProperties(messageDTO, messageSystemDO);
+            messageSystemDO.setUserId(userId);
+            messageSystemDOList.add(messageSystemDO);
+        }
     }
 
     @Transactional( rollbackFor = Exception.class, isolation = Isolation.REPEATABLE_READ)
@@ -125,7 +164,6 @@ public class MessageService implements BeanPropertiesUtil {
         //查询该群里的消息
         List<MessageDO> messageDOListDB = messageRepository.findAllByBusinessIdAndType(messageDO.getBusinessId(), messageDO.getType());
         //已发过消息的用户集合
-        Map<Integer, Integer> userIdToIdMap = messageDOListDB.stream().collect(Collectors.toMap(o -> o.getUserId(), o -> o.getId()));
         Map<Integer, MessageDO> userIdToMessageDOMap = messageDOListDB.stream().collect(Collectors.toMap(o -> o.getUserId(), o -> o));
 
         //根据群id查询群用户列表
@@ -147,29 +185,7 @@ public class MessageService implements BeanPropertiesUtil {
 
             for (Integer userId : userIds){
                 MessageDO messageDB = userIdToMessageDOMap.get(userId);
-                if(messageDB == null){
-                    //新增
-                    MessageDO message = new MessageDO();
-                    copyNonNullProperties(messageDO, message);
-                    message.setUnreadCount(1);
-                    message.setUserId(userId);
-                    messageDOList.add(message);
-                }else{
-                    //更新
-                    messageDB.setUnreadCount(messageDB.getUnreadCount() + 1);
-                    messageDB.setIsRead(false);
-                    messageDB.setContent(messageDTO.getContent());
-                    messageDB.setTitle(messageDTO.getTitle());
-                    messageDB.setType(messageDO.getType());
-                    messageDB.setBusinessId(messageDO.getBusinessId());
-                    messageDOList.add(messageDB);
-                }
-                if(isSystem){
-                    MessageSystemDO messageSystemDO = new MessageSystemDO();
-                    copyNonNullProperties(messageDTO, messageSystemDO);
-                    messageSystemDO.setUserId(userId);
-                    messageSystemDOList.add(messageSystemDO);
-                }
+                saveOrUpdate(messageDTO, messageDO, messageDOList, messageSystemDOList, isSystem, userId, messageDB);
             }
             log.info("messageDOList = {} ", messageDOList);
             messageRepository.save(messageDOList);
@@ -214,10 +230,9 @@ public class MessageService implements BeanPropertiesUtil {
             messageList.add(message);
         }
         //修改为已读
-        List<MessageDO> list = messageDOList.stream().map(messageDO -> {
+        List<MessageDO> list = messageDOList.stream().peek(messageDO -> {
             messageDO.setIsRead(true);
             messageDO.setUnreadCount(0);
-            return messageDO;
         }).collect(Collectors.toList());
         messageRepository.save(list);
         return messageList;
@@ -241,12 +256,14 @@ public class MessageService implements BeanPropertiesUtil {
     private final MessageRecordRepository messageRecordRepository;
     private final MessageSystemRepository messageSystemRepository;
     private final DeskMateSocketService deskMateSocketService;
+    private final RedissonClient redissonClient;
 
-    public MessageService(MessageRepository messageRepository, DeskMateGroupService deskMateGroupService, MessageRecordRepository messageRecordRepository, MessageSystemRepository messageSystemRepository, DeskMateSocketService deskMateSocketService) {
+    public MessageService(MessageRepository messageRepository, DeskMateGroupService deskMateGroupService, MessageRecordRepository messageRecordRepository, MessageSystemRepository messageSystemRepository, DeskMateSocketService deskMateSocketService, RedissonClient redissonClient) {
         this.messageRepository = messageRepository;
         this.deskMateGroupService = deskMateGroupService;
         this.messageRecordRepository = messageRecordRepository;
         this.messageSystemRepository = messageSystemRepository;
         this.deskMateSocketService = deskMateSocketService;
+        this.redissonClient = redissonClient;
     }
 }
