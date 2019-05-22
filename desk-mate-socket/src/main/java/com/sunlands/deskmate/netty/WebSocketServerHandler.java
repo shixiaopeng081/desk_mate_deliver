@@ -94,6 +94,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
         } else if (frame instanceof TextWebSocketFrame) {//文本消息
             String request = ((TextWebSocketFrame) frame).text();
+            if (PING_MSG.equalsIgnoreCase(request)){
+                ctx.channel().write(new TextWebSocketFrame(PONG_MSG));
+                return;
+            }
             MsgEntity msgEntity = null;
             try {
                 msgEntity = JSONObject.parseObject(request, MsgEntity.class);
