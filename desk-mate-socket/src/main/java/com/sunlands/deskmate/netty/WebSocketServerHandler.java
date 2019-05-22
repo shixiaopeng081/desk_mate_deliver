@@ -180,12 +180,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         ChannelHandlerContext ctx = ctxMap.get(userId);
         if (ctx != null){
             ChannelFuture write = ctx.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(msg, SerializerFeature.WriteMapNullValue)));
-
             ThreadFactory.getThreadPoolExecutor().execute(new Runnable() {
                 @Override
                 public void run() {
                     if (!write.isSuccess()){
-                        log.info("send msg erro={}",msg);
+                        log.info("send msg cause={}, error={}", write.cause(), msg);
                     }
                 }
             });
