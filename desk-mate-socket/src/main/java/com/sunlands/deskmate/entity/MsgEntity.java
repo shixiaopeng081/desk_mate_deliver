@@ -31,5 +31,6 @@ public class MsgEntity {
     private  String contentType;
     @ApiModelProperty(value = "扩展属性")
     private Map<String, String> extras = new HashMap<>();
+    private String retype;
 
 }

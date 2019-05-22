@@ -94,10 +94,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
         } else if (frame instanceof TextWebSocketFrame) {//文本消息
             String request = ((TextWebSocketFrame) frame).text();
-            if (PING_MSG.equalsIgnoreCase(request)){
-                ctx.channel().write(new TextWebSocketFrame(PONG_MSG));
-                return;
-            }
             MsgEntity msgEntity = null;
             try {
                 msgEntity = JSONObject.parseObject(request, MsgEntity.class);
@@ -109,6 +105,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 return;
             }
             log.info("recieve msgEntity={}", msgEntity);
+            if (PING_MSG.equalsIgnoreCase(msgEntity.getRetype())){
+                enterOrQuitProcess(ctx, msgEntity);
+                ctx.channel().write(new TextWebSocketFrame(PONG_MSG));
+                return;
+            }
             if (enterOrQuitProcess(ctx, msgEntity)) return;
             if (StringUtils.isNotBlank(msgEntity.getMessage())){
                 msgEntity.setMessage(contentSecCheck.filterSensitiveWords(msgEntity.getMessage()));
@@ -134,7 +135,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             if (oldSet2 != null){
                 oldSet2.add(key);
             }
-            if (MessageType.ENTER_ROOM.getType().equals(msgEntity.getType())){
+            if (MessageType.ENTER_ROOM.getType().equals(msgEntity.getType()) && !PING_MSG.equals(msgEntity.getRetype())){
                 Set<Integer> onlineSet = onlineMap.get(key);
                 log.info("send enter room msg to={}" , onlineSet);
                 if (onlineSet != null){
@@ -183,6 +184,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             ThreadFactory.getThreadPoolExecutor().execute(new Runnable() {
                 @Override
                 public void run() {
+                    log.info("状态context.isRemoved={} write.isDone={} ,write.isCancelled={},write.isSuccess={},write.isVoid={}, write.cause={}",ctx.isRemoved(),write.isDone(),write.isCancelled(),write.isSuccess(),write.isVoid(), write.cause());
                     if (!write.isSuccess()){
                         log.info("send msg cause={}, error={}", write.cause(), msg);
                     }
@@ -266,6 +268,14 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         }
         if (onlineUserIds != null){
             userIdsInContainer.removeAll(onlineUserIds);
+        }
+        if (MessageType.SHARE_GROUP_TO_PRIVATE.getType().equals(msgEntity.getType())
+            || MessageType.SHARE_ROOM_TO_PRIVATE.getType().equals(msgEntity.getType())
+            || MessageType.SHARE_GROUP_TO_GROUP.getType().equals(msgEntity.getType())
+            || MessageType.SHARE_ROOM_TO_GROUP.getType().equals(msgEntity.getType())
+            || MessageType.SHARE_GROUP_TO_ROOM.getType().equals(msgEntity.getType())
+            || MessageType.SHARE_ROOM_TO_ROOM.getType().equals(msgEntity.getType())){
+            userIdsInContainer.remove(Integer.valueOf(msgEntity.getFromUserId()));
         }
         offlineSendMessage(msgEntity, userIdsInContainer);
     }
