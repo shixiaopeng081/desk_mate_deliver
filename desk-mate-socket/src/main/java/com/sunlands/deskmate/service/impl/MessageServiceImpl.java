@@ -33,8 +33,8 @@ public class MessageServiceImpl implements MessageService {
 
     @Autowired
     private TzChatRecordMapper messageMapper;
-    @Autowired
-    private WebSocketServerHandler webSocketServerHandler;
+//    @Autowired
+//    private WebSocketServerHandler webSocketServerHandler;
 
     @Value("${queue}")
     private String queue;

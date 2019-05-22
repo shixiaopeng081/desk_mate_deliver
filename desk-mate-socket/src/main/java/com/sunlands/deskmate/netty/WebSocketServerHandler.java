@@ -17,6 +17,7 @@ import com.sunlands.deskmate.service.UserService;
 import com.sunlands.deskmate.vo.GroupUserVO;
 import com.sunlands.deskmate.vo.TzUserFriendInfo;
 import com.sunlands.deskmate.vo.response.BusinessResult;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -29,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -41,6 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Sharable
 @Slf4j
+@Scope("prototype")
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
 
     @Autowired
@@ -176,8 +179,16 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     private void sendMessage(Integer userId, Object msg){
         ChannelHandlerContext ctx = ctxMap.get(userId);
         if (ctx != null){
-            ctx.write(new TextWebSocketFrame(JSON.toJSONString(msg, SerializerFeature.WriteMapNullValue)));
-            ctx.flush();
+            ChannelFuture write = ctx.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(msg, SerializerFeature.WriteMapNullValue)));
+
+            ThreadFactory.getThreadPoolExecutor().execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (!write.isSuccess()){
+                        log.info("send msg erro={}",msg);
+                    }
+                }
+            });
         } else {
             log.warn("connection not find userId={}", userId);
         }
