@@ -137,7 +137,9 @@ public class MessageService implements BeanPropertiesUtil {
             messageDODB.setIsRead(false);
             messageDODB.setContent(messageDTO.getContent());
             messageDODB.setTitle(messageDTO.getTitle());
-            messageDODB.setType(messageDO.getType());
+            if(!messageDODB.getType().equals(messageDO.getType())){
+                messageDODB.setType(messageDO.getType());
+            }
             messageDODB.setBusinessId(messageDO.getBusinessId());
             messageDOList.add(messageDODB);
         } else {
