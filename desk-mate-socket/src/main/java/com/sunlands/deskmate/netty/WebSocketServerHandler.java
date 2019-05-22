@@ -185,6 +185,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 public void run() {
                     if (!write.isSuccess()){
                         log.info("send msg cause={}, error={}", write.cause(), msg);
+                    } else {
+                        log.info("send msg success");
                     }
                 }
             });
