@@ -35,6 +35,9 @@ public class UsersVO {
     @ApiModelProperty(position = 50, value = "年龄")
     private Integer age;
 
+    @ApiModelProperty(value = "用户是否登录（0未登录，1登录）")
+    private Integer loggedIn;
+
     @JsonIgnore
     private String password;
 
